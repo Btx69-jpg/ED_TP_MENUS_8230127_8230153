@@ -47,8 +47,6 @@ public class Cenarios implements Cenario {
 
     @Override
     public void run() {
-        Rounds round_ToCruz = new Rounds(pessoas.);
-        Rounds round_Inimigo = new Rounds(pessoas.);
 
     }
 }

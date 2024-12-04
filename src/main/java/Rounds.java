@@ -6,21 +6,11 @@ import Pessoa.ToCruz;
 
 public class Rounds implements Round {
 
-    private Pessoa pessoa;
-    private boolean toCruz;
-
-    public Rounds(Pessoa pessoa) {
-        this.pessoa = pessoa;
-        if(pessoa instanceof ToCruz){
-            toCruz = true;
-        }else {
-            toCruz = false;
-        }
-
+    public Rounds() {
     }
 
     @Override
-    public void move() {
+    public void move(Pessoa pessoa) {
         if(toCruz){
             //só pode fazer dois movimentos, andar para a frente ou andar para tras
         }else{
@@ -32,7 +22,19 @@ public class Rounds implements Round {
     }
 
     @Override
-    public void attack() {
+    public void attack(Pessoa atacante, Pessoa atacado) {
+        if (atacante.getVida() == 0){
+            throw new IllegalArgumentException("O atacante não pode atacar, pois está morto");
+        }
+        if (atacado.getVida() == 0){
+            throw new IllegalArgumentException("O atacado não pode ser atacado, pois está morto");
+        }
+        if(atacante.getVida() == 0 && atacado.getVida() == 0){
+            throw new IllegalArgumentException("Ambos estão mortos, não podem atacar");
+        }
+        if(atacante.getVida() > 0 && atacado.getVida() > 0){
+            atacado.setVida() -= atacante.getPoder();
+        }
 
     }
 
