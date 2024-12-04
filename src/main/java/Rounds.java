@@ -30,14 +30,8 @@ public class Rounds implements Round {
         }
         //Movimentação de inimigos feita.
         else{
-            sala.addInimigo((Inimigo) pessoa);
-            while (iterator.hasNext()){
-                sala = iterator.next();
-                if(sala.hasInimigo((Inimigo) pessoa)){
-                    sala.removeInimigo((Inimigo) pessoa);
-                    return;
-                }
-            }
+            edificio.removeInimigo((Inimigo) pessoa);
+            edificio.addInimigo((Inimigo) pessoa, sala);
 
         }
     }
