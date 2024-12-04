@@ -27,36 +27,33 @@ public class Rounds implements Round {
                     return;
                 }
             }
-        }else{
+        }
+        //Movimentação de inimigos feita.
+        else{
             sala.addInimigo((Inimigo) pessoa);
             while (iterator.hasNext()){
                 sala = iterator.next();
                 if(sala.hasInimigo((Inimigo) pessoa)){
-                    sala.(false);
+                    sala.removeInimigo((Inimigo) pessoa);
                     return;
                 }
             }
-            /*
-            Tem 5 opções de movimento, duas para tras, uma para tras
-            ficar no mesmo sitio, andar uma para a frente, andar duas para a frente
-         */
+
         }
     }
 
     public static void attack(Pessoa atacante, Pessoa atacado) {
-        if (atacante.getVida() == 0){
-            throw new IllegalArgumentException("O atacante não pode atacar, pois está morto");
-        }
-        if (atacado.getVida() == 0){
-            throw new IllegalArgumentException("O atacado não pode ser atacado, pois está morto");
-        }
-        if(atacante.getVida() == 0 && atacado.getVida() == 0){
+        if(atacante.getVida() <= 0 && atacado.getVida() <= 0){
             throw new IllegalArgumentException("Ambos estão mortos, não podem atacar");
         }
-        if(atacante.getVida() > 0 && atacado.getVida() > 0){
-            atacado.setVida(atacado.getVida() - atacante.getPoder());
+        if (atacante.getVida() <= 0){
+            throw new IllegalArgumentException("O atacante não pode atacar, pois está morto");
+        }
+        if (atacado.getVida() <= 0){
+            throw new IllegalArgumentException("O atacado não pode ser atacado, pois está morto");
         }
 
+        atacado.setVida(atacado.getVida() - atacante.getPoder());
     }
 
     /*
