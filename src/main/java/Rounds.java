@@ -9,11 +9,6 @@ import Pessoa.ToCruz;
 import java.util.Iterator;
 
 public class Rounds implements Round {
-
-    public Rounds() {
-    }
-
-
     public static void move(Pessoa pessoa, Sala to, Edificio edificio) {
         Iterator<Sala> iterator = edificio.getSalas().iteratorBFS(to);
         Sala sala = iterator.next();
