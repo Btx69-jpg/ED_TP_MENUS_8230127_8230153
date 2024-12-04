@@ -1,19 +1,41 @@
+import Edificio.Edificio;
+import Edificio.Sala;
 import Exceptions.EmptyCollectionException;
 import GameEngine.Round;
 import Pessoa.Pessoa;
 import Pessoa.Inimigo;
 import Pessoa.ToCruz;
 
+import java.util.Iterator;
+
 public class Rounds implements Round {
 
     public Rounds() {
     }
 
-    @Override
-    public void move(Pessoa pessoa) {
-        if(toCruz){
-            //só pode fazer dois movimentos, andar para a frente ou andar para tras
+
+    public static void move(Pessoa pessoa, Sala to, Edificio edificio) {
+        Iterator<Sala> iterator = edificio.getSalas().iteratorBFS(to);
+        Sala sala = iterator.next();
+        //Movimentação do to cruz feita.
+        if(pessoa instanceof ToCruz){
+            sala.setHaveToCruz(true);
+            while (iterator.hasNext()){
+                sala = iterator.next();
+                if(sala.haveToCruz()){
+                    sala.setHaveToCruz(false);
+                    return;
+                }
+            }
         }else{
+            sala.addInimigo((Inimigo) pessoa);
+            while (iterator.hasNext()){
+                sala = iterator.next();
+                if(sala.){
+                    sala.setHaveToCruz(false);
+                    return;
+                }
+            }
             /*
             Tem 5 opções de movimento, duas para tras, uma para tras
             ficar no mesmo sitio, andar uma para a frente, andar duas para a frente
@@ -21,8 +43,7 @@ public class Rounds implements Round {
         }
     }
 
-    @Override
-    public void attack(Pessoa atacante, Pessoa atacado) {
+    public static void attack(Pessoa atacante, Pessoa atacado) {
         if (atacante.getVida() == 0){
             throw new IllegalArgumentException("O atacante não pode atacar, pois está morto");
         }
@@ -33,11 +54,12 @@ public class Rounds implements Round {
             throw new IllegalArgumentException("Ambos estão mortos, não podem atacar");
         }
         if(atacante.getVida() > 0 && atacado.getVida() > 0){
-            atacado.setVida() -= atacante.getPoder();
+            atacado.setVida(atacado.getVida() - atacante.getPoder());
         }
 
     }
 
+    /*
     @Override
     public void attack(Sala sala) throws EmptyCollectionException {
         if (sala.getInimigos().lenght() == 0){
@@ -67,4 +89,6 @@ public class Rounds implements Round {
         ToCruz toCRUZ = (ToCruz) pessoa;
         toCRUZ.usarMedkit();
     }
+
+     */
 }
