@@ -32,6 +32,11 @@ public class Rounds implements Round {
     }
 
     @Override
+    public void attack() {
+
+    }
+
+    @Override
     public void attack(Sala sala) throws EmptyCollectionException {
         if (sala.getInimigos().lenght() == 0){
             throw new EmptyCollectionException("A sala não tem inimigos para atacar");
