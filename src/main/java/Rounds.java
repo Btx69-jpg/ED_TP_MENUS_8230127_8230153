@@ -26,6 +26,7 @@ public class Rounds implements Round {
         if(pessoa instanceof Inimigo){
             throw new IllegalArgumentException("Inimigo não pode usar item");
         }
-        
+        ToCruz toCruz = (ToCruz) pessoa;
+        toCruz.usarItem();
     }
 }
