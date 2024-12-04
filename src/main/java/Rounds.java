@@ -31,8 +31,8 @@ public class Rounds implements Round {
             sala.addInimigo((Inimigo) pessoa);
             while (iterator.hasNext()){
                 sala = iterator.next();
-                if(sala.){
-                    sala.setHaveToCruz(false);
+                if(sala.hasInimigo((Inimigo) pessoa)){
+                    sala.(false);
                     return;
                 }
             }
