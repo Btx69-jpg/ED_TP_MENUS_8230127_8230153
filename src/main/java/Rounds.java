@@ -14,7 +14,6 @@ public class Rounds implements Round {
         Sala sala = iterator.next();
         //Movimentação do to cruz feita.
         if(pessoa instanceof ToCruz){
-            sala.setHaveToCruz(true);
             while (iterator.hasNext()){
                 sala = iterator.next();
                 if(sala.haveToCruz()){
@@ -22,16 +21,17 @@ public class Rounds implements Round {
                     return;
                 }
             }
+            //confirmar que não envio uma copia da sala mas sim ela propriamente dita
+            to.setHaveToCruz(true);
         }
         //Movimentação de inimigos feita.
         else{
             edificio.removeInimigo((Inimigo) pessoa);
             edificio.addInimigo((Inimigo) pessoa, sala);
-
         }
     }
 
-    public static void attack(Pessoa atacante, Pessoa atacado) {
+    public static void attack(Pessoa atacante, Pessoa atacado) throws IllegalArgumentException{
         if(atacante.getVida() <= 0 && atacado.getVida() <= 0){
             throw new IllegalArgumentException("Ambos estão mortos, não podem atacar");
         }
@@ -39,7 +39,7 @@ public class Rounds implements Round {
             throw new IllegalArgumentException("O atacante não pode atacar, pois está morto");
         }
         if (atacado.getVida() <= 0){
-            throw new IllegalArgumentException("O atacado não pode ser atacado, pois está morto");
+            throw new IllegalArgumentException("O alvo não pode ser atacado, pois está morto");
         }
 
         atacado.setVida(atacado.getVida() - atacante.getPoder());

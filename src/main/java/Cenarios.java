@@ -12,7 +12,10 @@ public class Cenarios implements Cenario {
     /**
      * @return true se o jogador venceu o cenário, false caso contrário
      */
+    //LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO ou adicionar verificaçõoes para ver se o inimigo é valido antes de iniciar o confronto(se tem vida)
+    //falta adicionar o metodo para todos os outros andarem caso estes não morram
     public static boolean Confronto(ToCruz toCruz, LinearLinkedUnorderedList<Inimigo> p2, boolean TocruzStart, boolean autoMode) {
+//      PRINT DOS ENVOLVIDOS NO CONFRONTO
         Iterator<Inimigo> inimigosIterator = p2.iterator();
         Inimigo inimigo = inimigosIterator.next();
         System.out.print("Confronto entre " + toCruz.getNome() + " e " + inimigo);
@@ -21,22 +24,28 @@ public class Cenarios implements Cenario {
             System.out.print( ", " + inimigo );
         }
         System.out.println();
+//-------------------------------------------
 
         System.out.println("Início do confronto");
         while (toCruz.getVida() > 0 && !p2.isEmpty()) {
             if (TocruzStart && !autoMode) {
                 Scanner sc = new Scanner(System.in);
                 int op = 0;
-                System.out.println("Tocruz Tem Prioridade de ataque. ");
+                System.out.println("Round do Tó Cruz. ");
                 while ( op < 1 || op > 2){
                     System.out.println("Ação: \n1 - Atacar\n2 - Usar MedKit");
                     op = sc.nextInt();
                     if (op == 1) {
-                        //ataca todos os inimigos na sala       LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO
+                        //ataca todos os inimigos na sala
                         inimigosIterator = p2.iterator();
                         while (inimigosIterator.hasNext()) {
                             inimigo = inimigosIterator.next();
-                            Rounds.attack(toCruz, inimigo);
+                            try {
+                                Rounds.attack(toCruz, inimigo);
+                            } catch (IllegalArgumentException e) {
+                                System.out.println(e.getMessage());
+                                return false;
+                            }
                             if (inimigo.getVida() <= 0) {
                                 System.out.println(inimigo.getNome() + " foi derrotado");
                                 p2.remove(inimigo);
@@ -45,19 +54,28 @@ public class Cenarios implements Cenario {
                         }
 
                     } else if (op == 2) {
-                        System.out.println("Curou " + toCruz.usarMedKit().getQuantidade() + "pontos de vida");
+                        try {
+                            Item medkit = toCruz.usarMedKit();
+                            System.out.println("Curou " + medkit.getQuantidade() + "pontos de vida");
+                        } catch (EmptyCollectionException e) {
+                            System.out.println("Não há medkits disponíveis");
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("To Cruz não pode usar medkit, pois tem a vida cheia");
+                        }
+
                     } else {
                         System.out.println("Opção inválida");
                     }
                 }
+                TocruzStart = false;
 
             }
 
-            if (TocruzStart && autoMode) {
+            if (TocruzStart) {
 
-                System.out.println("Tocruz Tem Prioridade de ataque. ");
+                System.out.println("Tocruz ataca. ");
 
-
+                //
                 if (toCruz.getVida() > toCruz.getVida() * 0.35) {
                     //ataca todos os inimigos na sala       LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO
                     inimigosIterator = p2.iterator();
@@ -72,23 +90,41 @@ public class Cenarios implements Cenario {
                     }
 
                 } else {
-                    System.out.println("Curou " + toCruz.usarMedKit().getQuantidade() + "pontos de vida");
+                    try {
+                        Item medkit = toCruz.usarMedKit();
+                        System.out.println("Curou " + medkit.getQuantidade() + "pontos de vida");
+                    } catch (EmptyCollectionException e) {
+                        System.out.println("Não há medkits disponíveis");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("To Cruz não pode usar medkit, pois tem a vida cheia");
+                    }
                 }
-
+                TocruzStart = false;
             }
 
 
-            toCruz.setVida(toCruz.getVida() - p2.getPoder());
-            p2.setVida(p2.getVida() - toCruz.getPoder());
-            System.out.println(toCruz.getNome() + " atacou " + p2.getNome() + " com poder " + toCruz.getPoder());
-            System.out.println(p2.getNome() + " atacou " + toCruz.getNome() + " com poder " + p2.getPoder());
-            System.out.println("Vida de " + toCruz.getNome() + ": " + toCruz.getVida());
-            System.out.println("Vida de " + p2.getNome() + ": " + p2.getVida());
+
+
+            //ataque do(s) inimigo(s)       LEMBRAR DE FAZER TODOS OS OUTROS INIMIGOS ANDAREM CASO ESSES NÃO MORRAM
+            if (!p2.isEmpty()) {
+                System.out.println("Inimigos atacam. ");
+                inimigosIterator = p2.iterator();
+                while (inimigosIterator.hasNext()) {
+                    inimigo = inimigosIterator.next();
+                    Rounds.attack(inimigo, toCruz);
+                    if (toCruz.getVida() <= 0) {
+                        System.out.println("To Cruz foi derrotado foi derrotado");
+                        return false;
+                    }
+                    System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
+                }
+                TocruzStart = true;
+            }
+
         }
-        if (toCruz.getVida() <= 0) {
-            System.out.println(toCruz.getNome() + " foi derrotado");
-        } else {
-            System.out.println(p2.getNome() + " foi derrotado");
-        }
+        System.out.println("Fim do confronto");
+        return true;
     }
+
+
 }
