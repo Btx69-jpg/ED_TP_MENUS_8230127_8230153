@@ -1,3 +1,4 @@
+import Data.Json;
 import Edificio.Edificio;
 import GameEngine.GameMode;
 import Pessoa.ToCruz;
@@ -107,5 +108,8 @@ public class GamesMode implements GameMode {
     @Override
     public void run() {
 
+        new Missao();
+        Missao missao = Json.ReadJson("/teste.json");
+        manual();
     }
 }

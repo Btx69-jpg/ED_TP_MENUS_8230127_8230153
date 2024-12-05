@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Console">
-  <grid id="27dc6" binding="Jogo" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="Jogo" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="1505" height="1771"/>
+      <xy x="20" y="20" width="1505" height="1798"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -111,13 +111,115 @@
         <border type="none"/>
         <children>
           <component id="56036" class="javax.swing.JLabel" binding="labelComImagem">
-            <constraints border-constraint="Center"/>
+            <constraints border-constraint="West"/>
             <properties>
+              <enabled value="true"/>
               <icon value="imagens/ToCruz.jpeg"/>
+              <name value=""/>
               <text value=""/>
+              <toolTipText value=""/>
             </properties>
           </component>
+          <component id="49c10" class="javax.swing.JList" binding="ToCruzStatus">
+            <constraints border-constraint="Center"/>
+            <properties>
+              <model>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value=""/>
+                <item value="Nome : To Cruz"/>
+                <item value="Vida : 100"/>
+                <item value="Poder : 25"/>
+              </model>
+              <selectionMode value="2"/>
+            </properties>
+          </component>
+          <grid id="bcb4f" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints border-constraint="Last"/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="fda09" class="javax.swing.JButton" binding="PlayEasyModeButton">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                    <preferred-size width="1000" height="100"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <enabled value="true"/>
+                  <hideActionText value="false"/>
+                  <horizontalAlignment value="4"/>
+                  <horizontalTextPosition value="0"/>
+                  <text value="Jogar"/>
+                  <verticalAlignment value="0"/>
+                  <verticalTextPosition value="0"/>
+                </properties>
+              </component>
+              <component id="a7450" class="javax.swing.JProgressBar" binding="LoadingBar">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="2" fill="1" indent="0" use-parent-layout="false">
+                    <preferred-size width="10" height="10"/>
+                  </grid>
+                </constraints>
+                <properties>
+                  <borderPainted value="true"/>
+                  <enabled value="true"/>
+                  <string value="50%"/>
+                  <stringPainted value="true"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
         </children>
+      </grid>
+      <grid id="f780a" binding="JogoFacil" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
+      <grid id="cdb89" binding="LoadingScreen" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children/>
       </grid>
     </children>
   </grid>

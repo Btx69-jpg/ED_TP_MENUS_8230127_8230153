@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,17 +17,35 @@ public class Console {
     private JTextArea Dificuldadetxt;
     private JPanel DificuldadeFacilPanel;
     private JLabel labelComImagem;
+    private JList ToCruzStatus;
+    private JButton PlayEasyModeButton;
+    private JPanel JogoFacil;
+    private JPanel LoadingScreen;
+    private JProgressBar LoadingBar;
 
     public Console() {
+
+        PlayEasyModeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
+                frame.setContentPane(LoadingScreen);
+                GamesMode game = new GamesMode();
+                game.run();
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
 
         // Ação do botão Iniciar
         fácilButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Altera para o painel de nível de dificuldade
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(NivelDificuldadePanel);
-                frame.setContentPane(DificuldadeFacilPanel); // Troca para o painel de nível de dificuldade
+                frame.setContentPane(DificuldadeFacilPanel);
                 frame.revalidate(); // Atualiza o frame para refletir a mudança
+                UIManager.put("ProgressBar.foreground", Color.GREEN);
+                labelComImagem.setPreferredSize(new Dimension(540, 540));
                 frame.repaint();
             }
         });
