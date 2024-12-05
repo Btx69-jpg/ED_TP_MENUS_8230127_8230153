@@ -150,7 +150,14 @@ public abstract class Cenarios implements Cenario {
             System.out.print( ", " + inimigo );
         }
         System.out.println();
+        inimigosIterator = inimigos.iterator();
         while (inimigosIterator.hasNext()){
+            //garanto que não vao andar os inimigos que estão em confronto
+            if (inimigo.isInConfronto()){
+                inimigo = inimigosIterator.next();
+                continue;
+            }
+
             inimigo = inimigosIterator.next();
             if (inimigo.getVida() > 0){
                 Rounds.move(inimigo, edificio.getSalas().getRandom(), edificio);
