@@ -1,3 +1,4 @@
+import Edificio.Edificio;
 import Exceptions.EmptyCollectionException;
 import GameEngine.Cenario;
 import Item.Item;
@@ -14,12 +15,14 @@ public class Cenarios implements Cenario {
      */
     //LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO ou adicionar verificaçõoes para ver se o inimigo é valido antes de iniciar o confronto(se tem vida)
     //falta adicionar o metodo para todos os outros andarem caso estes não morram
-    public static boolean Confronto(ToCruz toCruz, LinearLinkedUnorderedList<Inimigo> p2, boolean TocruzStart, boolean autoMode) {
+    public static boolean Confronto(ToCruz toCruz, LinearLinkedUnorderedList<Inimigo> p2, boolean TocruzStart, boolean autoMode, Edificio edificio) {
 //      PRINT DOS ENVOLVIDOS NO CONFRONTO
+        toCruz.setInConfronto(true);
         Iterator<Inimigo> inimigosIterator = p2.iterator();
         Inimigo inimigo = inimigosIterator.next();
         System.out.print("Confronto entre " + toCruz.getNome() + " e " + inimigo);
         while (inimigosIterator.hasNext()) {
+            inimigo.setInConfronto(true);
             inimigo = inimigosIterator.next();
             System.out.print( ", " + inimigo );
         }
@@ -119,11 +122,30 @@ public class Cenarios implements Cenario {
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
                 }
                 TocruzStart = true;
+                walkEnimies(edificio);
             }
 
         }
         System.out.println("Fim do confronto");
+        toCruz.setInConfronto(false);
         return true;
+    }
+
+    public static void walkEnimies(Edificio edificio){
+        Iterator<Inimigo> inimigosIterator = edificio.getInimigos().iterator();
+        Inimigo inimigo = inimigosIterator.next();
+        System.out.print("Movimentação de " + inimigo);
+        while (inimigosIterator.hasNext()) {
+            inimigo = inimigosIterator.next();
+            System.out.print( ", " + inimigo );
+        }
+        System.out.println();
+        while (inimigosIterator.hasNext()){
+            inimigo = inimigosIterator.next();
+            if (inimigo.getVida() > 0){
+                Rounds.move(inimigo, edificio.getSalas().getRandom(), edificio);
+            }
+        }
     }
 
 
