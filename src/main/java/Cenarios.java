@@ -44,15 +44,40 @@ public class Cenarios implements Cenario {
                             System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
                         }
 
-
                     } else if (op == 2) {
-                        toCruz.usarMedKit();
+                        System.out.println("Curou " + toCruz.usarMedKit().getQuantidade() + "pontos de vida");
                     } else {
                         System.out.println("Opção inválida");
                     }
                 }
 
             }
+
+            if (TocruzStart && autoMode) {
+
+                System.out.println("Tocruz Tem Prioridade de ataque. ");
+
+
+                if (toCruz.getVida() > toCruz.getVida() * 0.35) {
+                    //ataca todos os inimigos na sala       LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO
+                    inimigosIterator = p2.iterator();
+                    while (inimigosIterator.hasNext()) {
+                        inimigo = inimigosIterator.next();
+                        Rounds.attack(toCruz, inimigo);
+                        if (inimigo.getVida() <= 0) {
+                            System.out.println(inimigo.getNome() + " foi derrotado");
+                            p2.remove(inimigo);
+                        }
+                        System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
+                    }
+
+                } else {
+                    System.out.println("Curou " + toCruz.usarMedKit().getQuantidade() + "pontos de vida");
+                }
+
+            }
+
+
             toCruz.setVida(toCruz.getVida() - p2.getPoder());
             p2.setVida(p2.getVida() - toCruz.getPoder());
             System.out.println(toCruz.getNome() + " atacou " + p2.getNome() + " com poder " + toCruz.getPoder());
