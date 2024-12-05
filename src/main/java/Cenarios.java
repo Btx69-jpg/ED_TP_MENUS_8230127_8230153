@@ -5,10 +5,11 @@ import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Pessoa.*;
 
+import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.Scanner;
 
-public class Cenarios implements Cenario {
+public abstract class Cenarios implements Cenario {
 
     /**
      * @return true se o jogador venceu o cenário, false caso contrário
@@ -131,9 +132,18 @@ public class Cenarios implements Cenario {
         return true;
     }
 
-    public static void walkEnimies(Edificio edificio){
-        Iterator<Inimigo> inimigosIterator = edificio.getInimigos().iterator();
+
+    //CONTINUAR DAQUI VER A ALEATORIEDADE DA POSIÇÃO DOS INIMIGOS
+    public static void walkEnimies(Edificio edificio) throws EmptyCollectionException {
+        LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
+        Iterator<Inimigo> inimigosIterator = inimigos.iterator();
+        if (inimigos.isEmpty()){
+            throw new EmptyCollectionException("Não há inimigos no edifício");
+        }
         Inimigo inimigo = inimigosIterator.next();
+        while (inimigo.isInConfronto() && inimigosIterator.hasNext()){
+            inimigo = inimigosIterator.next();
+        }
         System.out.print("Movimentação de " + inimigo);
         while (inimigosIterator.hasNext()) {
             inimigo = inimigosIterator.next();
