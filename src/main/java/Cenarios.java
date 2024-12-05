@@ -1,9 +1,11 @@
 import Edificio.Edificio;
 import Exceptions.EmptyCollectionException;
 import GameEngine.Cenario;
+import Heaps.PriorityHeap;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Pessoa.*;
+import Edificio.Sala;
 
 import java.util.EmptyStackException;
 import java.util.Iterator;
@@ -136,7 +138,12 @@ public abstract class Cenarios implements Cenario {
     //CONTINUAR DAQUI VER A ALEATORIEDADE DA POSIÇÃO DOS INIMIGOS
     public static void walkEnimies(Edificio edificio) throws EmptyCollectionException {
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
+        LinearLinkedUnorderedList<Sala> salasComInimigos = edificio;
         Iterator<Inimigo> inimigosIterator = inimigos.iterator();
+        Iterator<Sala> salasIterator = edificio.getSalas().getVerticesIterator();
+        PriorityHeap<Sala> PossiveisSalas = new PriorityHeap<>();
+        PriorityHeap<Inimigo> inimigosHeap = new PriorityHeap<>();
+        int cnt = 1;
         if (inimigos.isEmpty()){
             throw new EmptyCollectionException("Não há inimigos no edifício");
         }
@@ -145,11 +152,22 @@ public abstract class Cenarios implements Cenario {
             inimigo = inimigosIterator.next();
         }
         System.out.print("Movimentação de " + inimigo);
+        inimigosHeap.addElement(inimigo, cnt);
+        cnt++;
         while (inimigosIterator.hasNext()) {
+            if (inimigo.isInConfronto()){
+                inimigo = inimigosIterator.next();
+                continue;
+            }
             inimigo = inimigosIterator.next();
             System.out.print( ", " + inimigo );
+            inimigosHeap.addElement(inimigo, cnt);
+            cnt++;
         }
         System.out.println();
+
+
+
         inimigosIterator = inimigos.iterator();
         while (inimigosIterator.hasNext()){
             //garanto que não vao andar os inimigos que estão em confronto
