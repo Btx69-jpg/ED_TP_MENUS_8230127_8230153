@@ -45,36 +45,4 @@ public class Rounds implements Round {
         atacado.setVida(atacado.getVida() - atacante.getPoder());
     }
 
-    /*
-    @Override
-    public void attack(Sala sala) throws EmptyCollectionException {
-        if (sala.getInimigos().lenght() == 0){
-            throw new EmptyCollectionException("A sala não tem inimigos para atacar");
-        }
-        ToCruz toCRUZ = (ToCruz) pessoa;//está errado, pois pessoa pode ser inimigo
-        Inimigo[] inimigos = new Inimigo[sala.getInimigos().lenght()];
-        for (i = 0; i < sala.getInimigos().lenght(); i++) {
-            inimigos[i] = sala.getInimigos()[i];
-        }
-        if(toCruz){
-            for(Inimigo inimigo : inimigos){
-                inimigo.getVida() -= toCRUZ.getPoder();
-            }
-        }else{
-            for(Inimigo inimigo : inimigos){
-                toCRUZ.getVida() -= inimigo.getPoder();
-            }
-        }
-    }
-
-    @Override
-    public void useItem() throws IllegalArgumentException{
-        if(!toCruz){
-            throw new IllegalArgumentException("Inimigo não pode usar item");
-        }
-        ToCruz toCRUZ = (ToCruz) pessoa;
-        toCRUZ.usarMedkit();
-    }
-
-     */
 }

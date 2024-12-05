@@ -1,12 +1,15 @@
 import Edificio.Edificio;
 import Exceptions.EmptyCollectionException;
 import GameEngine.Cenario;
+import Heaps.PriorityHeap;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Pessoa.*;
+import Edificio.Sala;
 
 import java.util.EmptyStackException;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Scanner;
 
 public abstract class Cenarios implements Cenario {
@@ -136,31 +139,30 @@ public abstract class Cenarios implements Cenario {
     //CONTINUAR DAQUI VER A ALEATORIEDADE DA POSIÇÃO DOS INIMIGOS
     public static void walkEnimies(Edificio edificio) throws EmptyCollectionException {
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
-        Iterator<Inimigo> inimigosIterator = inimigos.iterator();
+        LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
+        LinearLinkedUnorderedList<Sala> salasConnectadas;
+        Sala sala;
+        Iterator<Sala> salasIterator = salasComInimigos.iterator();
+        PriorityHeap<Sala> PossiveisSalas = new PriorityHeap<>();
+
+        Random random = new Random();
+        int cnt = 1;
         if (inimigos.isEmpty()){
             throw new EmptyCollectionException("Não há inimigos no edifício");
         }
-        Inimigo inimigo = inimigosIterator.next();
-        while (inimigo.isInConfronto() && inimigosIterator.hasNext()){
-            inimigo = inimigosIterator.next();
-        }
-        System.out.print("Movimentação de " + inimigo);
-        while (inimigosIterator.hasNext()) {
-            inimigo = inimigosIterator.next();
-            System.out.print( ", " + inimigo );
-        }
-        System.out.println();
-        inimigosIterator = inimigos.iterator();
-        while (inimigosIterator.hasNext()){
-            //garanto que não vao andar os inimigos que estão em confronto
-            if (inimigo.isInConfronto()){
-                inimigo = inimigosIterator.next();
-                continue;
+        while(salasIterator.hasNext()){
+            sala = salasIterator.next();
+            inimigos = sala.getInimigos();
+            salasConnectadas = edificio.getSalas().getConnectedVertices(sala);
+            PossiveisSalas.addElement(sala, cnt);
+            cnt++;
+            for (Sala salaConnectada : salasConnectadas){
+                PossiveisSalas.addElement(salaConnectada, cnt);
+                cnt++;
             }
-
-            inimigo = inimigosIterator.next();
-            if (inimigo.getVida() > 0){
-                Rounds.move(inimigo, edificio.getSalas().getRandom(), edificio);
+            for (Inimigo inimigo : inimigos) {
+                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
+                Rounds.move(inimigo,  sala, edificio);
             }
         }
     }
