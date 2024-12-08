@@ -43,6 +43,8 @@ public class Json {
 
             // Lê o edifício e cria os vértices do grafo
             JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
+            Sala[] salasArray = new Sala[edificioArray.size()];
+            int index = 0;
             GraphNetwork<Sala> salas = new GraphNetwork<>();
 
             // Adiciona entradas e saídas
@@ -53,6 +55,7 @@ public class Json {
                 String nomeSala = (String) nomeSalaObj;
                 boolean isAlvo = nomeSala.equals(alvoDivisao);
                 boolean isEntradaSaida = false;
+
                 for (Object entradaSaidaObj : entradasSaidasArray) {
                     String nomeEntradaSaid = (String) entradaSaidaObj;
                     if (nomeSala.equals(nomeEntradaSaid)) {
@@ -61,31 +64,43 @@ public class Json {
                     }
                 }
                 Sala sala = new Sala(nomeSala, isAlvo, isEntradaSaida);
+                salasArray [index] = sala;
+                index++;
+
                 salaIterator = sala;
 
                 salas.addVertex(sala);
             }
 
-            // Adiciona os inimigos às salas
-            JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
             // Adiciona as ligações (arestas) entre as salas
             JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
             for (Object ligacaoObj : ligacoesArray) {
                 JSONArray ligacao = (JSONArray) ligacaoObj;
                 String sala1 = (String) ligacao.get(0);
                 String sala2 = (String) ligacao.get(1);
+                int pos1 = -1;
+                int pos2 = -1;
 
-                Sala salaObj1 = findSala(salas, sala1);
-                Sala salaObj2 = findSala(salas, sala2);
-
-                if (salaObj1 != null && salaObj2 != null) {
-                    salas.addEdge(salaObj1, salaObj2);
+                for (int i = 0; i < salasArray.length; i++) {
+                    if (salasArray[i].getNome().equals(sala1)) {
+                        pos1 = i;
+                    }
+                    if (salasArray[i].getNome().equals(sala2)) {
+                        pos2 = i;
+                    }
                 }
+                if (pos1 == -1) {
+                    System.out.println("Sala  para ligação não encontrada: " + sala1 + "\n Continuaremos a carregar o mapa");
+                    continue;
+                }
+
+                if (pos2 == -1) {
+                    System.out.println("Sala  para ligação não encontrada: " + sala2 + "\n Continuaremos a carregar o mapa");
+                    continue;
+                }
+
+                salas.addEdge(salasArray[pos1],salasArray[pos2]);
             }
-
-
-
-
 
             // Adiciona os itens às salas
             JSONArray itensArray = (JSONArray) jsonObject.get("itens");
@@ -95,9 +110,9 @@ public class Json {
                 long pontosItem = (long) itemJson.get("pontos");
                 String tipoItem = (String) itemJson.get("tipo");
 
-                Sala sala = findSala(salas, divisaoItem);
+                Sala sala = findSala(salasArray, divisaoItem);
                 if (sala != null) {
-                    ItemType itemType = ItemType.valueOf(tipoItem.toUpperCase().replace(" ", "_"));
+                    ItemType itemType = ItemType.fromString(tipoItem);
                     Item item = new Item(itemType, (int) pontosItem);
                     sala.addItem(item);
                 }
@@ -105,13 +120,15 @@ public class Json {
 
             Edificio edificio = new Edificio(salas);
 
+            // Adiciona os inimigos às salas
+            JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
             for (Object inimigoObj : inimigosArray) {
                 JSONObject inimigoJson = (JSONObject) inimigoObj;
                 String nomeInimigo = (String) inimigoJson.get("nome");
                 long poderInimigo = (long) inimigoJson.get("poder");
                 String divisaoInimigo = (String) inimigoJson.get("divisao");
 
-                Sala sala = findSala(salas, divisaoInimigo);
+                Sala sala = findSala(salasArray, divisaoInimigo);
                 if (sala != null) {
                     Inimigo inimigo = new Inimigo(nomeInimigo, (int) poderInimigo);
                     edificio.addInimigo(inimigo,sala);
@@ -119,7 +136,7 @@ public class Json {
             }
 
             // Adiciona o alvo
-            Sala salaAlvo = findSala(salas, alvoDivisao);
+            Sala salaAlvo = findSala(salasArray, alvoDivisao);
             return new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo));
 
 
@@ -147,11 +164,11 @@ public class Json {
      * @param nomeSala o nome da sala a ser procurada.
      * @return a sala encontrada, ou null se não for encontrada.
      */
-    private static Sala findSala(GraphNetwork<Sala> salas, String nomeSala) {
-        for (Iterator<Sala> it = salas.iteratorBFS(salaIterator); it.hasNext(); ) {
-            Sala sala = it.next();
-            if (sala.getNome().equals(nomeSala)) {
-                return sala;
+    private static Sala findSala(Sala [] salas, String nomeSala) {
+        for (int i = 0; i < salas.length; i++) {
+
+            if (salas[i].getNome().equals(nomeSala)) {
+                return salas[i];
             }
         }
         return null;

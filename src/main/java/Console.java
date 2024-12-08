@@ -1,3 +1,6 @@
+import Data.Json;
+import Missao.Missao;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,12 +28,14 @@ public class Console {
 
     public Console() {
 
+        Missao mission = Json.ReadJson("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+
         PlayEasyModeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
                 frame.setContentPane(LoadingScreen);
-                GamesMode game = new GamesMode();
+                GamesMode game = new GamesMode(mission);
                 game.run();
                 frame.revalidate();
                 frame.repaint();

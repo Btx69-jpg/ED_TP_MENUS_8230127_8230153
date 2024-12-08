@@ -26,7 +26,6 @@ public class Rounds implements Round {
         }
         //Movimentação de inimigos feita.
         else{
-            edificio.removeInimigo((Inimigo) pessoa);
             edificio.addInimigo((Inimigo) pessoa, sala);
         }
     }

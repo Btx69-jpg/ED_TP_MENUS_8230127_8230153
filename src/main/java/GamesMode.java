@@ -4,14 +4,23 @@ import GameEngine.GameMode;
 import Pessoa.ToCruz;
 import Missao.Missao;
 import Edificio.Sala;
+import  Enum.Dificulty;
 
 import java.util.Iterator;
 import java.util.Scanner;
 
 public class GamesMode implements GameMode {
-    Missao missao;
+    private Missao missao;
     private ToCruz toCruz;
     private boolean end;
+
+    public  GamesMode(Missao missao) {
+        this.missao = missao;
+        //LEMBRAR DE N\AO FAZER DANO FIXO E IMPLEMENTAR DIFICULDADES
+        this.toCruz = new ToCruz("ToCruz", 40);
+        this.end = false;
+    }
+
     @Override
     public void automatic() {
         //todas as decisões são tomadas automaticamente
