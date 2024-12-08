@@ -236,8 +236,12 @@ public class Console {
                 JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
                 break;
             case "2 - Usar MedKit":
-                rounds.useMedKit(toCruz);
-                JOptionPane.showMessageDialog(TurnoUtilizador, "Usou MedKit");
+                try{
+                    rounds.useMedKit(toCruz);
+                    JOptionPane.showMessageDialog(TurnoUtilizador, "Usou MedKit");
+                }catch (NullPointerException | IllegalArgumentException e){
+                    JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
+                }
                 break;
             case "3 - Atacar":
                 Iterator<Sala> itSalas = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
@@ -296,7 +300,9 @@ public class Console {
         JFrame frame = new JFrame("Console");
         frame.setContentPane(new Console().EcraInicial);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+        frame.setSize(1200, 800);
+        frame.setLocationRelativeTo(null);
+        //frame.pack();
         frame.setVisible(true);
     }
 }
