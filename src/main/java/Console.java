@@ -60,12 +60,13 @@ public class Console {
                 String selectedSpawnPoint = SpawnList.getSelectedValue();
                 if(selectedSpawnPoint == null){
                     JOptionPane.showMessageDialog(SpamSelecter, "Por favor, selecione um ponto de spawn!");
+                }else {
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpamSelecter);
+                    frame.setContentPane(JogoMapa);
+                    opcoesTurnoUtilizador();
+                    frame.revalidate();
+                    frame.repaint();
                 }
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpamSelecter);
-                frame.setContentPane(JogoMapa);
-                opcoesTurnoUtilizador();
-                frame.revalidate();
-                frame.repaint();
             }
         });
 
@@ -215,7 +216,7 @@ public class Console {
         }
         switch (selectedAction){
             case "1 - Mover":
-                rounds.move(toCruz);
+                rounds.move(toCruz, missao.getEdificio().getSalas().getVertex(0), missao.getEdificio());
                 break;
             case "2 - Usar MedKit":
                 rounds.useMedKit(toCruz);
@@ -241,7 +242,7 @@ public class Console {
                 toCruz.getVida();
                 break;
             case "5 - Verificar Mochila":
-                toCruz.
+                toCruz.getVida();
                 break;
             case "6 - Verificar Alvo":
                 missao.getAlvo();
