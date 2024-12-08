@@ -73,9 +73,25 @@ public class Console {
         TurnoUtillizadorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                while (!missao.isSucess() || toCruz.getVida() != 0){
-                    escolhaTurnoUtilizador();
+                boolean jogoEmAndamento = true;
+                if (!jogoEmAndamento) {
+                    JOptionPane.showMessageDialog(JogoMapa, "O jogo já terminou! Reinicie para jogar novamente.");
+                    System.exit(0);
                 }
+
+                escolhaTurnoUtilizador();
+
+                if (missao.isSucess()) {
+                    JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
+                    jogoEmAndamento = false;
+                } else if (toCruz.getVida() <= 0) {
+                    JOptionPane.showMessageDialog(JogoMapa, "Game Over! To Cruz foi derrotado.");
+                    jogoEmAndamento = false;
+                }
+
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
+                frame.revalidate();
+                frame.repaint();
             }
         });
 
@@ -217,9 +233,11 @@ public class Console {
         switch (selectedAction){
             case "1 - Mover":
                 rounds.move(toCruz, missao.getEdificio().getSalas().getVertex(0), missao.getEdificio());
+                JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
                 break;
             case "2 - Usar MedKit":
                 rounds.useMedKit(toCruz);
+                JOptionPane.showMessageDialog(TurnoUtilizador, "Usou MedKit");
                 break;
             case "3 - Atacar":
                 Iterator<Sala> itSalas = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
@@ -231,6 +249,7 @@ public class Console {
                             for (Inimigo inimigo : salaToCruz.getInimigos()){
                                 rounds.attack(toCruz, inimigo);
                             }
+                            JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + "inimigos");
                             break;
                         }else{
                             JOptionPane.showMessageDialog(TurnoUtilizador, "Sala não inimigos para atacar!");
@@ -239,16 +258,16 @@ public class Console {
                     }
                 }
             case "4 - Verificar Vida":
-                toCruz.getVida();
+                JOptionPane.showMessageDialog(TurnoUtilizador, toCruz.getVida());
                 break;
             case "5 - Verificar Mochila":
-                toCruz.getVida();
+                //JOptionPane.showMessageDialog(TurnoUtilizador,  toCruz.getMochila());
                 break;
             case "6 - Verificar Alvo":
-                missao.getAlvo();
+                JOptionPane.showMessageDialog(TurnoUtilizador, missao.getAlvo());
                 break;
             case "7 - Verificar Edificio":
-                missao.getEdificio();
+                JOptionPane.showMessageDialog(TurnoUtilizador, missao.getEdificio());
                 break;
         }
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
