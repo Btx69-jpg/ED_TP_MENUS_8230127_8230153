@@ -109,7 +109,7 @@ public class GamesMode implements GameMode {
     public void run() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Insira o Cami:");
-        this.missao = Json.ReadJson("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        this.missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
         manual();
     }
 }

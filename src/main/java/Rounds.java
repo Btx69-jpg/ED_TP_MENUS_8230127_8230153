@@ -31,6 +31,12 @@ public class Rounds implements Round {
         }
     }
 
+    public static void useMedKit(Pessoa pessoa){
+        if (pessoa instanceof ToCruz){
+            ((ToCruz) pessoa).usarMedKit();
+        }
+    }
+
     public static void attack(Pessoa atacante, Pessoa atacado) throws IllegalArgumentException{
         if(atacante.getVida() <= 0 && atacado.getVida() <= 0){
             throw new IllegalArgumentException("Ambos estão mortos, não podem atacar");
