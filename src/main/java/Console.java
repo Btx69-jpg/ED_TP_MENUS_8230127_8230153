@@ -57,6 +57,7 @@ public class Console {
 
     private Missao missao;
     private ToCruz toCruz;
+    private int roundsCount = 0;
 
     public Console() {
 
@@ -92,6 +93,7 @@ public class Console {
 
                 escolhaTurnoUtilizador();
                 gamesMode.moveEnimies(missao.getEdificio());
+                roundsCount++;
 
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
@@ -133,6 +135,7 @@ public class Console {
                 }
 
                 escolhaTurnoUtilizador();
+                roundsCount++;
 
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapaFacil, "Missão concluída com sucesso!");
@@ -318,7 +321,7 @@ public class Console {
                 JOptionPane.showMessageDialog(TurnoUtilizador, toCruz.getVida());
                 break;
             case "5 - Verificar Mochila":
-                //JOptionPane.showMessageDialog(TurnoUtilizador,  toCruz.getMochila());
+                JOptionPane.showMessageDialog(TurnoUtilizador,  toCruz.getMochila());
                 break;
             case "6 - Verificar Alvo":
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getAlvo());
@@ -355,7 +358,6 @@ public class Console {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 800);
         frame.setLocationRelativeTo(null);
-        //frame.pack();
         frame.setVisible(true);
     }
 }
