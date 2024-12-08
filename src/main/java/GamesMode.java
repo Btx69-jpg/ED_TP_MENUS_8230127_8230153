@@ -1,11 +1,16 @@
 import Data.Json;
 import Edificio.Edificio;
+import Exceptions.EmptyCollectionException;
 import GameEngine.GameMode;
+import Heaps.PriorityHeap;
+import LinkedList.LinearLinkedUnorderedList;
+import Pessoa.Inimigo;
 import Pessoa.ToCruz;
 import Missao.Missao;
 import Edificio.Sala;
 
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Scanner;
 
 public class GamesMode implements GameMode {
@@ -101,8 +106,34 @@ public class GamesMode implements GameMode {
         //aparecer um menu para deixar o utilizador escolher o que fazer
     }
 
-    public void moveEnimies() {
+    public void moveEnimies(Edificio edificio) {
+        LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
+        LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
+        LinearLinkedUnorderedList<Sala> salasConnectadas;
+        Sala sala;
+        Iterator<Sala> salasIterator = salasComInimigos.iterator();
+        PriorityHeap<Sala> PossiveisSalas = new PriorityHeap<>();
 
+        Random random = new Random();
+        int cnt = 1;
+        if (inimigos.isEmpty()) {
+            throw new EmptyCollectionException("Não há inimigos no edifício");
+        }
+        while (salasIterator.hasNext()) {
+            sala = salasIterator.next();
+            inimigos = sala.getInimigos();
+            salasConnectadas = edificio.getSalas().getConnectedVertices(sala);
+            PossiveisSalas.addElement(sala, cnt);
+            cnt++;
+            for (Sala salaConnectada : salasConnectadas) {
+                PossiveisSalas.addElement(salaConnectada, cnt);
+                cnt++;
+            }
+            for (Inimigo inimigo : inimigos) {
+                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
+                Rounds.move(inimigo, sala, edificio);
+            }
+        }
     }
 
     @Override

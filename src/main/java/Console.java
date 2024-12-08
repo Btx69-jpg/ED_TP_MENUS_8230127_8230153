@@ -32,7 +32,7 @@ public class Console {
     private JLabel labelImagemFacil;
     private JList ToCruzStatus;
     private JButton PlayEasyModeButton;
-    private JPanel SpamSelecter;
+    private JPanel SpawnSelecter;
     private JPanel LoadingScreen;
     private JPanel DificuldadeMediaPanel;
     private JButton PlayMedioModeButton;
@@ -44,42 +44,54 @@ public class Console {
     private JList<String> SpawnList;
     private JLabel SelectSpawnPoint;
     private JButton AvancarJogo;
-    private JPanel JogoMapa;
+    private JPanel JogoMapaFacil;
     private JList<String> TurnoUtilizador;
     private JButton TurnoUtillizadorButton;
     private JButton sairJogo;
+    private JButton ResetButton;
+    private JPanel JogoMapa;
+    private JList TurnoUtilizadorInimigo;
+    private JButton ConfirmarEscolha;
+    private JButton SairJogo;
+    private JButton ReiniciarButton;
 
     private Missao missao;
     private ToCruz toCruz;
 
     public Console() {
 
-        AvancarJogo.addActionListener(new ActionListener() {
+        ResetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedSpawnPoint = SpawnList.getSelectedValue();
-                if(selectedSpawnPoint == null){
-                    JOptionPane.showMessageDialog(SpamSelecter, "Por favor, selecione um ponto de spawn!");
-                }else {
-                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpamSelecter);
-                    frame.setContentPane(JogoMapa);
-                    opcoesTurnoUtilizador();
-                    frame.revalidate();
-                    frame.repaint();
-                }
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
+                frame.setContentPane(NivelDificuldadePanel);
+                frame.revalidate();
+                frame.repaint();
             }
         });
 
-        TurnoUtillizadorButton.addActionListener(new ActionListener() {
+        ReiniciarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
+                frame.setContentPane(NivelDificuldadePanel);
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        ConfirmarEscolha.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean jogoEmAndamento = true;
+                GamesMode gamesMode = new GamesMode();
                 if (!jogoEmAndamento) {
                     JOptionPane.showMessageDialog(JogoMapa, "O jogo já terminou! Reinicie para jogar novamente.");
                     System.exit(0);
                 }
 
                 escolhaTurnoUtilizador();
+                gamesMode.moveEnimies(missao.getEdificio());
 
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
@@ -95,11 +107,52 @@ public class Console {
             }
         });
 
+        AvancarJogo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedSpawnPoint = SpawnList.getSelectedValue();
+                if(selectedSpawnPoint == null){
+                    JOptionPane.showMessageDialog(SpawnSelecter, "Por favor, selecione um ponto de spawn!");
+                }else {
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpawnSelecter);
+                    frame.setContentPane(JogoMapaFacil);
+                    opcoesTurnoUtilizador();
+                    frame.revalidate();
+                    frame.repaint();
+                }
+            }
+        });
+
+        TurnoUtillizadorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean jogoEmAndamento = true;
+                if (!jogoEmAndamento) {
+                    JOptionPane.showMessageDialog(JogoMapaFacil, "O jogo já terminou! Reinicie para jogar novamente.");
+                    System.exit(0);
+                }
+
+                escolhaTurnoUtilizador();
+
+                if (missao.isSucess()) {
+                    JOptionPane.showMessageDialog(JogoMapaFacil, "Missão concluída com sucesso!");
+                    jogoEmAndamento = false;
+                } else if (toCruz.getVida() <= 0) {
+                    JOptionPane.showMessageDialog(JogoMapaFacil, "Game Over! To Cruz foi derrotado.");
+                    jogoEmAndamento = false;
+                }
+
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
         PlayEasyModeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
-                frame.setContentPane(SpamSelecter);
+                frame.setContentPane(SpawnSelecter);
                 runGame();
                 atualizarSpamList();
                 frame.revalidate();
@@ -111,7 +164,7 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeMediaPanel);
-                frame.setContentPane(SpamSelecter);
+                frame.setContentPane(SpawnSelecter);
                 runGame();
                 atualizarSpamList();
                 frame.revalidate();
@@ -123,7 +176,7 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeDificilPanel);
-                frame.setContentPane(SpamSelecter);
+                frame.setContentPane(SpawnSelecter);
                 runGame();
                 atualizarSpamList();
                 frame.revalidate();
@@ -274,7 +327,7 @@ public class Console {
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getEdificio());
                 break;
         }
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
         frame.revalidate();
         frame.repaint();
     }
