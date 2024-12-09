@@ -26,14 +26,7 @@ public class Rounds implements Round {
         }
         //Movimentação de inimigos feita.
         else{
-            edificio.removeInimigo((Inimigo) pessoa);
             edificio.addInimigo((Inimigo) pessoa, sala);
-        }
-    }
-
-    public static void useMedKit(Pessoa pessoa){
-        if (pessoa instanceof ToCruz){
-            ((ToCruz) pessoa).usarMedKit();
         }
     }
 
