@@ -73,8 +73,8 @@ public class GrafoRenderer extends JPanel {
             while (itVertices.hasNext()) {
                 Sala sala = itVertices.next();
                 Point p = coordenadas[index++];
-                g2d.fillOval(p.x - 10, p.y - 10, 20, 20); // Círculo do vértice
-                g2d.drawString(sala.getNome(), p.x - 15, p.y - 15); // Nome do vértice
+                g2d.fillRect(p.x - 10, p.y - 10, 100, 100);
+                g2d.drawString(sala.getNome(), p.x - 15, p.y - 15);
             }
         }
     }
