@@ -50,7 +50,7 @@ public class GrafoRenderer extends JPanel {
         Iterator<Sala> itArestas = vertices.iterator();
         while (itArestas.hasNext()) {
             Sala origem = itArestas.next();
-            int origemIndex = grafo.getIndex(origem);
+            int origemIndex = getVertexIndex(origem);
 
             // Obter vértices conectados a partir da origem
             LinearLinkedUnorderedList<Sala> conexoes = grafo.getConnectedVertices(origem);
@@ -58,7 +58,7 @@ public class GrafoRenderer extends JPanel {
 
             while (itConexoes.hasNext()) {
                 Sala destino = itConexoes.next();
-                int destinoIndex = grafo.getIndex(destino);
+                int destinoIndex = getVertexIndex(destino);
 
                 Point p1 = coordenadas[origemIndex];
                 Point p2 = coordenadas[destinoIndex];
@@ -77,5 +77,16 @@ public class GrafoRenderer extends JPanel {
                 g2d.drawString(sala.getNome(), p.x - 15, p.y - 15); // Nome do vértice
             }
         }
+    }
+    private int getVertexIndex(Sala vertex) {
+        Iterator<Sala> iterator = grafo.getVerticesIterator();
+
+        for(int index = 0; iterator.hasNext(); ++index) {
+            if (iterator.next().equals(vertex)) {
+                return index;
+            }
+        }
+
+        return -1;
     }
 }

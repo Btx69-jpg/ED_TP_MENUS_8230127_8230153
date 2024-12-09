@@ -59,11 +59,13 @@ public class Console {
     private JButton ModoManual;
     private JButton ModoAutomatico;
     private JPanel ModoDeJogo;
+    private JPanel Grafo;
 
 
     private Missao missao;
     private ToCruz toCruz;
     private int roundsCount = 1;
+    private GrafoRenderer grafoRenderer;
 
     public Console() {
 
@@ -142,6 +144,7 @@ public class Console {
                     System.exit(0);
                 }
 
+                grafoRenderer.repaint();
                 escolhaTurnoUtilizador();
                 roundsCount++;
                 atualizarRound();
@@ -165,6 +168,9 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
                 frame.setContentPane(JogoMapaFacil);
+                Grafo.setLayout(new BorderLayout());
+                Grafo.add(grafoRenderer, BorderLayout.CENTER);
+                grafoRenderer.repaint();
                 atualizarRound();
                 frame.revalidate();
                 frame.repaint();
@@ -364,6 +370,7 @@ public class Console {
 
     public void runGame() {
         missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        grafoRenderer = new GrafoRenderer(missao);
     }
 
     public void atualizarRound(){
