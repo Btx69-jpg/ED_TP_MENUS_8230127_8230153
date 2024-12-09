@@ -98,10 +98,10 @@ public class Console {
                     System.exit(0);
                 }
 
-                atualizarRound();
                 escolhaTurnoUtilizador();
                 Cenarios.walkEnimies(missao.getEdificio());
                 roundsCount++;
+                atualizarRound();
 
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
@@ -142,9 +142,9 @@ public class Console {
                     System.exit(0);
                 }
 
-                atualizarRound();
                 escolhaTurnoUtilizador();
                 roundsCount++;
+                atualizarRound();
 
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapaFacil, "Missão concluída com sucesso!");
@@ -165,6 +165,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
                 frame.setContentPane(JogoMapaFacil);
+                atualizarRound();
                 frame.revalidate();
                 frame.repaint();
             }
@@ -175,6 +176,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeMediaPanel);
                 frame.setContentPane(JogoMapa);
+                atualizarRound();
                 frame.revalidate();
                 frame.repaint();
             }
@@ -185,6 +187,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeDificilPanel);
                 frame.setContentPane(JogoMapa);
+                atualizarRound();
                 frame.revalidate();
                 frame.repaint();
             }
@@ -315,17 +318,15 @@ public class Console {
                 }
                 break;
             case "3 - Atacar":
-                //Cenarios.Confronto();
+
                 Iterator<Sala> itSalas = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
                 Sala salaToCruz;
                 while (itSalas.hasNext()){
                     salaToCruz = itSalas.next();
                     if (salaToCruz.haveToCruz()){
                         if (salaToCruz.hasInimigos()){
-                            for (Inimigo inimigo : salaToCruz.getInimigos()){
-                                rounds.attack(toCruz, inimigo);
-                            }
-                            JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + "inimigos");
+                            Cenarios.Confronto(toCruz, salaToCruz.getInimigos(),true, false, missao.getEdificio());
+                            JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + " inimigos");
                             break;
                         }else{
                             JOptionPane.showMessageDialog(TurnoUtilizador, "Sala não inimigos para atacar!");

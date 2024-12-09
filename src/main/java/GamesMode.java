@@ -113,10 +113,6 @@ public class GamesMode implements GameMode {
         //aparecer um menu para deixar o utilizador escolher o que fazer
     }
 
-    public void moveEnimies() {
-
-    }
-
     @Override
     public void run() {
 
