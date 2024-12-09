@@ -4,6 +4,7 @@ import Edificio.Edificio;
 import Edificio.Sala;
 import Enum.ItemType;
 import Graphs.GraphNetwork;
+import Graphs.PropriaAutoria.GraphNetworkEM;
 import Item.Item;
 import Missao.Alvo;
 import Missao.Missao;
@@ -43,7 +44,7 @@ public class Json {
 
             // Lê o edifício e cria os vértices do grafo
             JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
-            GraphNetwork<Sala> salas = new GraphNetwork<>();
+            GraphNetworkEM<Sala> salas = new GraphNetworkEM<>();
 
             // Adiciona entradas e saídas
             JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
