@@ -67,6 +67,7 @@ public class Console {
         ResetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                roundsCount = 1;
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
                 frame.setContentPane(NivelDificuldadePanel);
                 frame.revalidate();
@@ -77,6 +78,7 @@ public class Console {
         ReiniciarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                roundsCount = 1;
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
                 frame.setContentPane(NivelDificuldadePanel);
                 frame.revalidate();
@@ -120,6 +122,7 @@ public class Console {
                 }else {
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpawnSelecter);
                     frame.setContentPane(JogoMapaFacil);
+                    RoundCnt.setText("Ronda:" + roundsCount);
                     opcoesTurnoUtilizador();
                     frame.revalidate();
                     frame.repaint();
