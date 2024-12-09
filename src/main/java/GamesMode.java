@@ -14,9 +14,17 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class GamesMode implements GameMode {
-    Missao missao;
+    private Missao missao;
     private ToCruz toCruz;
     private boolean end;
+
+    public  GamesMode(Missao missao) {
+        this.missao = missao;
+        //LEMBRAR DE N\AO FAZER DANO FIXO E IMPLEMENTAR DIFICULDADES
+        this.toCruz = new ToCruz("ToCruz", 40);
+        this.end = false;
+    }
+
     @Override
     public void automatic() {
         //todas as decisões são tomadas automaticamente
@@ -105,41 +113,15 @@ public class GamesMode implements GameMode {
         //aparecer um menu para deixar o utilizador escolher o que fazer
     }
 
-    public void moveEnimies(Edificio edificio) {
-        LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
-        LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
-        LinearLinkedUnorderedList<Sala> salasConnectadas;
-        Sala sala;
-        Iterator<Sala> salasIterator = salasComInimigos.iterator();
-        PriorityHeap<Sala> PossiveisSalas = new PriorityHeap<>();
+    public void moveEnimies() {
 
-        Random random = new Random();
-        int cnt = 1;
-        if (inimigos.isEmpty()) {
-            throw new EmptyCollectionException("Não há inimigos no edifício");
-        }
-        while (salasIterator.hasNext()) {
-            sala = salasIterator.next();
-            inimigos = sala.getInimigos();
-            salasConnectadas = edificio.getSalas().getConnectedVertices(sala);
-            PossiveisSalas.addElement(sala, cnt);
-            cnt++;
-            for (Sala salaConnectada : salasConnectadas) {
-                PossiveisSalas.addElement(salaConnectada, cnt);
-                cnt++;
-            }
-            for (Inimigo inimigo : inimigos) {
-                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
-                Rounds.move(inimigo, sala, edificio);
-            }
-        }
     }
 
     @Override
     public void run() {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Insira o Cami:");
-        this.missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+
+        new Missao();
+        Missao missao = Json.ReadJson("/teste.json");
         manual();
     }
 }

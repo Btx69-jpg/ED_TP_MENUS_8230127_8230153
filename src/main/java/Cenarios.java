@@ -141,8 +141,6 @@ public abstract class Cenarios implements Cenario {
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
         LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
         LinearLinkedUnorderedList<Sala> salasConnectadas;
-        Sala sala;
-        Iterator<Sala> salasIterator = salasComInimigos.iterator();
         PriorityHeap<Sala> PossiveisSalas = new PriorityHeap<>();
 
         Random random = new Random();
@@ -150,18 +148,18 @@ public abstract class Cenarios implements Cenario {
         if (inimigos.isEmpty()){
             throw new EmptyCollectionException("Não há inimigos no edifício");
         }
-        while(salasIterator.hasNext()){
-            sala = salasIterator.next();
+        for( Sala sala : salasComInimigos){
             inimigos = sala.getInimigos();
-            salasConnectadas = edificio.getSalas().getConnectedVertices(sala);
+            salasConnectadas= edificio.getSalas().getConnectedVertices(sala);
+
             PossiveisSalas.addElement(sala, cnt);
-            cnt++;
             for (Sala salaConnectada : salasConnectadas){
-                PossiveisSalas.addElement(salaConnectada, cnt);
                 cnt++;
+                PossiveisSalas.addElement(salaConnectada, cnt);
+
             }
             for (Inimigo inimigo : inimigos) {
-                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
+                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt)+ 1);
                 Rounds.move(inimigo,  sala, edificio);
             }
         }
