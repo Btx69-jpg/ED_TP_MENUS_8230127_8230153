@@ -55,6 +55,7 @@ public class Console {
     private JButton SairJogo;
     private JButton ReiniciarButton;
 
+
     private Missao missao;
     private ToCruz toCruz;
     private int roundsCount = 0;
@@ -85,14 +86,13 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean jogoEmAndamento = true;
-                GamesMode gamesMode = new GamesMode();
                 if (!jogoEmAndamento) {
                     JOptionPane.showMessageDialog(JogoMapa, "O jogo já terminou! Reinicie para jogar novamente.");
                     System.exit(0);
                 }
 
                 escolhaTurnoUtilizador();
-                gamesMode.moveEnimies(missao.getEdificio());
+                Cenarios.walkEnimies(missao.getEdificio());
                 roundsCount++;
 
                 if (missao.isSucess()) {
@@ -293,7 +293,7 @@ public class Console {
                 break;
             case "2 - Usar MedKit":
                 try{
-                    rounds.useMedKit(toCruz);
+                    toCruz.usarMedKit();
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Usou MedKit");
                 }catch (NullPointerException | IllegalArgumentException e){
                     JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
