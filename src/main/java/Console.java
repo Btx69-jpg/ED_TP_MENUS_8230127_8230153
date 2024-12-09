@@ -92,7 +92,7 @@ public class Console {
                 }
 
                 escolhaTurnoUtilizador();
-                gamesMode.moveEnimies(missao.getEdificio());
+                Cenarios.walkEnimies(missao.getEdificio());
                 roundsCount++;
 
                 if (missao.isSucess()) {
@@ -300,6 +300,7 @@ public class Console {
                 }
                 break;
             case "3 - Atacar":
+                //Cenarios.Confronto();
                 Iterator<Sala> itSalas = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
                 Sala salaToCruz;
                 while (itSalas.hasNext()){
@@ -330,9 +331,6 @@ public class Console {
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getEdificio());
                 break;
         }
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
-        frame.revalidate();
-        frame.repaint();
     }
 
     public void opcoesTurnoUtilizador(){
