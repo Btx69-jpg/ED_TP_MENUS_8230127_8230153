@@ -1,5 +1,7 @@
 import Data.Json;
 import Edificio.Sala;
+import GameEngine.Cenarios;
+import GameEngine.Rounds;
 import Missao.Missao;
 import Pessoa.Inimigo;
 import Pessoa.ToCruz;
@@ -92,7 +94,7 @@ public class Console {
                 }
 
                 escolhaTurnoUtilizador();
-                Cenarios.walkEnimies(missao.getEdificio());
+                Cenarios.walkEnimies(missao.getEdificio(), missao.getToCruz(), false );
                 roundsCount++;
 
                 if (missao.isSucess()) {
@@ -288,7 +290,7 @@ public class Console {
         }
         switch (selectedAction){
             case "1 - Mover":
-                rounds.move(toCruz, missao.getEdificio().getSalas().getVertex(0), missao.getEdificio());
+                rounds.moveToCruz(missao.getToCruz(), missao.getEdificio().getSalas().getVertex(0), missao.getEdificio(), false);
                 JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
                 break;
             case "2 - Usar MedKit":

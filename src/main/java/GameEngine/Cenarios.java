@@ -1,13 +1,13 @@
+package GameEngine;
+
 import Edificio.Edificio;
 import Exceptions.EmptyCollectionException;
-import GameEngine.Cenario;
 import Heaps.PriorityHeap;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Pessoa.*;
 import Edificio.Sala;
 
-import java.util.EmptyStackException;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
@@ -137,7 +137,7 @@ public abstract class Cenarios implements Cenario {
 
 
     //CONTINUAR DAQUI VER A ALEATORIEDADE DA POSIÇÃO DOS INIMIGOS
-    public static void walkEnimies(Edificio edificio) throws EmptyCollectionException {
+    public static void walkEnimies(Edificio edificio, ToCruz toCruz, boolean autoMode) throws EmptyCollectionException {
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
         LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
         LinearLinkedUnorderedList<Sala> salasConnectadas;
@@ -160,8 +160,12 @@ public abstract class Cenarios implements Cenario {
             }
             for (Inimigo inimigo : inimigos) {
                 sala = PossiveisSalas.FindELPriority(random.nextInt(cnt)+ 1);
-                Rounds.move(inimigo,  sala, edificio);
+                edificio.addInimigo(inimigo, sala);
             }
+        }
+        Sala checkConfronto = edificio.getSalaToCruz();
+        if (checkConfronto.haveToCruz()){
+            Cenarios.Confronto(toCruz, edificio.getAllInimigos(), false, autoMode, edificio);
         }
     }
 

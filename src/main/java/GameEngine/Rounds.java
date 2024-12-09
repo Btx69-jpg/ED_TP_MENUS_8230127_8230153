@@ -1,33 +1,31 @@
+package GameEngine;
+
 import Edificio.Edificio;
 import Edificio.Sala;
-import Exceptions.EmptyCollectionException;
-import GameEngine.Round;
-import Pessoa.Pessoa;
-import Pessoa.Inimigo;
-import Pessoa.ToCruz;
+import Pessoa.*;
 
 import java.util.Iterator;
 
 public class Rounds implements Round {
-    public static void move(Pessoa pessoa, Sala to, Edificio edificio) {
+    public static void moveToCruz(ToCruz toCruz, Sala to, Edificio edificio, boolean autoMode) {
         Iterator<Sala> iterator = edificio.getSalas().iteratorBFS(to);
         Sala sala = iterator.next();
         //Movimentação do to cruz feita.
-        if(pessoa instanceof ToCruz){
-            while (iterator.hasNext()){
-                sala = iterator.next();
-                if(sala.haveToCruz()){
-                    sala.setHaveToCruz(false);
-                    return;
-                }
+        while (iterator.hasNext()){
+            sala = iterator.next();
+            if(sala.haveToCruz()){
+                sala.setHaveToCruz(false);
+                return;
             }
-            //confirmar que não envio uma copia da sala mas sim ela propriamente dita
-            to.setHaveToCruz(true);
         }
-        //Movimentação de inimigos feita.
-        else{
-            edificio.addInimigo((Inimigo) pessoa, sala);
+        //confirmar que não envio uma copia da sala mas sim ela propriamente dita
+        to.setHaveToCruz(true);
+        if (to.hasInimigos()){
+            Cenarios.Confronto(toCruz, to.getInimigos(), true, autoMode, edificio);
         }
+        Cenarios.walkEnimies(edificio, toCruz, autoMode);
+
+
     }
 
     public static void attack(Pessoa atacante, Pessoa atacado) throws IllegalArgumentException{
