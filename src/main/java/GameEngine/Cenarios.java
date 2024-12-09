@@ -7,6 +7,7 @@ import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Pessoa.*;
 import Edificio.Sala;
+import Missao.Missao;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -19,9 +20,12 @@ public abstract class Cenarios implements Cenario {
      */
     //LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO ou adicionar verificaçõoes para ver se o inimigo é valido antes de iniciar o confronto(se tem vida)
     //falta adicionar o metodo para todos os outros andarem caso estes não morram
-    public static boolean Confronto(ToCruz toCruz, LinearLinkedUnorderedList<Inimigo> p2, boolean TocruzStart, boolean autoMode, Edificio edificio) {
+    public static boolean Confronto(Missao missao, LinearLinkedUnorderedList<Inimigo> p2, boolean TocruzStart, boolean autoMode) {
 //      PRINT DOS ENVOLVIDOS NO CONFRONTO
+        ToCruz toCruz = missao.getToCruz();
+        Edificio edificio = missao.getEdificio();
         toCruz.setInConfronto(true);
+        missao.changeToCruz(toCruz);
         Iterator<Inimigo> inimigosIterator = p2.iterator();
         Inimigo inimigo = inimigosIterator.next();
         System.out.print("Confronto entre " + toCruz.getNome() + " e " + inimigo);
@@ -126,7 +130,7 @@ public abstract class Cenarios implements Cenario {
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
                 }
                 TocruzStart = true;
-                walkEnimies(edificio);
+                walkEnimies(missao, autoMode);
             }
 
         }
@@ -137,7 +141,8 @@ public abstract class Cenarios implements Cenario {
 
 
     //CONTINUAR DAQUI VER A ALEATORIEDADE DA POSIÇÃO DOS INIMIGOS
-    public static void walkEnimies(Edificio edificio, ToCruz toCruz, boolean autoMode) throws EmptyCollectionException {
+    public static void walkEnimies(Missao missao, boolean autoMode) throws EmptyCollectionException {
+        Edificio edificio = missao.getEdificio();
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
         LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
         LinearLinkedUnorderedList<Sala> salasConnectadas;
@@ -163,9 +168,10 @@ public abstract class Cenarios implements Cenario {
                 edificio.addInimigo(inimigo, sala);
             }
         }
+        missao.changeEdificio(edificio);
         Sala checkConfronto = edificio.getSalaToCruz();
         if (checkConfronto.haveToCruz()){
-            Cenarios.Confronto(toCruz, edificio.getAllInimigos(), false, autoMode, edificio);
+            Cenarios.Confronto(missao, checkConfronto.getInimigos(), false, autoMode);
         }
     }
 
