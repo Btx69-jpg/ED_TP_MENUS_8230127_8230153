@@ -150,7 +150,8 @@ public abstract class Cenarios implements Cenario {
         }
         for( Sala sala : salasComInimigos){
             inimigos = sala.getInimigos();
-            salasConnectadas = edificio.getSalas().getConnectedVertices(sala);
+            salasConnectadas= edificio.getSalas().getConnectedVertices(sala);
+
             PossiveisSalas.addElement(sala, cnt);
             for (Sala salaConnectada : salasConnectadas){
                 cnt++;
