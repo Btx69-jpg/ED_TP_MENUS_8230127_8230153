@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Console">
-  <grid id="27dc6" binding="Jogo" layout-manager="GridLayoutManager" row-count="8" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="Jogo" layout-manager="GridLayoutManager" row-count="9" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="1505" height="3494"/>
+      <xy x="20" y="20" width="1505" height="3708"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -54,7 +54,7 @@
       <grid id="6f307" binding="NivelDificuldadePanel" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -71,7 +71,7 @@
               <text value="Escolha a diculdade"/>
             </properties>
           </component>
-          <component id="55e" class="javax.swing.JButton" binding="fácilButton" default-binding="true">
+          <component id="55e" class="javax.swing.JButton" binding="facilButton">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="2" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="40" height="40"/>
@@ -81,7 +81,7 @@
               <text value="Fácil"/>
             </properties>
           </component>
-          <component id="718a3" class="javax.swing.JButton" binding="médioButton" default-binding="true">
+          <component id="718a3" class="javax.swing.JButton" binding="medioButton">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="40" height="40"/>
@@ -105,7 +105,7 @@
       </grid>
       <grid id="a2104" binding="DificuldadeFacilPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -192,7 +192,7 @@
       </grid>
       <grid id="f1b8a" binding="DificuldadeMediaPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -279,7 +279,7 @@
       </grid>
       <grid id="255c8" binding="DificuldadeDificilPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -364,52 +364,10 @@
           </grid>
         </children>
       </grid>
-      <grid id="f780a" binding="SpawnSelecter" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="8bf86" class="javax.swing.JLabel" binding="SelectSpawnPoint">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="100" height="100"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value="Selecione o local de entrada e saida"/>
-              <verticalAlignment value="0"/>
-              <verticalTextPosition value="0"/>
-            </properties>
-          </component>
-          <component id="327c4" class="javax.swing.JList" binding="SpawnList">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="50"/>
-              </grid>
-            </constraints>
-            <properties>
-              <model/>
-            </properties>
-          </component>
-          <component id="ab81e" class="javax.swing.JButton" binding="AvancarJogo">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="2" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="100" height="100"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value="Confirmar"/>
-            </properties>
-          </component>
-        </children>
-      </grid>
       <grid id="a0063" binding="JogoMapaFacil" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -465,7 +423,7 @@
       <grid id="882cf" binding="JogoMapa" layout-manager="GridLayoutManager" row-count="2" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -514,6 +472,78 @@
             </constraints>
             <properties>
               <text value=""/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="b2a15" binding="SpawnSelecter" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="ec555" class="javax.swing.JLabel" binding="SelectSpawnPoint">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="100" height="100"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="Selecione o local de entrada e saida"/>
+              <verticalAlignment value="0"/>
+              <verticalTextPosition value="0"/>
+            </properties>
+          </component>
+          <component id="72e02" class="javax.swing.JList" binding="SpawnList">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+            </constraints>
+            <properties>
+              <model/>
+            </properties>
+          </component>
+          <component id="18f7" class="javax.swing.JButton" binding="AvancarJogo">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="2" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="100" height="100"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="Confirmar"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="81bae" binding="ModoDeJogo" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="fb3f9" class="javax.swing.JButton" binding="ModoManual">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="100" height="100"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="Modo Manual"/>
+            </properties>
+          </component>
+          <component id="63fc1" class="javax.swing.JButton" binding="ModoAutomatico">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="100" height="100"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="Modo Automatico"/>
             </properties>
           </component>
         </children>

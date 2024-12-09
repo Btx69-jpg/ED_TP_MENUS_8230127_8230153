@@ -24,9 +24,9 @@ public class Console {
     private JPanel EcraInicial;
     private JPanel Jogo;
     private JPanel NivelDificuldadePanel;
-    private JButton fácilButton;
+    private JButton facilButton;
     private JButton dificilButton;
-    private JButton médioButton;
+    private JButton medioButton;
     private JTextArea Dificuldadetxt;
     private JPanel DificuldadeFacilPanel;
     private JLabel labelImagemFacil;
@@ -42,7 +42,6 @@ public class Console {
     private JLabel labelImagemDificil;
     private JButton PlayHardModeButton;
     private JList<String> SpawnList;
-    private JLabel SelectSpawnPoint;
     private JButton AvancarJogo;
     private JPanel JogoMapaFacil;
     private JList<String> TurnoUtilizador;
@@ -56,6 +55,10 @@ public class Console {
     private JButton ReiniciarButton;
     private JLabel RoundsCount;
     private JLabel RoundCnt;
+    private JLabel SelectSpawnPoint;
+    private JButton ModoManual;
+    private JButton ModoAutomatico;
+    private JPanel ModoDeJogo;
 
 
     private Missao missao;
@@ -95,6 +98,7 @@ public class Console {
                     System.exit(0);
                 }
 
+                atualizarRound();
                 escolhaTurnoUtilizador();
                 Cenarios.walkEnimies(missao.getEdificio());
                 roundsCount++;
@@ -121,8 +125,7 @@ public class Console {
                     JOptionPane.showMessageDialog(SpawnSelecter, "Por favor, selecione um ponto de spawn!");
                 }else {
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpawnSelecter);
-                    frame.setContentPane(JogoMapaFacil);
-                    RoundCnt.setText("Ronda:" + roundsCount);
+                    frame.setContentPane(NivelDificuldadePanel);
                     opcoesTurnoUtilizador();
                     frame.revalidate();
                     frame.repaint();
@@ -139,6 +142,7 @@ public class Console {
                     System.exit(0);
                 }
 
+                atualizarRound();
                 escolhaTurnoUtilizador();
                 roundsCount++;
 
@@ -160,9 +164,7 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
-                frame.setContentPane(SpawnSelecter);
-                runGame();
-                atualizarSpamList();
+                frame.setContentPane(JogoMapaFacil);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -172,9 +174,7 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeMediaPanel);
-                frame.setContentPane(SpawnSelecter);
-                runGame();
-                atualizarSpamList();
+                frame.setContentPane(JogoMapa);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -184,15 +184,13 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeDificilPanel);
-                frame.setContentPane(SpawnSelecter);
-                runGame();
-                atualizarSpamList();
+                frame.setContentPane(JogoMapa);
                 frame.revalidate();
                 frame.repaint();
             }
         });
 
-        fácilButton.addActionListener(new ActionListener() {
+        facilButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(NivelDificuldadePanel);
@@ -204,7 +202,7 @@ public class Console {
             }
         });
 
-        médioButton.addActionListener(new ActionListener() {
+        medioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(NivelDificuldadePanel);
@@ -228,11 +226,23 @@ public class Console {
             }
         });
 
+        ModoManual.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ModoDeJogo);
+                frame.setContentPane(SpawnSelecter);
+                runGame();
+                atualizarSpamList();
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
         IniciarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
-                frame.setContentPane(NivelDificuldadePanel);
+                frame.setContentPane(ModoDeJogo);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -353,6 +363,11 @@ public class Console {
 
     public void runGame() {
         missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+    }
+
+    public void atualizarRound(){
+        RoundCnt.setText("Round:" + roundsCount);
+        RoundsCount.setText("Round:" + roundsCount);
     }
 
     public static void main(String[] args) {
