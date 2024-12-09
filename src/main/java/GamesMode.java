@@ -65,7 +65,6 @@ public class GamesMode implements GameMode {
 
         while (toCruz.getVida() > 0 && !end) {
 
-
             while (op < 1 || op > 8) {
                 System.out.println("Escolha uma opção:");
                 System.out.println("1 - Mover");
