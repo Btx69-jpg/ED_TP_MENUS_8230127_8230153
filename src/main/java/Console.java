@@ -54,11 +54,13 @@ public class Console {
     private JButton ConfirmarEscolha;
     private JButton SairJogo;
     private JButton ReiniciarButton;
+    private JLabel RoundsCount;
+    private JLabel RoundCnt;
 
 
     private Missao missao;
     private ToCruz toCruz;
-    private int roundsCount = 0;
+    private int roundsCount = 1;
 
     public Console() {
 
@@ -330,9 +332,6 @@ public class Console {
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getEdificio());
                 break;
         }
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
-        frame.revalidate();
-        frame.repaint();
     }
 
     public void opcoesTurnoUtilizador(){
