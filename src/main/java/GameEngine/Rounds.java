@@ -2,6 +2,7 @@ package GameEngine;
 
 import Edificio.Edificio;
 import Edificio.Sala;
+import Exceptions.EmptyCollectionException;
 import Pessoa.*;
 import Missao.Missao;
 import Item.Item;
@@ -48,9 +49,13 @@ public class Rounds implements Round {
     }
 
     public static void useMedkit(ToCruz toCruz, Missao missao, boolean autoMode, boolean wasInConfronto) {
-        Item kit = toCruz.usarMedKit();
-        System.out.println("ToCruz usou um medkit, Curou: " + kit.getQuantidade());
-        Cenarios.walkEnimies(missao, autoMode, wasInConfronto);
+        try {
+            Item kit = toCruz.usarMedKit();
+            System.out.println("ToCruz usou um medkit, Curou: " + kit.getQuantidade());
+            Cenarios.walkEnimies(missao, autoMode, wasInConfronto);
+        }catch (EmptyCollectionException | IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 }

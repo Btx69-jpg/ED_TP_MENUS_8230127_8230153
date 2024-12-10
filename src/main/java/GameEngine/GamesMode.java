@@ -11,13 +11,11 @@ import java.util.Scanner;
 
 public class GamesMode implements GameMode {
     private Missao missao;
-    private ToCruz toCruz;
+
     private boolean end;
 
     public  GamesMode(Missao missao) {
         this.missao = missao;
-        //LEMBRAR DE N\AO FAZER DANO FIXO E IMPLEMENTAR DIFICULDADES
-        this.toCruz = new ToCruz("ToCruz", 40);
         this.end = false;
     }
 
@@ -31,6 +29,7 @@ public class GamesMode implements GameMode {
     public void manual() {
         int op = 0;
         Scanner sc = new Scanner(System.in);
+        ToCruz toCruz = missao.getToCruz();
 
         //setUp do spawn point
         int entradasSaidas = missao.getEdificio().getNumeroEntradas_saidas();
@@ -84,16 +83,16 @@ public class GamesMode implements GameMode {
                         moverMenu(op,sc, caminhoMedkit, caminhoAlvo);
                         break;
                     case 2:
-                        //usar medkit
+                        Rounds.useMedkit(toCruz, missao, false, false);
                         break;
                     case 3:
                         //atacar
                         break;
                     case 4:
-                        //verificar vida
+                        System.out.println("Vida atual: " + toCruz.getVida() + " Vida maxima: " + toCruz.g());
                         break;
                     case 5:
-                        //verificar mochila
+                        System.out.println(toCruz.g());
                         break;
                     case 6:
                         //verificar alvo
