@@ -312,7 +312,7 @@ public class Console {
                     salaToCruz = itSalas.next();
                     if (salaToCruz.haveToCruz()){
                         if (salaToCruz.hasInimigos()){
-                            Cenarios.Confronto(missao.getToCruz(), salaToCruz.getInimigos(),true, false, missao.getEdificio());
+                            //Cenarios.Confronto(missao.getToCruz(), salaToCruz.getInimigos(),true, false, missao.getEdificio());
                             JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + " inimigos");
                             break;
                         }else{
@@ -354,8 +354,8 @@ public class Console {
     }
 
     public void runGame() {
-        missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
-        grafoRenderer = new GrafoRenderer(missao);
+        missao = Json.ReadJson("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        grafoRenderer = new GrafoRenderer(missao, true);
     }
 
     public void atualizarRound(){
