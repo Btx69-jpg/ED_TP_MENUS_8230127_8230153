@@ -168,6 +168,7 @@ public class GamesMode implements GameMode {
 
             }
         }
+        //criar o relatorio com os dados da missao
     }
 
     private void moverMenu(int op, Scanner sc){

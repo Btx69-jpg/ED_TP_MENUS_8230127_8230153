@@ -1,5 +1,6 @@
 package GameEngine;
 
+import BinaryTree.AVLPriorityTree;
 import Edificio.Edificio;
 import Exceptions.EmptyCollectionException;
 import Heaps.PriorityHeap;
@@ -162,7 +163,7 @@ public abstract class Cenarios implements Cenario {
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
         LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
         LinearLinkedUnorderedList<Sala> salasConnectadas;
-        PriorityHeap<Sala> PossiveisSalas = new PriorityHeap<>();
+        AVLPriorityTree<Sala> PossiveisSalas = new AVLPriorityTree<>();
 
         Random random = new Random();
         int cnt = 1;
