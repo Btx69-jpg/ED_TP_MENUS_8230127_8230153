@@ -1,10 +1,14 @@
 package GameEngine;
 
 import Data.Json;
+import Edificio.Edificio;
+import Graphs.GraphNetwork;
+import Graphs.PropriaAutoria.GraphNetworkEM;
 import LinkedList.LinearLinkedUnorderedList;
 import Pessoa.ToCruz;
 import Missao.Missao;
 import Edificio.Sala;
+import Missao.Alvo;
 
 import java.util.Iterator;
 import java.util.Scanner;
@@ -23,6 +27,39 @@ public class GamesMode implements GameMode {
 
     @Override
     public void automatic() {
+        Edificio edificio = missao.getEdificio();
+        ToCruz toCruz = missao.getToCruz();
+        LinearLinkedUnorderedList<Sala> EntradasSaidas = edificio.getEntradas_saidas();
+        GraphNetwork<Sala> mstCaminhos = edificio.getSalas().mstNetwork();;
+        Sala salaAlvo = edificio.getSalaAlvo();
+        Sala sala = EntradasSaidas.first();
+        Iterator<Sala> caminho ;
+
+         if (EntradasSaidas.size() > 1) {
+            for (Sala EntExit : EntradasSaidas){
+                double currentWeight =  mstCaminhos.shortestPathWeight(EntExit, salaAlvo);
+                if (mstCaminhos.shortestPathWeight(sala, edificio.getSalaAlvo()) > currentWeight){
+                    sala = EntExit;
+                }
+            }
+
+        }
+
+        caminho = mstCaminhos.iteratorShortestPath(sala, edificio.getSalaAlvo());
+        missao.changeSala(sala, sala.setHaveToCruz(true));
+
+        while ( !end) {
+            while (caminho.hasNext() && toCruz.getVida() > 0) {
+                Sala salaAtual = caminho.next();
+                Rounds.moveToCruz(missao, salaAtual, true);
+            }
+            if (missao.getToCruz().getVida() <= 0){
+                end = false;
+                break;
+            }
+        }
+
+
         //todas as decisões são tomadas automaticamente
         //iterator the shortestpath
     }
@@ -56,9 +93,8 @@ public class GamesMode implements GameMode {
                 for (int i = 1; i < entradasSaidas + 1; i++) {
                     if (i == op) {
                         Sala sala = entradasSaidasIterator.next();
-                        Sala newSala = sala;
-                        newSala.setHaveToCruz(true);
-                        missao.changeSala(sala, newSala);
+
+                        missao.changeSala(sala, sala.setHaveToCruz(true));
                         break;
                     }
                     entradasSaidasIterator.next();
@@ -105,6 +141,9 @@ public class GamesMode implements GameMode {
                     else if (salaToCruz.haveAlvo()) {
                         if (op == opcoesValidas++) {
                             toCruz.setGotAlvo(true);
+                            salaToCruz.setAlvo(false);
+                            missao.changeSala(salaToCruz, salaToCruz.setAlvo(false));
+                            missao.changeAlvo(new Alvo(new Sala("ToCruz", true, false), missao.getAlvo().getTipo()));
                         }
 
                     }

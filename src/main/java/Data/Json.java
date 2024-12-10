@@ -5,6 +5,7 @@ import Edificio.Sala;
 import Enum.ItemType;
 import Graphs.GraphNetwork;
 import Graphs.PropriaAutoria.GraphNetworkEM;
+import Interfaces.OrderedListADT;
 import Item.Item;
 import Missao.Alvo;
 import Missao.Missao;
@@ -22,6 +23,8 @@ import java.util.Iterator;
 
 
 public class Json {
+
+    private static OrderedListADT<Missao> missoes;
 
     public static Missao ReadJson(String filePath) {
         JSONParser jsonParser = new JSONParser();

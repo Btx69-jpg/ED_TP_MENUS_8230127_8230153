@@ -11,25 +11,23 @@ import java.util.Iterator;
 
 public class Rounds implements Round {
     public static void moveToCruz(Missao missao, Sala to, boolean autoMode) {
+
         Edificio edificio = missao.getEdificio();
         Iterator<Sala> iterator = edificio.getSalas().iteratorBFS(to);
-        Sala sala = iterator.next();
-        //Movimentação do to cruz feita.
-        while (iterator.hasNext()){
-            sala = iterator.next();
-            if(sala.haveToCruz()){
-                sala.setHaveToCruz(false);
-                return;
-            }
+        Sala sala = edificio.getSalaToCruz();
+
+        if (sala != null){
+            missao.changeSala(sala, sala.setHaveToCruz(false));
         }
-        //confirmar que não envio uma copia da sala mas sim ela propriamente dita
-        to.setHaveToCruz(true);
+
+        missao.changeSala(to, to.setHaveToCruz(true));
+        missao.addSalaCaminhoTo(to);
+
         if (to.hasInimigos()){
             Cenarios.Confronto(missao, true, autoMode);
         } else {
             Cenarios.walkEnimies(missao, autoMode,false );
         }
-
 
 
     }
