@@ -3,11 +3,14 @@ package GameEngine;
 import Edificio.Edificio;
 import Edificio.Sala;
 import Pessoa.*;
+import Missao.Missao;
+import Item.Item;
 
 import java.util.Iterator;
 
 public class Rounds implements Round {
-    public static void moveToCruz(ToCruz toCruz, Sala to, Edificio edificio, boolean autoMode) {
+    public static void moveToCruz(Missao missao, Sala to, boolean autoMode) {
+        Edificio edificio = missao.getEdificio();
         Iterator<Sala> iterator = edificio.getSalas().iteratorBFS(to);
         Sala sala = iterator.next();
         //Movimentação do to cruz feita.
@@ -21,9 +24,11 @@ public class Rounds implements Round {
         //confirmar que não envio uma copia da sala mas sim ela propriamente dita
         to.setHaveToCruz(true);
         if (to.hasInimigos()){
-            Cenarios.Confronto(toCruz, to.getInimigos(), true, autoMode, edificio);
+            Cenarios.Confronto(missao, to.getInimigos(), true, autoMode);
+        } else {
+            Cenarios.walkEnimies(missao, autoMode,false );
         }
-        Cenarios.walkEnimies(edificio, toCruz, autoMode);
+
 
 
     }
@@ -40,6 +45,12 @@ public class Rounds implements Round {
         }
 
         atacado.setVida(atacado.getVida() - atacante.getPoder());
+    }
+
+    public static void useMedkit(ToCruz toCruz, Missao missao, boolean autoMode, boolean wasInConfronto) {
+        Item kit = toCruz.usarMedKit();
+        System.out.println("ToCruz usou um medkit, Curou: " + kit.getQuantidade());
+        Cenarios.walkEnimies(missao, autoMode, wasInConfronto);
     }
 
 }

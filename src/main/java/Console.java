@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 
 
 import java.util.Iterator;
-
+/*
 public class Console {
 
     private static int PODER_MODE_EASY = 25;
@@ -94,7 +94,7 @@ public class Console {
                 }
 
                 escolhaTurnoUtilizador();
-                Cenarios.walkEnimies(missao.getEdificio(), missao.getToCruz(), false );
+                Cenarios.walkEnimies(missao, false, false );
                 roundsCount++;
 
                 if (missao.isSucess()) {
@@ -250,7 +250,9 @@ public class Console {
         });
     }
 
-    /*protected void paintComponent() {
+    /* JA ESTAVA COMENTADO!!
+    protected void paintComponent() {
+
         missao.getEdificio();
         super.paintComponent(g);
 
@@ -270,6 +272,7 @@ public class Console {
         }
     }*/
 
+/*
     public void atualizarSpamList() {
         DefaultListModel<String> model = new DefaultListModel<>();
         int entradasSaidas = missao.getEdificio().getNumeroEntradas_saidas();
@@ -363,3 +366,4 @@ public class Console {
         frame.setVisible(true);
     }
 }
+ */

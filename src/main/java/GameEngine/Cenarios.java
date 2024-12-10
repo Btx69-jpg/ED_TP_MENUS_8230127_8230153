@@ -39,6 +39,7 @@ public abstract class Cenarios implements Cenario {
 
         System.out.println("Início do confronto");
         while (toCruz.getVida() > 0 && !p2.isEmpty()) {
+            //Confronto manual ------------------------------
             if (TocruzStart && !autoMode) {
                 Scanner sc = new Scanner(System.in);
                 int op = 0;
@@ -81,7 +82,8 @@ public abstract class Cenarios implements Cenario {
                 TocruzStart = false;
 
             }
-
+//---------------------------------------------------------------------------------
+            //confronto automatico
             if (TocruzStart) {
 
                 System.out.println("Tocruz ataca. ");
@@ -112,11 +114,10 @@ public abstract class Cenarios implements Cenario {
                 }
                 TocruzStart = false;
             }
+            //Fim do ataque do TO no modo automatico---------------------------------------------------------------------------------
 
 
-
-
-            //ataque do(s) inimigo(s)       LEMBRAR DE FAZER TODOS OS OUTROS INIMIGOS ANDAREM CASO ESSES NÃO MORRAM
+            //ataque do(s) inimigo(s)    -----------------------------------
             if (!p2.isEmpty()) {
                 System.out.println("Inimigos atacam. ");
                 inimigosIterator = p2.iterator();
@@ -130,18 +131,19 @@ public abstract class Cenarios implements Cenario {
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
                 }
                 TocruzStart = true;
-                walkEnimies(missao, autoMode);
             }
+            //fim do ataque do inimigo -----------------------
 
+            //movimentação dos inimigos que não estão em confronto
+            walkEnimies(missao, autoMode, true);
         }
-        System.out.println("Fim do confronto");
+        System.out.println("Fim do confronto Tó Cruz passou em ED!");
         toCruz.setInConfronto(false);
         return true;
     }
 
-
-    //CONTINUAR DAQUI VER A ALEATORIEDADE DA POSIÇÃO DOS INIMIGOS
-    public static void walkEnimies(Missao missao, boolean autoMode) throws EmptyCollectionException {
+//penso estar pronto e correto
+    public static void walkEnimies(Missao missao, boolean autoMode, boolean wasInConfronto) throws EmptyCollectionException {
         Edificio edificio = missao.getEdificio();
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
         LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
@@ -154,26 +156,33 @@ public abstract class Cenarios implements Cenario {
             throw new EmptyCollectionException("Não há inimigos no edifício");
         }
         for( Sala sala : salasComInimigos){
+            //impedir de movimentar os inimigos que estão em confronto
+            if (sala.hasInimigos() && sala.haveToCruz()){
+                continue;
+            }
             inimigos = sala.getInimigos();
             salasConnectadas= edificio.getSalas().getConnectedVertices(sala);
 
             PossiveisSalas.addElement(sala, cnt);
             for (Sala salaConnectada : salasConnectadas){
+                //para impedir inimigos de entrarem na sala em que esta a haver um confronto
+                if (salaConnectada.hasInimigos() && salaConnectada.haveToCruz()){
+                    continue;
+                }
                 cnt++;
                 PossiveisSalas.addElement(salaConnectada, cnt);
-
             }
+
             for (Inimigo inimigo : inimigos) {
-                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt)+ 1);
+                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
                 edificio.addInimigo(inimigo, sala);
             }
         }
         missao.changeEdificio(edificio);
         Sala checkConfronto = edificio.getSalaToCruz();
-        if (checkConfronto.haveToCruz()){
+        if (checkConfronto.haveToCruz() && checkConfronto.hasInimigos() && !wasInConfronto){
             Cenarios.Confronto(missao, checkConfronto.getInimigos(), false, autoMode);
         }
     }
-
 
 }

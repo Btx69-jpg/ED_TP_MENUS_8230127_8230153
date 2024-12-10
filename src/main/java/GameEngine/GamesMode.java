@@ -81,7 +81,7 @@ public class GamesMode implements GameMode {
                 op = sc.nextInt();
                 switch (op) {
                     case 1:
-                        //mover
+                        moverMenu(op,sc, caminhoMedkit, caminhoAlvo);
                         break;
                     case 2:
                         //usar medkit
@@ -136,17 +136,17 @@ public class GamesMode implements GameMode {
             }
             else {
                 if (op == 1){
-                    Rounds.moveToCruz(missao.getToCruz(), caminhoMedkitSala, missao.getEdificio(),false);
+                    Rounds.moveToCruz(missao, caminhoMedkitSala,false);
                 }
                 if (op == 2){
-                    Rounds.moveToCruz(missao.getToCruz(), caminhoAlvoSala, missao.getEdificio(), false);
+                    Rounds.moveToCruz(missao, caminhoAlvoSala, false);
                 }
                 Iterator<Sala> salasIt = salas.iterator();
                 for (int i = 0; i < salas.size() ; i++) {
 
                     if (i + 3 == op) {
                         Sala sala = salasIt.next();
-                        Rounds.moveToCruz(missao.getToCruz(), sala, missao.getEdificio(), false);
+                        Rounds.moveToCruz(missao, sala, false);
                         if (caminhoMedkitSala != sala){
                             caminhoMedkit = missao.getEdificio().getCaminhoMedkit();
                         }
@@ -176,7 +176,7 @@ public class GamesMode implements GameMode {
     public void run() {
 
         new Missao();
-        Missao missao = Json.ReadJson("/teste.json");
+        this.missao = Json.ReadJson("/teste.json");
         manual();
     }
 }

@@ -13,7 +13,7 @@ public class TestAndar {
 
         missao.setToCruz(new ToCruz("to", 45));
 
-        Cenarios.walkEnimies(missao.getEdificio(), missao.getToCruz(), false);
+        Cenarios.walkEnimies(missao , false, false);
 
         System.out.println("\n\nDepois de se moverem: " + missao.getEdificio().getSalaComInimigos());
 
