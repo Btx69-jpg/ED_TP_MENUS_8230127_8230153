@@ -66,8 +66,6 @@ public class Json {
                 salasArray [index] = sala;
                 index++;
 
-                salaIterator = sala;
-
                 salas.addVertex(sala);
             }
 
