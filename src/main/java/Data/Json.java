@@ -23,8 +23,6 @@ import java.util.Iterator;
 
 public class Json {
 
-    private static Sala salaIterator;
-
     public static Missao ReadJson(String filePath) {
         JSONParser jsonParser = new JSONParser();
 
