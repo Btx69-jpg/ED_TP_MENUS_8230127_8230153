@@ -52,8 +52,8 @@ public class GamesMode implements GameMode {
                 break;
             }
             else {
-                entradasSaidasIterator = missao.getEdificio().getSalas().getVerticesIterator();
-                for (int i = 0; i < entradasSaidas; i++) {
+                entradasSaidasIterator = missao.getEdificio().getEntradas_saidas().iterator();
+                for (int i = 1; i < entradasSaidas + 1; i++) {
                     if (i == op) {
                         Sala sala = entradasSaidasIterator.next();
                         Sala newSala = sala;
@@ -77,13 +77,13 @@ public class GamesMode implements GameMode {
             Sala salaToCruz = missao.getEdificio().getSalaToCruz();
 
             int cntOpc = printOptions(salaToCruz);
-            while (op < 1 || op > cntOpc + 1) {
+            while (op < 1 || op > cntOpc ) {
 
                 op = sc.nextInt();
-                if (op < 1 || op > cntOpc + 1){
+                if (op < 1 || op > cntOpc){
                     System.out.println("Opção inválida!");
                     printOptions(salaToCruz);
-                }else if (op == (cntOpc + 1)) {
+                }else if (op == (cntOpc)) {
                     end = true;
                     break;
                 }
@@ -96,23 +96,24 @@ public class GamesMode implements GameMode {
                         Rounds.useMedkit(toCruz, missao, false, false);
                     }
                     else if (salaToCruz.hasItens()){
-                        opcoesValidas++;
-                        if ( op == opcoesValidas) {
+
+                        if ( op == opcoesValidas++) {
                             toCruz.apanhaItem(salaToCruz.getItens());
                         }
+
                     }
                     else if (salaToCruz.haveAlvo()) {
-                        opcoesValidas++;
-                        if (op == opcoesValidas) {
+                        if (op == opcoesValidas++) {
                             toCruz.setGotAlvo(true);
                         }
+
                     }
                     else if (salaToCruz.isEntradaSaida()) {
-                        opcoesValidas++;
-                        if ( op == opcoesValidas) {
+                        if ( op == opcoesValidas++) {
                             end = true;
                             break;
                         }
+
                     }
                     else if (op == opcoesValidas++){
                         System.out.println("Vida atual: " + toCruz.getVida() + " Vida maxima: " + toCruz.getMaxLife());
@@ -217,7 +218,7 @@ public class GamesMode implements GameMode {
         System.out.println(cnt++ +" - Verificar Vida");
         System.out.println(cnt++ +" - Verificar Mochila");
         System.out.println(cnt++ +" - Verificar Alvo");
-        System.out.println(cnt++ +" - Sair");
+        System.out.println(cnt +" - Sair");
 
         System.out.print("\nEscolha: ");
 

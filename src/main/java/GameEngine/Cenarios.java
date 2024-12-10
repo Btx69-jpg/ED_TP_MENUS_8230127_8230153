@@ -83,6 +83,8 @@ public abstract class Cenarios implements Cenario {
                             System.out.println("Não há medkits disponíveis");
                         } catch (IllegalArgumentException e) {
                             System.out.println("To Cruz não pode usar medkit, pois tem a vida cheia");
+                        }catch (NullPointerException e) {
+                            System.out.println(e.getMessage());
                         }
 
                     } else {
@@ -150,6 +152,7 @@ public abstract class Cenarios implements Cenario {
         System.out.println("Fim do confronto Tó Cruz passou em ED!");
         toCruz.setInConfronto(false);
         missao.changeToCruz(toCruz);
+        missao.changeEdificio(edificio);
         //return true;
     }
 
