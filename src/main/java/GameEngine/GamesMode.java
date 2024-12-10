@@ -11,6 +11,8 @@ import java.util.Scanner;
 
 public class GamesMode implements GameMode {
     private Missao missao;
+    private Iterator<Sala> caminhoMedKit;
+    private Iterator<Sala> caminhoAlvo;
 
     private boolean end;
 
@@ -63,57 +65,68 @@ public class GamesMode implements GameMode {
         //-------------------------------------- fim do setup do spawn point-------------------------------------------
 
         while (toCruz.getVida() > 0 && !end) {
-        Iterator<Sala> caminhoMedkit = missao.getEdificio().getCaminhoMedkit();
-        Iterator<Sala> caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
-            while (op < 1 || op > 8) {
-                System.out.println("Escolha uma opção:");
-                System.out.println("1 - Mover");
-                System.out.println("2 - Usar MedKit");
-                System.out.println("3 - Atacar");
-                System.out.println("4 - Verificar Vida");
-                System.out.println("5 - Verificar Mochila");
-                System.out.println("6 - Verificar Alvo");
-                System.out.println("7 - Verificar Edificio");
-                System.out.println("8 - Sair");
-                System.out.println("Caminho para o medKit mais proximo: " + PrintCaminho(caminhoMedkit));
-                System.out.println("Caminho mais curto para o alvo: " + PrintCaminho(caminhoMedkit));
+        toCruz = missao.getToCruz();
+        this.caminhoMedKit = missao.getEdificio().getCaminhoMedkit();
+        this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
+        Sala salaToCruz = missao.getEdificio().getSalaToCruz();
+
+        int cntOpc = printOptions(salaToCruz);
+            while (op < 1 || op > cntOpc + 1) {
+
                 op = sc.nextInt();
-                switch (op) {
-                    case 1:
-                        moverMenu(op,sc, caminhoMedkit, caminhoAlvo);
-                        break;
-                    case 2:
-                        Rounds.useMedkit(toCruz, missao, false, false);
-                        break;
-                    case 3:
-                        //atacar
-                        break;
-                    case 4:
-                        System.out.println("Vida atual: " + toCruz.getVida() + " Vida maxima: " + toCruz.g());
-                        break;
-                    case 5:
-                        System.out.println(toCruz.g());
-                        break;
-                    case 6:
-                        //verificar alvo
-                        break;
-                    case 7:
-                        //verificar edificio
-                        break;
-                    case 8:
-                        //sair
-                        break;
-                    default:
-                        System.out.println("Opção inválida");
+                if (op < 1 || op > cntOpc + 1){
+                    System.out.println("Opção inválida!");
+                    printOptions(salaToCruz);
+                }else if (op == (cntOpc + 1)) {
+                    end = true;
+                    break;
                 }
+                else {
+                    int opcoesValidas = 1;
+                    if (cntOpc == opcoesValidas++){
+                        moverMenu(op,sc);
+                    }
+                    else if (cntOpc == opcoesValidas++){
+                        Rounds.useMedkit(toCruz, missao, false, false);
+                    }
+                    else if (salaToCruz.hasItens()){
+                        opcoesValidas++;
+                        if ( cntOpc == opcoesValidas) {
+                            toCruz.apanhaItem(salaToCruz.getItens());
+                        }
+                    }
+                    else if (salaToCruz.haveAlvo()) {
+                        opcoesValidas++;
+                        if (cntOpc == opcoesValidas) {
+                            toCruz.setGotAlvo(true);
+                        }
+                    }
+                    else if (salaToCruz.isEntradaSaida()) {
+                        opcoesValidas++;
+                        if ( cntOpc == opcoesValidas) {
+                            end = true;
+                            break;
+                        }
+                    }
+                    else if (cntOpc == opcoesValidas++){
+                        System.out.println("Vida atual: " + toCruz.getVida() + " Vida maxima: " + toCruz.getMaxLife());
+                    }
+                    else if (cntOpc == opcoesValidas++){
+                        System.out.println("Mochila: " + toCruz.getMochila());
+                    }
+                    else if (cntOpc == opcoesValidas++){
+                        System.out.println(missao.getAlvo());
+                    }
+
+                }
+
             }
         }
-        //aparecer um menu para deixar o utilizador escolher o que fazer
     }
 
-    private void moverMenu(int op, Scanner sc, Iterator<Sala> caminhoMedkit, Iterator<Sala> caminhoAlvo){
+    private void moverMenu(int op, Scanner sc){
         LinearLinkedUnorderedList<Sala> salas =missao.getEdificio().getSalas().getConnectedVertices(missao.getEdificio().getSalaToCruz());
-        Sala caminhoMedkitSala = caminhoMedkit.next();
+        Sala caminhoMedkitSala = caminhoMedKit.next();
         Sala caminhoAlvoSala = caminhoAlvo.next();
         while (op < 1 || op > salas.size()) {
             int cnt = 3;
@@ -147,10 +160,10 @@ public class GamesMode implements GameMode {
                         Sala sala = salasIt.next();
                         Rounds.moveToCruz(missao, sala, false);
                         if (caminhoMedkitSala != sala){
-                            caminhoMedkit = missao.getEdificio().getCaminhoMedkit();
+                            caminhoMedKit = missao.getEdificio().getCaminhoMedkit();
                         }
                         if (caminhoAlvoSala != sala){
-                            caminhoMedkit = missao.getEdificio().getCaminhoAlvo();
+                            caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
                         }
                         break;
                     }
@@ -177,5 +190,28 @@ public class GamesMode implements GameMode {
         new Missao();
         this.missao = Json.ReadJson("/teste.json");
         manual();
+    }
+
+    public int printOptions(Sala salaToCruz){
+        int cnt = 1;
+        System.out.println("Escolha uma opção:");
+        System.out.println(cnt++ + " - Mover");
+        System.out.println(cnt++ +" - Usar MedKit");
+
+        if (salaToCruz.hasItens()) {
+            System.out.println(cnt++ + " - Apanhar Item");
+        }
+        if (salaToCruz.haveAlvo()) {
+            System.out.println(cnt++ + " - Recuperar o alvo");
+        }
+        if (salaToCruz.isEntradaSaida()) {
+            System.out.println(cnt++ + " - Sair do edificio (Terminar missão)");
+        }
+        System.out.println(cnt++ +" - Verificar Vida");
+        System.out.println(cnt++ +" - Verificar Mochila");
+        System.out.println(cnt++ +" - Verificar Alvo");
+        System.out.println(cnt++ +" - Sair");
+
+        return cnt;
     }
 }
