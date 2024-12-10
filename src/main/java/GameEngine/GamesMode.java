@@ -16,8 +16,8 @@ public class GamesMode implements GameMode {
 
     private boolean end;
 
-    public  GamesMode(Missao missao) {
-        this.missao = missao;
+    public  GamesMode() {
+        this.missao = null;
         this.end = false;
     }
 
@@ -36,12 +36,14 @@ public class GamesMode implements GameMode {
         //setUp do spawn point
         int entradasSaidas = missao.getEdificio().getNumeroEntradas_saidas();
         while (op < 1 || op > entradasSaidas + 1) {
+            int localCnt = 1;
             System.out.println("Escolha o spawn point:");
             Iterator<Sala> entradasSaidasIterator = missao.getEdificio().getEntradas_saidas().iterator();
-            for (int i = 0 ; i < entradasSaidas; i++) {
-                System.out.println(i + " - " + entradasSaidasIterator.next());
+            for (localCnt = 1 ; localCnt <= entradasSaidas; localCnt++) {
+                System.out.println(localCnt + " - " + entradasSaidasIterator.next());
             }
-            System.out.println((entradasSaidas + 1) +" - Sair");
+            System.out.println((localCnt) +" - Sair");
+            System.out.print("\nEscolha: ");
             op = sc.nextInt();
             if (op < 1 || op > entradasSaidas + 1){
                 System.out.println("Opção inválida");
@@ -54,7 +56,9 @@ public class GamesMode implements GameMode {
                 for (int i = 0; i < entradasSaidas; i++) {
                     if (i == op) {
                         Sala sala = entradasSaidasIterator.next();
-                        sala.setHaveToCruz(true);
+                        Sala newSala = sala;
+                        newSala.setHaveToCruz(true);
+                        missao.changeSala(sala, newSala);
                         break;
                     }
                     entradasSaidasIterator.next();
@@ -65,12 +69,14 @@ public class GamesMode implements GameMode {
         //-------------------------------------- fim do setup do spawn point-------------------------------------------
 
         while (toCruz.getVida() > 0 && !end) {
-        toCruz = missao.getToCruz();
-        this.caminhoMedKit = missao.getEdificio().getCaminhoMedkit();
-        this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
-        Sala salaToCruz = missao.getEdificio().getSalaToCruz();
+            op = 0;
+            System.out.println();
+            toCruz = missao.getToCruz();
+            this.caminhoMedKit = missao.getEdificio().getCaminhoMedkit();
+            this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
+            Sala salaToCruz = missao.getEdificio().getSalaToCruz();
 
-        int cntOpc = printOptions(salaToCruz);
+            int cntOpc = printOptions(salaToCruz);
             while (op < 1 || op > cntOpc + 1) {
 
                 op = sc.nextInt();
@@ -83,38 +89,38 @@ public class GamesMode implements GameMode {
                 }
                 else {
                     int opcoesValidas = 1;
-                    if (cntOpc == opcoesValidas++){
+                    if (op == opcoesValidas++){
                         moverMenu(op,sc);
                     }
-                    else if (cntOpc == opcoesValidas++){
+                    else if (op == opcoesValidas++){
                         Rounds.useMedkit(toCruz, missao, false, false);
                     }
                     else if (salaToCruz.hasItens()){
                         opcoesValidas++;
-                        if ( cntOpc == opcoesValidas) {
+                        if ( op == opcoesValidas) {
                             toCruz.apanhaItem(salaToCruz.getItens());
                         }
                     }
                     else if (salaToCruz.haveAlvo()) {
                         opcoesValidas++;
-                        if (cntOpc == opcoesValidas) {
+                        if (op == opcoesValidas) {
                             toCruz.setGotAlvo(true);
                         }
                     }
                     else if (salaToCruz.isEntradaSaida()) {
                         opcoesValidas++;
-                        if ( cntOpc == opcoesValidas) {
+                        if ( op == opcoesValidas) {
                             end = true;
                             break;
                         }
                     }
-                    else if (cntOpc == opcoesValidas++){
+                    else if (op == opcoesValidas++){
                         System.out.println("Vida atual: " + toCruz.getVida() + " Vida maxima: " + toCruz.getMaxLife());
                     }
-                    else if (cntOpc == opcoesValidas++){
+                    else if (op == opcoesValidas++){
                         System.out.println("Mochila: " + toCruz.getMochila());
                     }
-                    else if (cntOpc == opcoesValidas++){
+                    else if (op == opcoesValidas){
                         System.out.println(missao.getAlvo());
                     }
 
@@ -128,6 +134,7 @@ public class GamesMode implements GameMode {
         LinearLinkedUnorderedList<Sala> salas =missao.getEdificio().getSalas().getConnectedVertices(missao.getEdificio().getSalaToCruz());
         Sala caminhoMedkitSala = caminhoMedKit.next();
         Sala caminhoAlvoSala = caminhoAlvo.next();
+        op = 0;
         while (op < 1 || op > salas.size()) {
             int cnt = 3;
             System.out.println("Escolha uma opção:");
@@ -138,7 +145,7 @@ public class GamesMode implements GameMode {
                 cnt++;
             }
             System.out.println((cnt + 1) + " - Sair do jogo ");
-
+            System.out.print("\nEscolha: ");
             op = sc.nextInt();
             if (op < 1 || op > salas.size() + 1){
                 System.out.println("Opção inválida");
@@ -186,9 +193,9 @@ public class GamesMode implements GameMode {
     }
     @Override
     public void run() {
-
-        new Missao();
-        this.missao = Json.ReadJson("/teste.json");
+        ToCruz toTeste = new ToCruz("teste", 30);
+        this.missao = Json.ReadJson("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        missao.setToCruz(toTeste);
         manual();
     }
 
@@ -211,6 +218,8 @@ public class GamesMode implements GameMode {
         System.out.println(cnt++ +" - Verificar Mochila");
         System.out.println(cnt++ +" - Verificar Alvo");
         System.out.println(cnt++ +" - Sair");
+
+        System.out.print("\nEscolha: ");
 
         return cnt;
     }

@@ -53,7 +53,7 @@ public class Rounds implements Round {
             Item kit = toCruz.usarMedKit();
             System.out.println("ToCruz usou um medkit, Curou: " + kit.getQuantidade());
             Cenarios.walkEnimies(missao, autoMode, wasInConfronto);
-        }catch (EmptyCollectionException | IllegalArgumentException e) {
+        }catch (EmptyCollectionException | NullPointerException  | IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }

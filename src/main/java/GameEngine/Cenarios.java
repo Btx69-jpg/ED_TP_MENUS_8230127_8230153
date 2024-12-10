@@ -20,7 +20,7 @@ public abstract class Cenarios implements Cenario {
      */
     //LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO ou adicionar verificaçõoes para ver se o inimigo é valido antes de iniciar o confronto(se tem vida)
     //falta adicionar o metodo para todos os outros andarem caso estes não morram
-    public static boolean Confronto(Missao missao, boolean TocruzStart, boolean autoMode) {
+    public static void Confronto(Missao missao, boolean TocruzStart, boolean autoMode) {
 //      PRINT DOS ENVOLVIDOS NO CONFRONTO
         ToCruz toCruz = missao.getToCruz();
         Edificio edificio = missao.getEdificio();
@@ -64,7 +64,7 @@ public abstract class Cenarios implements Cenario {
                                     Rounds.attack(toCruz, inimigo);
                                 } catch (IllegalArgumentException e) {
                                     System.out.println(e.getMessage());
-                                    return false;
+                                    //return false;
                                 }
                                 if (inimigo.getVida() <= 0) {
                                     System.out.println(inimigo.getNome() + " foi derrotado");
@@ -136,7 +136,7 @@ public abstract class Cenarios implements Cenario {
                     if (toCruz.getVida() <= 0) {
                         System.out.println("To Cruz foi derrotado foi derrotado");
                         missao.changeToCruz(toCruz);
-                        return false;
+                        //return false;
                     }
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
                 }
@@ -150,7 +150,7 @@ public abstract class Cenarios implements Cenario {
         System.out.println("Fim do confronto Tó Cruz passou em ED!");
         toCruz.setInConfronto(false);
         missao.changeToCruz(toCruz);
-        return true;
+        //return true;
     }
 
 //penso estar pronto e correto
