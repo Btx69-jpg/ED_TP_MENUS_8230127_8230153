@@ -25,7 +25,7 @@ public class Rounds implements Round {
         //confirmar que não envio uma copia da sala mas sim ela propriamente dita
         to.setHaveToCruz(true);
         if (to.hasInimigos()){
-            Cenarios.Confronto(missao, to.getInimigos(), true, autoMode);
+            Cenarios.Confronto(missao, true, autoMode);
         } else {
             Cenarios.walkEnimies(missao, autoMode,false );
         }

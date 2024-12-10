@@ -20,14 +20,21 @@ public abstract class Cenarios implements Cenario {
      */
     //LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO ou adicionar verificaçõoes para ver se o inimigo é valido antes de iniciar o confronto(se tem vida)
     //falta adicionar o metodo para todos os outros andarem caso estes não morram
-    public static boolean Confronto(Missao missao, LinearLinkedUnorderedList<Inimigo> p2, boolean TocruzStart, boolean autoMode) {
+    public static boolean Confronto(Missao missao, boolean TocruzStart, boolean autoMode) {
 //      PRINT DOS ENVOLVIDOS NO CONFRONTO
         ToCruz toCruz = missao.getToCruz();
         Edificio edificio = missao.getEdificio();
         toCruz.setInConfronto(true);
         missao.changeToCruz(toCruz);
+        LinearLinkedUnorderedList<Inimigo> p2 = edificio.getSalaToCruz().getInimigos();
+
+        if (p2 == null){
+            throw new NullPointerException("Não há inimigos na sala");
+        }
+
         Iterator<Inimigo> inimigosIterator = p2.iterator();
         Inimigo inimigo = inimigosIterator.next();
+
         System.out.print("Confronto entre " + toCruz.getNome() + " e " + inimigo);
         while (inimigosIterator.hasNext()) {
             inimigo.setInConfronto(true);
@@ -52,17 +59,20 @@ public abstract class Cenarios implements Cenario {
                         inimigosIterator = p2.iterator();
                         while (inimigosIterator.hasNext()) {
                             inimigo = inimigosIterator.next();
-                            try {
-                                Rounds.attack(toCruz, inimigo);
-                            } catch (IllegalArgumentException e) {
-                                System.out.println(e.getMessage());
-                                return false;
+                            if (inimigo != null){
+                                try {
+                                    Rounds.attack(toCruz, inimigo);
+                                } catch (IllegalArgumentException e) {
+                                    System.out.println(e.getMessage());
+                                    return false;
+                                }
+                                if (inimigo.getVida() <= 0) {
+                                    System.out.println(inimigo.getNome() + " foi derrotado");
+                                    p2.remove(inimigo);
+                                }
+                                System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
                             }
-                            if (inimigo.getVida() <= 0) {
-                                System.out.println(inimigo.getNome() + " foi derrotado");
-                                p2.remove(inimigo);
-                            }
-                            System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
+
                         }
 
                     } else if (op == 2) {
@@ -80,7 +90,6 @@ public abstract class Cenarios implements Cenario {
                     }
                 }
                 TocruzStart = false;
-
             }
 //---------------------------------------------------------------------------------
             //confronto automatico
@@ -89,7 +98,7 @@ public abstract class Cenarios implements Cenario {
                 System.out.println("Tocruz ataca. ");
 
                 //
-                if (toCruz.getVida() > toCruz.getVida() * 0.35) {
+                if (toCruz.getVida() > toCruz.getMaxLife() * 0.35) {
                     //ataca todos os inimigos na sala       LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO
                     inimigosIterator = p2.iterator();
                     while (inimigosIterator.hasNext()) {
@@ -126,6 +135,7 @@ public abstract class Cenarios implements Cenario {
                     Rounds.attack(inimigo, toCruz);
                     if (toCruz.getVida() <= 0) {
                         System.out.println("To Cruz foi derrotado foi derrotado");
+                        missao.changeToCruz(toCruz);
                         return false;
                     }
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
@@ -139,6 +149,7 @@ public abstract class Cenarios implements Cenario {
         }
         System.out.println("Fim do confronto Tó Cruz passou em ED!");
         toCruz.setInConfronto(false);
+        missao.changeToCruz(toCruz);
         return true;
     }
 
@@ -181,7 +192,7 @@ public abstract class Cenarios implements Cenario {
         missao.changeEdificio(edificio);
         Sala checkConfronto = edificio.getSalaToCruz();
         if (checkConfronto.haveToCruz() && checkConfronto.hasInimigos() && !wasInConfronto){
-            Cenarios.Confronto(missao, checkConfronto.getInimigos(), false, autoMode);
+            Cenarios.Confronto(missao, false, autoMode);
         }
     }
 
