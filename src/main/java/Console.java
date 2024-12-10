@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 
 
 import java.util.Iterator;
-/*
+
 public class Console {
 
     private static int PODER_MODE_EASY = 25;
@@ -110,7 +110,7 @@ public class Console {
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
                     jogoEmAndamento = false;
-                } else if (toCruz.getVida() <= 0) {
+                } else if (missao.getToCruz().getVida() <= 0) {
                     JOptionPane.showMessageDialog(JogoMapa, "Game Over! To Cruz foi derrotado.");
                     jogoEmAndamento = false;
                 }
@@ -154,7 +154,7 @@ public class Console {
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapaFacil, "Missão concluída com sucesso!");
                     jogoEmAndamento = false;
-                } else if (toCruz.getVida() <= 0) {
+                } else if (missao.getToCruz().getVida() <= 0) {
                     JOptionPane.showMessageDialog(JogoMapaFacil, "Game Over! To Cruz foi derrotado.");
                     jogoEmAndamento = false;
                 }
@@ -208,7 +208,7 @@ public class Console {
                 frame.setContentPane(DificuldadeFacilPanel);
                 frame.revalidate();
                 labelImagemFacil.setPreferredSize(new Dimension(540, 540));
-                toCruz = new ToCruz("ToCruz", PODER_MODE_EASY);
+                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_EASY));
                 frame.repaint();
             }
         });
@@ -220,7 +220,7 @@ public class Console {
                 frame.setContentPane(DificuldadeMediaPanel);
                 frame.revalidate();
                 labelImagemMedio.setPreferredSize(new Dimension(540, 540));
-                toCruz = new ToCruz("ToCruz", PODER_MODE_MEDIO);
+                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_MEDIO));
                 frame.repaint();
             }
         });
@@ -232,7 +232,7 @@ public class Console {
                 frame.setContentPane(DificuldadeDificilPanel);
                 frame.revalidate();
                 labelImagemDificil.setPreferredSize(new Dimension(540, 540));
-                toCruz = new ToCruz("ToCruz", PODER_MODE_HARD);
+                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_HARD));
                 frame.repaint();
             }
         });
@@ -274,29 +274,6 @@ public class Console {
         });
     }
 
-    /* JA ESTAVA COMENTADO!!
-    protected void paintComponent() {
-
-        missao.getEdificio();
-        super.paintComponent(g);
-
-        // Desenhar as arestas
-        g.setColor(Color.GRAY);
-        for (Grafo.Edge edge : grafo.getEdges()) {
-            g.drawLine(edge.from.x, edge.from.y, edge.to.x, edge.to.y);
-        }
-
-        // Desenhar os nós
-        g.setColor(Color.BLUE);
-        for (Grafo.Node node : grafo.getNodes()) {
-            g.fillOval(node.x - 10, node.y - 10, 20, 20);
-            g.setColor(Color.BLACK);
-            g.drawString(node.id, node.x - 15, node.y - 15);
-            g.setColor(Color.BLUE);
-        }
-    }*/
-
-/*
     public void atualizarSpamList() {
         DefaultListModel<String> model = new DefaultListModel<>();
         int entradasSaidas = missao.getEdificio().getNumeroEntradas_saidas();
@@ -311,18 +288,17 @@ public class Console {
 
     public void escolhaTurnoUtilizador(){
         String selectedAction = TurnoUtilizador.getSelectedValue();
-        Rounds rounds = new Rounds();
         if (selectedAction == null) {
             JOptionPane.showMessageDialog(TurnoUtilizador, "Por favor, selecione uma ação!");
         }
         switch (selectedAction){
             case "1 - Mover":
-                rounds.moveToCruz(missao.getToCruz(), missao.getEdificio().getSalas().getVertex(0), missao.getEdificio(), false);
+                Rounds.moveToCruz(missao, missao.getEdificio().getSalas().getVertex(0), false);
                 JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
                 break;
             case "2 - Usar MedKit":
                 try{
-                    toCruz.usarMedKit();
+                    Rounds.useMedkit(missao.getToCruz(),missao, false, false);
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Usou MedKit");
                 }catch (NullPointerException | IllegalArgumentException e){
                     JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
@@ -336,7 +312,7 @@ public class Console {
                     salaToCruz = itSalas.next();
                     if (salaToCruz.haveToCruz()){
                         if (salaToCruz.hasInimigos()){
-                            Cenarios.Confronto(toCruz, salaToCruz.getInimigos(),true, false, missao.getEdificio());
+                            Cenarios.Confronto(missao.getToCruz(), salaToCruz.getInimigos(),true, false, missao.getEdificio());
                             JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + " inimigos");
                             break;
                         }else{
@@ -346,10 +322,14 @@ public class Console {
                     }
                 }
             case "4 - Verificar Vida":
-                JOptionPane.showMessageDialog(TurnoUtilizador, toCruz.getVida());
+                JOptionPane.showMessageDialog(TurnoUtilizador, missao.getToCruz().getVida());
                 break;
             case "5 - Verificar Mochila":
-                JOptionPane.showMessageDialog(TurnoUtilizador,  toCruz.getMochila());
+                try{
+                    JOptionPane.showMessageDialog(TurnoUtilizador,  missao.getToCruz().getMochila());
+                }catch (NullPointerException | IllegalArgumentException e){
+                    JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
+                }
                 break;
             case "6 - Verificar Alvo":
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getAlvo());
@@ -392,4 +372,3 @@ public class Console {
         frame.setVisible(true);
     }
 }
- */
