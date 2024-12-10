@@ -19,6 +19,7 @@ public class GrafoRenderer extends JPanel {
     private Random random;
     private Point[] coordenadas;
     private LinearLinkedUnorderedList<Sala> vertices;
+    private LinearLinkedUnorderedList<Point[]> linhasDesenhadas;
 
     public GrafoRenderer(Missao missao, boolean organizar) {
         this.missao = missao;
@@ -44,19 +45,35 @@ public class GrafoRenderer extends JPanel {
             Sala origem = itArestas.next();
             int origemIndex = getVertexIndex(origem);
 
-            // Obter vértices conectados a partir da origem
             LinearLinkedUnorderedList<Sala> conexoes = grafo.getConnectedVertices(origem);
             Iterator<Sala> itConexoes = conexoes.iterator();
 
             while (itConexoes.hasNext()) {
+                int verticalOffset = 50;
+                int squareWidth = 50;
+                int squareHeight = 50;
                 Sala destino = itConexoes.next();
                 int destinoIndex = getVertexIndex(destino);
 
-                Point p1 = coordenadas[origemIndex];
-                Point p2 = coordenadas[destinoIndex];
+                Point origemCenter  = coordenadas[origemIndex];
+                Point destinoCenter  = coordenadas[destinoIndex];
 
-                // Desenhar linha entre os vértices
-                g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
+                Point origemBorda = getClosestBorderPoint(origemCenter, destinoCenter, squareWidth, squareHeight);
+                Point destinoBorda = getClosestBorderPoint(destinoCenter, origemCenter, squareWidth, squareHeight);
+
+                boolean desviarParaCima = isSpaceAbove(origemBorda, destinoBorda);
+
+                Point pontoIntermediario;
+                if (desviarParaCima) {
+                    pontoIntermediario = new Point((origemBorda.x + destinoBorda.x) / 2, Math.min(origemBorda.y, destinoBorda.y) - 50);
+                } else {
+                    pontoIntermediario = new Point((origemBorda.x + destinoBorda.x) / 2, Math.max(origemBorda.y, destinoBorda.y) + 50);
+                }
+
+                g2d.drawLine(origemBorda.x, origemBorda.y, pontoIntermediario.x, pontoIntermediario.y);
+                g2d.drawLine(pontoIntermediario.x, pontoIntermediario.y, destinoBorda.x, destinoBorda.y);
+
+                linhasDesenhadas.addToRear(new Point[]{origemBorda, destinoBorda});
             }
 
             // Desenhar Vértices
@@ -65,11 +82,104 @@ public class GrafoRenderer extends JPanel {
             while (itVertices.hasNext()) {
                 Sala sala = itVertices.next();
                 Point p = coordenadas[index++];
-                g2d.fillRect(p.x - 10, p.y - 10, 50, 50);
-                g2d.drawString(sala.getNome(), p.x - 15, p.y - 15);
+
+                int squareSize = 70;
+                g2d.drawRect(p.x - squareSize / 2, p.y - squareSize / 2, squareSize, squareSize);
+
+                FontMetrics metrics = g2d.getFontMetrics();
+                int textX = p.x - metrics.stringWidth(sala.getNome()) / 2;
+                int textY = p.y + metrics.getHeight() / 4;
+                if (sala.haveAlvo()){
+                    g2d.drawString(sala.getNome() + "(Alvo)", textX, textY);
+                }else {
+                    g2d.drawString(sala.getNome() , textX, textY);
+                }
+
             }
         }
     }
+
+    private boolean isSpaceAbove(Point origem, Point destino) {
+        int midX = (origem.x + destino.x) / 2;
+        int aboveY = origem.y - 20; // Testar um deslocamento acima
+        int belowY = origem.y + 20; // Testar um deslocamento abaixo
+
+        int linhasAcima = 0;
+        int linhasAbaixo = 0;
+
+        // Verificar cada linha desenhada
+        for (Point[] linha : linhasDesenhadas) {
+            Point linhaOrigem = linha[0];
+            Point linhaDestino = linha[1];
+
+            // Verificar interseção acima
+            if (linhaIntersectsRect(linhaOrigem, linhaDestino, midX, aboveY, 10, 10)) {
+                linhasAcima++;
+            }
+
+            // Verificar interseção abaixo
+            if (linhaIntersectsRect(linhaOrigem, linhaDestino, midX, belowY, 10, 10)) {
+                linhasAbaixo++;
+            }
+        }
+
+        // Retorna true se há mais espaço acima
+        return linhasAcima <= linhasAbaixo;
+    }
+
+    private boolean linhaIntersectsRect(Point origem, Point destino, int rectX, int rectY, int rectWidth, int rectHeight) {
+        int x1 = origem.x, y1 = origem.y;
+        int x2 = destino.x, y2 = destino.y;
+
+        // Coordenadas do retângulo
+        int rx1 = rectX, ry1 = rectY;
+        int rx2 = rectX + rectWidth, ry2 = rectY + rectHeight;
+
+        // Verifica interseção com as bordas do retângulo
+        return linhaIntersectsLinha(x1, y1, x2, y2, rx1, ry1, rx2, ry1) || // Topo
+                linhaIntersectsLinha(x1, y1, x2, y2, rx1, ry2, rx2, ry2) || // Base
+                linhaIntersectsLinha(x1, y1, x2, y2, rx1, ry1, rx1, ry2) || // Esquerda
+                linhaIntersectsLinha(x1, y1, x2, y2, rx2, ry1, rx2, ry2);   // Direita
+    }
+
+    private boolean linhaIntersectsLinha(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+        // Fórmula para verificar se duas linhas se intersectam
+        double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+        if (denom == 0) return false; // Linhas paralelas
+
+        double ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+        double ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+
+        return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
+    }
+
+    private Point getClosestBorderPoint(Point center, Point target, int width, int height) {
+        int left = center.x - width / 2;
+        int right = center.x + width / 2;
+        int top = center.y - height / 2;
+        int bottom = center.y + height / 2;
+
+        double dx = target.x - center.x;
+        double dy = target.y - center.y;
+
+        // Determinar qual borda está mais próxima
+        if (Math.abs(dy) * width > Math.abs(dx) * height) {
+            // Vertical: Topo ou fundo
+            if (dy < 0) { // Topo
+                return new Point(center.x, top);
+            } else { // Fundo
+                return new Point(center.x, bottom);
+            }
+        } else {
+            // Horizontal: Esquerda ou direita
+            if (dx < 0) { // Esquerda
+                return new Point(left, center.y);
+            } else { // Direita
+                return new Point(right, center.y);
+            }
+        }
+    }
+
     private int getVertexIndex(Sala vertex) {
         Iterator<Sala> iterator = grafo.getVerticesIterator();
 

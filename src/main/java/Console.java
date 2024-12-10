@@ -62,6 +62,7 @@ public class Console {
     private JButton ModoAutomatico;
     private JPanel ModoDeJogo;
     private JPanel Grafo;
+    private JPanel Graph;
 
 
     private Missao missao;
@@ -184,6 +185,9 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeMediaPanel);
                 frame.setContentPane(JogoMapa);
+                Graph.setLayout(new BorderLayout());
+                Graph.add(grafoRenderer, BorderLayout.CENTER);
+                grafoRenderer.repaint();
                 atualizarRound();
                 frame.revalidate();
                 frame.repaint();
@@ -195,6 +199,9 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeDificilPanel);
                 frame.setContentPane(JogoMapa);
+                Graph.setLayout(new BorderLayout());
+                Graph.add(grafoRenderer, BorderLayout.CENTER);
+                grafoRenderer.repaint();
                 atualizarRound();
                 frame.revalidate();
                 frame.repaint();
@@ -354,7 +361,7 @@ public class Console {
     }
 
     public void runGame() {
-        missao = Json.ReadJson("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
         grafoRenderer = new GrafoRenderer(missao, true);
     }
 
