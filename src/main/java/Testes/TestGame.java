@@ -1,4 +1,5 @@
-import GameEngine.GameMode;
+package Testes;
+
 import GameEngine.GamesMode;
 
 public class TestGame {

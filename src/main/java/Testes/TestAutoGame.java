@@ -1,3 +1,5 @@
+package Testes;
+
 import GameEngine.GamesMode;
 
 public class TestAutoGame {

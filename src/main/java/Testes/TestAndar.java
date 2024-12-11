@@ -1,3 +1,5 @@
+package Testes;
+
 import Data.Json;
 import GameEngine.Cenarios;
 import Missao.Missao;

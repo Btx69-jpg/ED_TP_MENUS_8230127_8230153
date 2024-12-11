@@ -1,8 +1,10 @@
 import Data.Json;
 import Edificio.Sala;
 import GameEngine.Cenarios;
+import GameEngine.GamesMode;
 import GameEngine.Rounds;
 import Missao.Missao;
+import Pessoa.Inimigo;
 import Pessoa.ToCruz;
 
 import javax.swing.*;
@@ -65,6 +67,7 @@ public class Console {
     private Missao missao;
     private int roundsCount = 1;
     private GrafoRenderer grafoRenderer;
+    private GamesMode gamesMode;
 
     public Console() {
 
@@ -331,12 +334,27 @@ public class Console {
         }
         switch (selectedAction){
             case "1 - Mover":
-                Rounds.moveToCruz(missao, missao.getEdificio().getSalas().getVertex(0), false);
-                JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
+                Sala sala = missao.getEdificio().getSalaToCruz();
+                String escolha = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Escolha a sala para a qual deseja mover:",
+                        "Mover para uma Sala",
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        missao.getEdificio().getSalas().getConnectedVertex(sala),
+                        sala // Padrão selecionado
+                );
+
+                if (escolha != null) {
+                    Rounds.moveToCruz(missao, sala, false);
+                    JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
+                } else {
+                    JOptionPane.showMessageDialog(TurnoUtilizador, "O utilizador cancelou ou não fez uma escolha.");
+                }
                 break;
             case "2 - Usar MedKit":
                 try{
-                    Rounds.useMedkit(missao.getToCruz(),missao, false, false);
+                    Rounds.useMedkit(missao, false, false);
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Usou MedKit");
                 }catch (NullPointerException | IllegalArgumentException e){
                     JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
@@ -344,21 +362,16 @@ public class Console {
                 break;
             case "3 - Atacar":
 
-                Iterator<Sala> itSalas = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
-                Sala salaToCruz;
-                while (itSalas.hasNext()){
-                    salaToCruz = itSalas.next();
-                    if (salaToCruz.haveToCruz()){
-                        if (salaToCruz.hasInimigos()){
-                            //Cenarios.Confronto(missao.getToCruz(), salaToCruz.getInimigos(),true, false, missao.getEdificio());
-                            JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + " inimigos");
-                            break;
-                        }else{
-                            JOptionPane.showMessageDialog(TurnoUtilizador, "Sala não inimigos para atacar!");
-                            break;
-                        }
-                    }
+                Sala salaToCruz = missao.getEdificio().getSalaToCruz();
+                Iterator<Inimigo> itInimigos = salaToCruz.getInimigos().iterator();
+                while (itInimigos.hasNext()){
+                    Inimigo inimigo = itInimigos.next();
+                    Rounds.attack(missao.getToCruz(), inimigo);
+                    JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + " inimigos");
+                    break;
                 }
+                JOptionPane.showMessageDialog(TurnoUtilizador, "Sala não inimigos para atacar!");
+                break;
             case "4 - Verificar Vida":
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getToCruz().getVida());
                 break;
@@ -369,12 +382,12 @@ public class Console {
                     JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
                 }
                 break;
-            case "6 - Verificar Alvo":
+            /*case "6 - Verificar Alvo":
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getAlvo());
                 break;
             case "7 - Verificar Edificio":
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getEdificio());
-                break;
+                break;*/
         }
     }
 
@@ -400,7 +413,8 @@ public class Console {
     }
 
     private void runGame() {
-        missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        missao = Json.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        gamesMode = new GamesMode();
     }
 
     private void atualizarRound(){
