@@ -26,6 +26,7 @@ public class Json {
 
     public static Missao ReadMissao(String filePath) {
         JSONParser jsonParser = new JSONParser();
+        int bothFind = 0;
 
         try (FileReader reader = new FileReader(filePath)) {
             // Lê o JSON como objeto
@@ -76,29 +77,27 @@ public class Json {
                 JSONArray ligacao = (JSONArray) ligacaoObj;
                 String sala1 = (String) ligacao.get(0);
                 String sala2 = (String) ligacao.get(1);
+
                 int pos1 = -1;
                 int pos2 = -1;
 
                 for (int i = 0; i < salasArray.length; i++) {
-                    if (salasArray[i].getNome().equals(sala1)) {
+                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala1.trim())) {
                         pos1 = i;
                     }
-                    if (salasArray[i].getNome().equals(sala2)) {
+                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala2.trim())) {
                         pos2 = i;
                     }
                 }
-                if (pos1 == -1) {
-                    System.out.println("Sala  para ligação não encontrada: " + sala1 + "\n Continuaremos a carregar o mapa");
+
+                if (pos1 == -1 || pos2 == -1) {
+                    System.err.println("Erro ao criar ligação entre: " + sala1 + " e " + sala2);
                     continue;
                 }
 
-                if (pos2 == -1) {
-                    System.out.println("Sala  para ligação não encontrada: " + sala2 + "\n Continuaremos a carregar o mapa");
-                    continue;
-                }
-
-                salas.addEdge(salasArray[pos1],salasArray[pos2]);
+                salas.addEdge(salasArray[pos1], salasArray[pos2]);
             }
+
 
             // Adiciona os itens às salas
             JSONArray itensArray = (JSONArray) jsonObject.get("itens");
