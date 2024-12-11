@@ -344,7 +344,7 @@ public class Console {
         switch (selectedAction){
             case "1 - Mover":
                 Sala sala = missao.getEdificio().getSalaToCruz();
-                /*String escolha = (String) JOptionPane.showInputDialog(
+                String escolha = (String) JOptionPane.showInputDialog(
                         null,
                         "Escolha a sala para a qual deseja mover:",
                         "Mover para uma Sala",
@@ -359,7 +359,7 @@ public class Console {
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
                 } else {
                     JOptionPane.showMessageDialog(TurnoUtilizador, "O utilizador cancelou ou não fez uma escolha.");
-                }*/
+                }
                 break;
             case "2 - Usar MedKit":
                 try{
