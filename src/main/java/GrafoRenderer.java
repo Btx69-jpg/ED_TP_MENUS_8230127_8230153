@@ -1,13 +1,13 @@
 import Edificio.Sala;
 import Graphs.PropriaAutoria.GraphNetworkEM;
+import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
-import Queue.LinkedQueue;
 
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Random;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class GrafoRenderer extends JPanel {
 
@@ -20,10 +20,20 @@ public class GrafoRenderer extends JPanel {
     private Point[] coordenadas;
     private LinearLinkedUnorderedList<Sala> vertices;
     private LinearLinkedUnorderedList<Point[]> linhasDesenhadas;
+    private Image inimigoIcon;
+    private Image medkitIcon;
+    private Image coleteIcon;
+
 
     public GrafoRenderer(Missao missao, boolean organizar) {
         this.missao = missao;
         this.random = new Random();
+        this.linhasDesenhadas = new LinearLinkedUnorderedList<>();
+
+        inimigoIcon = new ImageIcon(getClass().getResource("/resources/imagens/Inimigo.jpeg")).getImage();
+        medkitIcon = new ImageIcon(getClass().getResource("/resources/imagens/MedKit.jpeg")).getImage();
+        coleteIcon = new ImageIcon(getClass().getResource("/resources/imagens/Colete.jpeg")).getImage();
+
         grafo = missao.getEdificio().getSalas();
         if(organizar){
             organizarSalas();
@@ -61,7 +71,7 @@ public class GrafoRenderer extends JPanel {
                 Point origemBorda = getClosestBorderPoint(origemCenter, destinoCenter, squareWidth, squareHeight);
                 Point destinoBorda = getClosestBorderPoint(destinoCenter, origemCenter, squareWidth, squareHeight);
 
-                boolean desviarParaCima = isSpaceAbove(origemBorda, destinoBorda);
+                boolean desviarParaCima = isSpaceAbove(origemBorda, destinoBorda, linhasDesenhadas);
 
                 Point pontoIntermediario;
                 if (desviarParaCima) {
@@ -94,21 +104,69 @@ public class GrafoRenderer extends JPanel {
                 }else {
                     g2d.drawString(sala.getNome() , textX, textY);
                 }
+                int iconSize = 20; // Tamanho de cada ícone
+                int iconPadding = 5; // Espaçamento entre ícones
+                int startX = p.x - (squareSize / 2) + iconPadding; // Início da linha
+                int startY = p.y - (squareSize / 2) + iconPadding; // Início do topo
 
+                // Desenhar inimigos
+                for (int i = 0; i < sala.getInimigos().size(); i++) {
+                    g2d.drawImage(inimigoIcon, startX, startY, iconSize, iconSize, this);
+                    startX += iconSize + iconPadding;
+
+                    // Ir para a próxima linha se exceder o quadrado
+                    if (startX > p.x + (squareSize / 2) - iconSize) {
+                        startX = p.x - (squareSize / 2) + iconPadding;
+                        startY += iconSize + iconPadding;
+                    }
+                }
+
+                // Desenhar medkits
+                Iterator<Item> itemIterator = sala.getItens().iterator();
+                for (Item item : itemIterator) {
+                    if (item.getTipo().equals("MEDKIT")){
+                        g2d.drawImage(medkitIcon, startX, startY, iconSize, iconSize, this);
+                        startX += iconSize + iconPadding;
+
+                        if (startX > p.x + (squareSize / 2) - iconSize) {
+                            startX = p.x - (squareSize / 2) + iconPadding;
+                            startY += iconSize + iconPadding;
+                        }
+                    }else if (item.getTipo().equals("COLETE")){
+                        g2d.drawImage(coleteIcon, startX, startY, iconSize, iconSize, this);
+                        startX += iconSize + iconPadding;
+
+                        if (startX > p.x + (squareSize / 2) - iconSize) {
+                            startX = p.x - (squareSize / 2) + iconPadding;
+                            startY += iconSize + iconPadding;
+                        }
+                    }else{
+                        //throw new
+                    }
+                }
             }
         }
     }
 
-    private boolean isSpaceAbove(Point origem, Point destino) {
+    private boolean isSpaceAbove(Point origem, Point destino, LinearLinkedUnorderedList<Point[]> linhasExistentes) {
         int midX = (origem.x + destino.x) / 2;
-        int aboveY = origem.y - 20; // Testar um deslocamento acima
-        int belowY = origem.y + 20; // Testar um deslocamento abaixo
+        int aboveY = origem.y - 20;
+        int belowY = origem.y + 20;
 
         int linhasAcima = 0;
         int linhasAbaixo = 0;
 
-        // Verificar cada linha desenhada
-        for (Point[] linha : linhasDesenhadas) {
+        // Adicionar a linha atual como uma linha simulada para a verificação
+        LinearLinkedUnorderedList<Point[]> linhasTestadas = new LinearLinkedUnorderedList<>();
+        if(linhasExistentes != null){
+            for (Point[] linha : linhasExistentes){
+                linhasTestadas.addToRear(linha);
+            }
+        }
+        linhasTestadas.addToRear(new Point[]{origem, destino});
+
+        // Verificar cada linha existente
+        for (Point[] linha : linhasTestadas) {
             Point linhaOrigem = linha[0];
             Point linhaDestino = linha[1];
 
@@ -126,6 +184,7 @@ public class GrafoRenderer extends JPanel {
         // Retorna true se há mais espaço acima
         return linhasAcima <= linhasAbaixo;
     }
+
 
     private boolean linhaIntersectsRect(Point origem, Point destino, int rectX, int rectY, int rectWidth, int rectHeight) {
         int x1 = origem.x, y1 = origem.y;
