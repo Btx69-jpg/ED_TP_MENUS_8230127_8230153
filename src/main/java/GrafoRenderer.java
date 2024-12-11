@@ -4,6 +4,7 @@ import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
 import Enum.ItemType;
+import Pessoa.Inimigo;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -31,14 +32,14 @@ public class GrafoRenderer extends JPanel {
         this.random = new Random();
         this.linhasDesenhadas = new LinearLinkedUnorderedList<>();
 
-        inimigoIcon = new JLabel(new ImageIcon("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Inimigos.jpeg"));
-        medkitIcon = new JLabel(new ImageIcon("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\MedKit.jpeg"));
-        coleteIcon = new JLabel(new ImageIcon("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Colete.jpeg"));
+        inimigoIcon = new JLabel(new ImageIcon("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Inimigos.jpeg"));
+        medkitIcon = new JLabel(new ImageIcon("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\MedKit.jpeg"));
+        coleteIcon = new JLabel(new ImageIcon("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Colete.jpeg"));
 
         grafo = missao.getEdificio().getSalas();
-        if(organizar){
+        if (organizar) {
             organizarSalas();
-        }else {
+        } else {
             randomCordinnates();
         }
 
@@ -62,13 +63,13 @@ public class GrafoRenderer extends JPanel {
 
             while (itConexoes.hasNext()) {
                 int verticalOffset = 50;
-                int squareWidth = 50;
-                int squareHeight = 50;
+                int squareWidth = 70;
+                int squareHeight = 70;
                 Sala destino = itConexoes.next();
                 int destinoIndex = getVertexIndex(destino);
 
-                Point origemCenter  = coordenadas[origemIndex];
-                Point destinoCenter  = coordenadas[destinoIndex];
+                Point origemCenter = coordenadas[origemIndex];
+                Point destinoCenter = coordenadas[destinoIndex];
 
                 Point origemBorda = getClosestBorderPoint(origemCenter, destinoCenter, squareWidth, squareHeight);
                 Point destinoBorda = getClosestBorderPoint(destinoCenter, origemCenter, squareWidth, squareHeight);
@@ -95,19 +96,21 @@ public class GrafoRenderer extends JPanel {
                 Sala sala = itVertices.next();
                 Point p = coordenadas[index++];
 
-                int squareSize = 70;
+                int squareSize = 80;
                 g2d.drawRect(p.x - squareSize / 2, p.y - squareSize / 2, squareSize, squareSize);
 
                 FontMetrics metrics = g2d.getFontMetrics();
                 int textX = p.x - metrics.stringWidth(sala.getNome()) / 2;
                 int textY = p.y + metrics.getHeight() / 4;
-                if (sala.haveAlvo()){
+                if (sala.haveAlvo()) {
                     g2d.drawString(sala.getNome() + "(Alvo)", textX, textY);
-                }else {
-                    g2d.drawString(sala.getNome() , textX, textY);
+                } else {
+                    g2d.drawString(sala.getNome(), textX, textY);
                 }
 
-                int iconSize = 20; // Tamanho de cada ícone
+
+
+                /*int iconSize = 20; // Tamanho de cada ícone
                 int iconPadding = 5; // Espaçamento entre ícones
                 int startX = p.x - (squareSize / 2) + iconPadding; // Início da linha
                 int startY = p.y - (squareSize / 2) + iconPadding; // Início do topo
@@ -145,7 +148,7 @@ public class GrafoRenderer extends JPanel {
                             startY += 25;
                         }
                     }
-                }
+                }*/
             }
         }
     }
@@ -160,8 +163,8 @@ public class GrafoRenderer extends JPanel {
 
         // Adicionar a linha atual como uma linha simulada para a verificação
         LinearLinkedUnorderedList<Point[]> linhasTestadas = new LinearLinkedUnorderedList<>();
-        if(linhasExistentes != null){
-            for (Point[] linha : linhasExistentes){
+        if (linhasExistentes != null) {
+            for (Point[] linha : linhasExistentes) {
                 linhasTestadas.addToRear(linha);
             }
         }
@@ -244,7 +247,7 @@ public class GrafoRenderer extends JPanel {
     private int getVertexIndex(Sala vertex) {
         Iterator<Sala> iterator = grafo.getVerticesIterator();
 
-        for(int index = 0; iterator.hasNext(); ++index) {
+        for (int index = 0; iterator.hasNext(); ++index) {
             if (iterator.next().equals(vertex)) {
                 return index;
             }
@@ -252,6 +255,7 @@ public class GrafoRenderer extends JPanel {
 
         return -1;
     }
+
     private void randomCordinnates() {
         int width = LARGURA;
         int height = ALTURA;
@@ -298,8 +302,8 @@ public class GrafoRenderer extends JPanel {
 
     private void organizarSalas() {
         int width = LARGURA;
-        int spacingX = 150;
-        int spacingY = 100;
+        int spacingX = 140;
+        int spacingY = 130;
 
         vertices = new LinearLinkedUnorderedList<>();
         Iterator<Sala> itVertices = grafo.getVerticesIterator();
@@ -325,6 +329,57 @@ public class GrafoRenderer extends JPanel {
                 y += spacingY;
             }
         }
+    }
+
+    protected Sala detectarSalaClicada(Point clickPoint) {
+        Iterator<Sala> itVer = vertices.iterator();
+        int i = 0;
+        while (itVer.hasNext()) {
+            Sala sala = itVer.next();
+            Point centro = coordenadas[i++];
+            int tamanhoSala = 70;
+            Rectangle rect = new Rectangle(centro.x - tamanhoSala / 2, centro.y - tamanhoSala / 2, tamanhoSala, tamanhoSala);
+            if (rect.contains(clickPoint)) {
+                return sala;
+            }
+        }
+        return null;
+    }
+    protected void mostrarPainelSala(Sala sala) {
+        JPanel painelSala = new JPanel();
+        painelSala.setLayout(new BoxLayout(painelSala, BoxLayout.Y_AXIS));
+
+        JLabel nomeSala = new JLabel("Nome: " + sala.getNome());
+        painelSala.add(nomeSala);
+
+        if (sala.getInimigos() != null && !sala.getInimigos().isEmpty()) {
+            JLabel inimigosLabel = new JLabel("Inimigos: " + sala.getInimigos().size());
+            painelSala.add(inimigosLabel);
+            for (Inimigo inimigo : sala.getInimigos()) {
+                painelSala.add(new JLabel("- " + inimigo));
+            }
+        }
+
+        if (sala.getItens() != null && !sala.getItens().isEmpty()) {
+            JLabel itensLabel = new JLabel("Itens:");
+            painelSala.add(itensLabel);
+            for (Item item : sala.getItens()) {
+                painelSala.add(new JLabel("- " + item.getTipo()));
+            }
+        }
+
+        JLabel ligacoesLabel = new JLabel("Ligações:");
+        painelSala.add(ligacoesLabel);
+        for (Sala ligacao : grafo.getConnectedVertices(sala)) {
+            painelSala.add(new JLabel("- " + ligacao.getNome()));
+        }
+
+        JFrame frameSala = new JFrame("Informações da Sala");
+        frameSala.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frameSala.setLocationRelativeTo(null);
+        frameSala.setSize(500, 500);
+        frameSala.add(painelSala);
+        frameSala.setVisible(true);
     }
 
 }

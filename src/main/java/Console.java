@@ -3,15 +3,11 @@ import Edificio.Sala;
 import GameEngine.Cenarios;
 import GameEngine.Rounds;
 import Missao.Missao;
-import Pessoa.Inimigo;
 import Pessoa.ToCruz;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-
+import java.awt.event.*;
 import java.util.Iterator;
 
 public class Console {
@@ -66,11 +62,17 @@ public class Console {
 
 
     private Missao missao;
-    private ToCruz toCruz;
     private int roundsCount = 1;
     private GrafoRenderer grafoRenderer;
 
     public Console() {
+
+        Grafo.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                carregarSalas(e);
+            }
+        });
 
         ResetButton.addActionListener(new ActionListener() {
             @Override
@@ -280,9 +282,16 @@ public class Console {
                 System.exit(0); // Fecha a aplicação
             }
         });
+
+        SairJogo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0); // Fecha a aplicação
+            }
+        });
     }
 
-    public void atualizarSpamList() {
+    private void atualizarSpamList() {
         DefaultListModel<String> model = new DefaultListModel<>();
         int entradasSaidas = missao.getEdificio().getNumeroEntradas_saidas();
         Iterator<Sala> entradasSaidasIterator = missao.getEdificio().getEntradas_saidas().iterator();
@@ -294,7 +303,7 @@ public class Console {
         SpawnList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    public void escolhaTurnoUtilizador(){
+    private void escolhaTurnoUtilizador(){
         String selectedAction = TurnoUtilizador.getSelectedValue();
         if (selectedAction == null) {
             JOptionPane.showMessageDialog(TurnoUtilizador, "Por favor, selecione uma ação!");
@@ -348,7 +357,7 @@ public class Console {
         }
     }
 
-    public void opcoesTurnoUtilizador(){
+    private void opcoesTurnoUtilizador(){
         DefaultListModel<String> model = new DefaultListModel<>();
         model.addElement("1 - Mover");
         model.addElement("2 - Usar MedKit");
@@ -361,12 +370,20 @@ public class Console {
         TurnoUtilizador.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 
-    public void runGame() {
-        missao = Json.ReadJson("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+    private void carregarSalas(MouseEvent e){
+        Point clickPoint = e.getPoint();
+        Sala salaClicada = grafoRenderer.detectarSalaClicada(clickPoint);
+        if (salaClicada != null) {
+            grafoRenderer.mostrarPainelSala(salaClicada);
+        }
+    }
+
+    private void runGame() {
+        missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
         grafoRenderer = new GrafoRenderer(missao, true);
     }
 
-    public void atualizarRound(){
+    private void atualizarRound(){
         RoundCnt.setText("Round:" + roundsCount);
         RoundsCount.setText("Round:" + roundsCount);
     }

@@ -402,16 +402,6 @@
               <text value="Reiniciar"/>
             </properties>
           </component>
-          <component id="1c31b" class="javax.swing.JLabel" binding="RoundCnt">
-            <constraints>
-              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="50" height="50"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value=""/>
-            </properties>
-          </component>
           <component id="bae86" class="javax.swing.JList" binding="TurnoUtilizador">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false">
@@ -431,6 +421,24 @@
             <border type="none"/>
             <children/>
           </grid>
+          <component id="1c31b" class="javax.swing.JLabel" binding="RoundCnt">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="50" height="50"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value=""/>
+            </properties>
+          </component>
+          <component id="a0908" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <grid id="882cf" binding="JogoMapa" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
