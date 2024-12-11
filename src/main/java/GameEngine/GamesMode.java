@@ -44,8 +44,8 @@ public class GamesMode implements GameMode {
         System.out.println("SetUp do SpawnPoint");
          if (EntradasSaidas.size() > 1) {
             for (Sala EntExit : EntradasSaidas){
-                 currentWeigthAM =  salasGrafo.shortestPathWeight(EntExit, salaAlvo);
-                if (salasGrafo.shortestPathWeight(salaToCruz, edificio.getSalaAlvo()) > currentWeigthAM){
+                 currentWeigthAM =  salasGrafo.shortestWeightWeight(EntExit, salaAlvo);
+                if (salasGrafo.shortestWeightWeight(salaToCruz, edificio.getSalaAlvo()) > currentWeigthAM){
                     salaToCruz = EntExit;
                 }
             }
@@ -54,17 +54,18 @@ public class GamesMode implements GameMode {
         System.out.println("SpawnPoint: " + salaToCruz.getNome());
 
         caminho = salasGrafo.iteratorShortestWeight(salaToCruz, salaAlvo);
-         currentWeigthAM = salasGrafo.shortestPathWeight(salaToCruz, edificio.getSalaAlvo());
+         currentWeigthAM = salasGrafo.shortestWeightWeight(salaToCruz, edificio.getSalaAlvo());
         missao.changeSala(salaToCruz, salaToCruz.setHaveToCruz(true));
         //---------------------------------------------------------------------
         //Inicio do jogo
         System.out.println("Comecou!");
         while ( !end) {
-            while ( toCruz.getVida() > 0 && !caminho.hasNext()) {
+            while ( toCruz.getVida() > 0 && caminho.hasNext()) {
                 toCruz = missao.getToCruz();
                 Sala proximaSala;
                 Sala salaMedKit = edificio.getMedKitProx(true);
                 edificio = missao.getEdificio();
+                salasGrafo = edificio.getSalas();
                 salaToCruz = edificio.getSalaToCruz();
                 if (toCruz.getGotAlvo()){
                     saida = edificio.getClosestExitAM();
@@ -75,7 +76,7 @@ public class GamesMode implements GameMode {
 
                     //continuação do caminho caso ele não tenha o alvo
                     if (!toCruz.getGotAlvo()){
-                        CaminhoTemp = getCaminhoAM(salaToCruz, salaAlvo, mstCaminhos);
+                        CaminhoTemp = getCaminhoAM(salaToCruz, salaAlvo, salasGrafo);
                         if (CaminhoTemp != null){
                             caminho = CaminhoTemp;
                         }
@@ -83,7 +84,7 @@ public class GamesMode implements GameMode {
                     //------------------------------
                     //continuação do caminho caso ele tenha o alvo
                     else {
-                        CaminhoTemp = getCaminhoAM(salaAlvo, saida, mstCaminhos);
+                        CaminhoTemp = getCaminhoAM(salaAlvo, saida, salasGrafo);
                         if (CaminhoTemp != null){
                             caminho = CaminhoTemp;
                         }
@@ -93,7 +94,7 @@ public class GamesMode implements GameMode {
                     proximaSala = caminho.next();
                     System.out.println("To andou para: " + proximaSala.getNome());
                     Rounds.moveToCruz(missao, proximaSala, true);
-                    mstCaminhos = edificio.getSalas().mstNetwork();
+                    salasGrafo = edificio.getSalas();
                 }
                 //---------------------------------------------
                 //caso tenha 40% ou menos da vida maxima, e tenha a mochila vazia, vai buscar o medkit dependendo se tem o alvo ou não, caso tenha, anda na direção do que estiver mais proximo(saida ou medKit)
@@ -101,66 +102,66 @@ public class GamesMode implements GameMode {
                     caminhoMedKit = edificio.getCaminhoMedkit(true);
                     caminhoMedKit.next();
                     proximaSala = caminhoMedKit.next();
-                    tempWeight1 = mstCaminhos.shortestPathWeight( edificio.getSalaToCruz(), salaMedKit);
+                    tempWeight1 = salasGrafo.shortestWeightWeight( edificio.getSalaToCruz(), salaMedKit);
                     //caso não tenha o alvo nem medKit e tenha a vida a baixo dos40% decide ir para o que esta mais proximo
                     if ( !toCruz.getGotAlvo()){
-                        tempWeight2 = mstCaminhos.shortestPathWeight( edificio.getSalaToCruz(), salaAlvo);
+                        tempWeight2 = salasGrafo.shortestWeightWeight( edificio.getSalaToCruz(), salaAlvo);
 
                         if (tempWeight1 < tempWeight2){
 
-                            CaminhoTemp = getCaminhoAM(salaToCruz, salaMedKit, mstCaminhos);
+                            CaminhoTemp = getCaminhoAM(salaToCruz, salaMedKit, salasGrafo);
                             if (CaminhoTemp != null){
                                 caminho = CaminhoTemp;
                             }
                             System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, proximaSala, true);
-                            mstCaminhos = edificio.getSalas().mstNetwork();
+                            salasGrafo = edificio.getSalas();
                         }
                         else {
 
-                            CaminhoTemp = getCaminhoAM(proximaSala, salaAlvo, mstCaminhos);
+                            CaminhoTemp = getCaminhoAM(proximaSala, salaAlvo, salasGrafo);
                             if (CaminhoTemp != null){
                                 caminho = CaminhoTemp;
                             }
                             caminho.next();
                             System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, caminho.next(), true);
-                            mstCaminhos = edificio.getSalas().mstNetwork();
+                            salasGrafo = edificio.getSalas();
                         }
                     }
                     //------------------------------------
                     //caso não tenha medKit mas tem o alvo e tem a vida a baixo dos40% decide ir para o que esta mais proximo (saida ou medkit)
                      if  (toCruz.getGotAlvo()){
-                        tempWeight2 = mstCaminhos.shortestPathWeight( edificio.getSalaToCruz(), edificio.getClosestExitAM());
+                        tempWeight2 = salasGrafo.shortestWeightWeight( edificio.getSalaToCruz(), edificio.getClosestExitAM());
 
                         if (tempWeight1 < tempWeight2){
 
-                            CaminhoTemp = getCaminhoAM(salaToCruz, salaMedKit, mstCaminhos);
+                            CaminhoTemp = getCaminhoAM(salaToCruz, salaMedKit, salasGrafo);
                             if (CaminhoTemp != null){
                                 caminho = CaminhoTemp;
                             }
                             System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, proximaSala, true);
-                            mstCaminhos = edificio.getSalas().mstNetwork();
+                            salasGrafo = edificio.getSalas();
                         }
 
                         else {
-                            CaminhoTemp = getCaminhoAM(salaToCruz, saida, mstCaminhos);
+                            CaminhoTemp = getCaminhoAM(salaToCruz, saida, salasGrafo);
                             if (CaminhoTemp != null){
                                 caminho = CaminhoTemp;
                             }
                             System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, edificio.getClosestExitAM(), true);
-                            mstCaminhos = edificio.getSalas().mstNetwork();
+                            salasGrafo = edificio.getSalas();
                         }
                     }
                     //----------------------------------------
 
-                    mstCaminhos = edificio.getSalas().mstNetwork();
-                    double newWeight = mstCaminhos.shortestPathWeight(edificio.getSalaToCruz(), edificio.getSalaAlvo());
+                     salasGrafo = edificio.getSalas();
+                    double newWeight = salasGrafo.shortestWeightWeight(edificio.getSalaToCruz(), edificio.getSalaAlvo());
 
                     if (currentWeigthAM > newWeight){
-                        caminho = mstCaminhos.iteratorShortestPath(edificio.getSalaToCruz(), edificio.getSalaAlvo());
+                        caminho = salasGrafo.iteratorShortestWeight(edificio.getSalaToCruz(), edificio.getSalaAlvo());
                         currentWeigthAM = newWeight;
                     }
                 }
@@ -176,9 +177,6 @@ public class GamesMode implements GameMode {
             }
 
         }
-
-
-
         //todas as decisões são tomadas automaticamente
         //iterator the shortestpath
     }
@@ -228,7 +226,7 @@ public class GamesMode implements GameMode {
             System.out.println();
             toCruz = missao.getToCruz();
             this.caminhoMedKit = missao.getEdificio().getCaminhoMedkit(false);
-            this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
+            this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
             Sala salaToCruz = missao.getEdificio().getSalaToCruz();
 
             int cntOpc = printOptions(salaToCruz);
@@ -333,7 +331,7 @@ public class GamesMode implements GameMode {
                             caminhoMedKit = missao.getEdificio().getCaminhoMedkit(true);
                         }
                         if (caminhoAlvoSala != sala){
-                            caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
+                            caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
                         }
                         Rounds.moveToCruz(missao, sala, false);
                         break;
@@ -391,12 +389,12 @@ public class GamesMode implements GameMode {
         return cnt;
     }
 
-    private Iterator<Sala> getCaminhoAM(Sala from, Sala to, GraphNetwork<Sala> mstCaminhos){
-        double newWeight = mstCaminhos.shortestPathWeight(from, to);
+    private Iterator<Sala> getCaminhoAM(Sala from, Sala to, GraphNetwork<Sala> salasGraph){
+        double newWeight = salasGraph.shortestWeightWeight(from, to);
 
         if (currentWeigthAM > newWeight){
             currentWeigthAM = newWeight;
-            return mstCaminhos.iteratorShortestPath(from, to);
+            return salasGraph.iteratorShortestWeight(from, to);
         }
         return null;
     }
