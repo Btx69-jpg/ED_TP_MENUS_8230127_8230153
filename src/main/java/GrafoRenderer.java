@@ -51,7 +51,6 @@ public class GrafoRenderer extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         this.setLayout(null);
 
-        Iterator<Sala> itVertices = vertices.iterator();
         // Desenhar Arestas
         Iterator<Sala> itArestas = vertices.iterator();
         while (itArestas.hasNext()) {
@@ -90,13 +89,33 @@ public class GrafoRenderer extends JPanel {
             }
 
             // Desenhar Vértices
-            itVertices = vertices.iterator();
+            Iterator<Sala> itVertices = vertices.iterator();
             int index = 0;
             while (itVertices.hasNext()) {
                 Sala sala = itVertices.next();
                 Point p = coordenadas[index++];
 
                 int squareSize = 80;
+
+                if(sala.haveToCruz() && !sala.hasInimigos() && !sala.hasItens()){
+                    g2d.setColor(Color.BLUE);
+                }else if (!sala.haveToCruz() && sala.hasInimigos() && !sala.hasItens()){
+                    g2d.setColor(Color.RED);
+                }else if (!sala.haveToCruz() && !sala.hasInimigos() && sala.hasItens()){
+                    g2d.setColor(Color.GREEN);
+                }else if (sala.haveToCruz() && sala.hasInimigos() && !sala.hasItens()){
+                    g2d.setColor(Color.MAGENTA);
+                }else if (!sala.haveToCruz() && sala.hasInimigos() && sala.hasItens()){
+                    g2d.setColor(Color.YELLOW);
+                }else if (sala.haveToCruz() && !sala.hasInimigos() && sala.hasItens()){
+                    g2d.setColor(Color.GRAY);
+                }else if (sala.haveToCruz() && sala.hasInimigos() && sala.hasItens()){
+                    g2d.setColor(Color.ORANGE);
+                }else {
+                    g2d.setColor(Color.BLACK);
+                }
+
+
                 g2d.drawRect(p.x - squareSize / 2, p.y - squareSize / 2, squareSize, squareSize);
 
                 FontMetrics metrics = g2d.getFontMetrics();
@@ -107,8 +126,6 @@ public class GrafoRenderer extends JPanel {
                 } else {
                     g2d.drawString(sala.getNome(), textX, textY);
                 }
-
-
 
                 /*int iconSize = 20; // Tamanho de cada ícone
                 int iconPadding = 5; // Espaçamento entre ícones

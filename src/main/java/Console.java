@@ -59,6 +59,7 @@ public class Console {
     private JPanel ModoDeJogo;
     private JPanel Grafo;
     private JPanel Graph;
+    private JTextArea legenda;
 
 
     private Missao missao;
@@ -133,6 +134,15 @@ public class Console {
                 }else {
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpawnSelecter);
                     frame.setContentPane(NivelDificuldadePanel);
+                    Iterator<Sala> itSala = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
+                    while (itSala.hasNext()){
+                        Sala sala = itSala.next();
+                        if (sala.toString().equals(selectedSpawnPoint)){
+                            Sala oldSala = sala;
+                            sala.setHaveToCruz(true);
+                            missao.changeSala(oldSala, sala);
+                        }
+                    }
                     opcoesTurnoUtilizador();
                     frame.revalidate();
                     frame.repaint();
@@ -173,6 +183,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
                 frame.setContentPane(JogoMapaFacil);
+                grafoRenderer = new GrafoRenderer(missao, true);
                 Grafo.setLayout(new BorderLayout());
                 Grafo.add(grafoRenderer, BorderLayout.CENTER);
                 grafoRenderer.revalidate();
@@ -188,6 +199,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeMediaPanel);
                 frame.setContentPane(JogoMapa);
+                grafoRenderer = new GrafoRenderer(missao, true);
                 Graph.setLayout(new BorderLayout());
                 Graph.add(grafoRenderer, BorderLayout.CENTER);
                 grafoRenderer.repaint();
@@ -197,11 +209,20 @@ public class Console {
             }
         });
 
+        legenda.setText("ToCruz: Azul \n" +
+                "Inimigo: Vermelho \n" +
+                "Itens: Verde \n" +
+                "ToCruz e Inimigos: Rosa \n" +
+                "Tocruz e Itens: Cinzento \n" +
+                "Inimigo e Itens: Amarelo\n" +
+                "ToCruz e Inimigos e Itens: Orange");
+
         PlayHardModeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeDificilPanel);
                 frame.setContentPane(JogoMapa);
+                grafoRenderer = new GrafoRenderer(missao, true);
                 Graph.setLayout(new BorderLayout());
                 Graph.add(grafoRenderer, BorderLayout.CENTER);
                 grafoRenderer.repaint();
@@ -253,7 +274,7 @@ public class Console {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ModoDeJogo);
                 frame.setContentPane(SpawnSelecter);
                 runGame();
-                atualizarSpamList();
+                atualizarSpawnList();
                 frame.revalidate();
                 frame.repaint();
             }
@@ -291,7 +312,7 @@ public class Console {
         });
     }
 
-    private void atualizarSpamList() {
+    private void atualizarSpawnList() {
         DefaultListModel<String> model = new DefaultListModel<>();
         int entradasSaidas = missao.getEdificio().getNumeroEntradas_saidas();
         Iterator<Sala> entradasSaidasIterator = missao.getEdificio().getEntradas_saidas().iterator();
@@ -380,7 +401,6 @@ public class Console {
 
     private void runGame() {
         missao = Json.ReadJson("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
-        grafoRenderer = new GrafoRenderer(missao, true);
     }
 
     private void atualizarRound(){
