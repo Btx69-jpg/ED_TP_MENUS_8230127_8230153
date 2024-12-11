@@ -1,5 +1,6 @@
 package GameEngine;
 
+import BinaryTree.AVLPriorityTree;
 import Edificio.Edificio;
 import Exceptions.EmptyCollectionException;
 import Heaps.PriorityHeap;
@@ -68,6 +69,7 @@ public abstract class Cenarios implements Cenario {
                                 }
                                 if (inimigo.getVida() <= 0) {
                                     System.out.println(inimigo.getNome() + " foi derrotado");
+                                    edificio.removeInimigo(inimigo);
                                     p2.remove(inimigo);
                                 }
                                 System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
@@ -98,9 +100,14 @@ public abstract class Cenarios implements Cenario {
             if (TocruzStart) {
 
                 System.out.println("Tocruz ataca. ");
+                inimigosIterator = p2.iterator();
+                int totalDmg = 0;
+                while (inimigosIterator.hasNext()) {
+                    inimigo = inimigosIterator.next();
+                    totalDmg += inimigo.getPoder();
+                }
 
-                //
-                if (toCruz.getVida() > toCruz.getMaxLife() * 0.35) {
+                if (toCruz.getMochila().isEmpty() || (toCruz.getVida() > toCruz.getMaxLife() * 0.35 && toCruz.getVida() > totalDmg )) {
                     //ataca todos os inimigos na sala       LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO
                     inimigosIterator = p2.iterator();
                     while (inimigosIterator.hasNext()) {
@@ -108,6 +115,7 @@ public abstract class Cenarios implements Cenario {
                         Rounds.attack(toCruz, inimigo);
                         if (inimigo.getVida() <= 0) {
                             System.out.println(inimigo.getNome() + " foi derrotado");
+                            edificio.removeInimigo(inimigo);
                             p2.remove(inimigo);
                         }
                         System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
@@ -138,6 +146,7 @@ public abstract class Cenarios implements Cenario {
                     if (toCruz.getVida() <= 0) {
                         System.out.println("To Cruz foi derrotado foi derrotado");
                         missao.changeToCruz(toCruz);
+                        missao.setSucess(false);
                         //return false;
                     }
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
@@ -162,7 +171,7 @@ public abstract class Cenarios implements Cenario {
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
         LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
         LinearLinkedUnorderedList<Sala> salasConnectadas;
-        PriorityHeap<Sala> PossiveisSalas = new PriorityHeap<>();
+        AVLPriorityTree<Sala> PossiveisSalas = new AVLPriorityTree<>();
 
         Random random = new Random();
         int cnt = 1;

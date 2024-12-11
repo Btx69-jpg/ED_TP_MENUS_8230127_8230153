@@ -1,9 +1,8 @@
-import GameEngine.GameMode;
 import GameEngine.GamesMode;
 
-public class TestGame {
+public class TestAutoGame {
     public static void main(String[] args) {
         GamesMode gameMode = new GamesMode();
-        gameMode.run(false);
+        gameMode.run(true);
     }
 }

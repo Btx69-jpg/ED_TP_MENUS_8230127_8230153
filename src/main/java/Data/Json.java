@@ -4,11 +4,9 @@ import Edificio.Edificio;
 import Edificio.Sala;
 import Enum.ItemType;
 import Graphs.GraphNetwork;
-import Graphs.PropriaAutoria.GraphNetworkEM;
+import Interfaces.OrderedListADT;
 import Item.Item;
-import Missao.Alvo;
-import Missao.Missao;
-import Missao.Relatorio;
+import Missao.*;
 import Pessoa.Inimigo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -23,10 +21,12 @@ import java.util.Iterator;
 
 public class Json {
 
-    private static Sala salaIterator;
+    private static OrderedListADT<Missao> missoes;
+    private static Relatorios relatorios;
 
-    public static Missao ReadJson(String filePath) {
+    public static Missao ReadMissao(String filePath) {
         JSONParser jsonParser = new JSONParser();
+        int bothFind = 0;
 
         try (FileReader reader = new FileReader(filePath)) {
             // Lê o JSON como objeto
@@ -46,7 +46,7 @@ public class Json {
             JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
             Sala[] salasArray = new Sala[edificioArray.size()];
             int index = 0;
-            GraphNetworkEM<Sala> salas = new GraphNetworkEM<>();
+            GraphNetwork<Sala> salas = new GraphNetwork<>();
 
             // Adiciona entradas e saídas
             JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
@@ -68,8 +68,6 @@ public class Json {
                 salasArray [index] = sala;
                 index++;
 
-                salaIterator = sala;
-
                 salas.addVertex(sala);
             }
 
@@ -79,29 +77,27 @@ public class Json {
                 JSONArray ligacao = (JSONArray) ligacaoObj;
                 String sala1 = (String) ligacao.get(0);
                 String sala2 = (String) ligacao.get(1);
+
                 int pos1 = -1;
                 int pos2 = -1;
 
                 for (int i = 0; i < salasArray.length; i++) {
-                    if (salasArray[i].getNome().equals(sala1)) {
+                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala1.trim())) {
                         pos1 = i;
                     }
-                    if (salasArray[i].getNome().equals(sala2)) {
+                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala2.trim())) {
                         pos2 = i;
                     }
                 }
-                if (pos1 == -1) {
-                    System.out.println("Sala  para ligação não encontrada: " + sala1 + "\n Continuaremos a carregar o mapa");
+
+                if (pos1 == -1 || pos2 == -1) {
+                    System.err.println("Erro ao criar ligação entre: " + sala1 + " e " + sala2);
                     continue;
                 }
 
-                if (pos2 == -1) {
-                    System.out.println("Sala  para ligação não encontrada: " + sala2 + "\n Continuaremos a carregar o mapa");
-                    continue;
-                }
-
-                salas.addEdge(salasArray[pos1],salasArray[pos2]);
+                salas.addEdge(salasArray[pos1], salasArray[pos2]);
             }
+
 
             // Adiciona os itens às salas
             JSONArray itensArray = (JSONArray) jsonObject.get("itens");
@@ -150,9 +146,9 @@ public class Json {
     }
 
     public static void WriteJson() {
-        Relatorio relatorio = new Relatorio();
+
         try (FileWriter arquivoJson = new FileWriter("mapa.json")) {
-            arquivoJson.write(relatorio.toJsonString());
+            arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }
