@@ -3,7 +3,6 @@ package GameEngine;
 import Data.Json;
 import Edificio.Edificio;
 import Graphs.GraphNetwork;
-import Graphs.PropriaAutoria.GraphNetworkEM;
 import LinkedList.LinearLinkedUnorderedList;
 import Pessoa.ToCruz;
 import Missao.Missao;
@@ -241,39 +240,43 @@ public class GamesMode implements GameMode {
                     if (op == opcoesValidas++){
                         moverMenu(op,sc);
                     }
-                    else if (op == opcoesValidas++){
+                     if (op == opcoesValidas){
                         Rounds.useMedkit(missao, false, false);
                     }
-                    else if (salaToCruz.hasItens()){
-
-                        if ( op == opcoesValidas++) {
+                     if (salaToCruz.hasItens()){
+                        opcoesValidas++;
+                        if ( op == opcoesValidas) {
                             toCruz.apanhaItem(salaToCruz.getItens());
                             missao.changeToCruz(toCruz);
                         }
 
                     }
-                    else if (salaToCruz.haveAlvo()) {
-                        if (op == opcoesValidas++) {
+                     if (salaToCruz.haveAlvo()) {
+                        opcoesValidas++;
+                        if (op == opcoesValidas) {
                             toCruz.setGotAlvo(true);
                             salaToCruz.setAlvo(false);
                             missao.changeToCruz(toCruz);
                             missao.changeSala(salaToCruz, salaToCruz.setAlvo(false));
                             missao.changeAlvo(new Alvo(new Sala("ToCruz", true, false), missao.getAlvo().getTipo()));
                         }
+
                     }
-                    else if (salaToCruz.isEntradaSaida()) {
-                        if ( op == opcoesValidas++) {
+                     if (salaToCruz.isEntradaSaida()) {
+                        opcoesValidas++;
+                        if ( op == opcoesValidas) {
                             end = true;
                             break;
                         }
+
                     }
-                    else if (op == opcoesValidas++){
+                     if (op == ++opcoesValidas){
                         System.out.println("Vida atual: " + toCruz.getVida() + " Vida maxima: " + toCruz.getMaxLife());
                     }
-                    else if (op == opcoesValidas++){
+                     if (op == ++opcoesValidas){
                         System.out.println("Mochila: " + toCruz.getMochila());
                     }
-                    else if (op == opcoesValidas){
+                     if (op == ++opcoesValidas){
                         System.out.println(missao.getAlvo());
                     }
 
@@ -301,9 +304,9 @@ public class GamesMode implements GameMode {
             System.out.println((cnt + 1) + " - Sair do jogo ");
             System.out.print("\nEscolha: ");
             op = sc.nextInt();
-            if (op < 1 || op > salas.size() + 1){
+            if (op < 1 || op > salas.size() + 3){
                 System.out.println("Opção inválida");
-            }else if (op == (salas.size() + 1)) {
+            }else if (op == (salas.size() + 3)) {
                 end = true;
                 break;
             }
@@ -319,13 +322,13 @@ public class GamesMode implements GameMode {
 
                     if (i + 3 == op) {
                         Sala sala = salasIt.next();
-                        Rounds.moveToCruz(missao, sala, false);
                         if (caminhoMedkitSala != sala){
                             caminhoMedKit = missao.getEdificio().getCaminhoMedkit(true);
                         }
                         if (caminhoAlvoSala != sala){
                             caminhoAlvo = missao.getEdificio().getCaminhoAlvo();
                         }
+                        Rounds.moveToCruz(missao, sala, false);
                         break;
                     }
                     salasIt.next();
@@ -346,7 +349,7 @@ public class GamesMode implements GameMode {
         return caminhoStr.toString();
     }
     @Override
-    public void run() {
+    public void run(Boolean autoMode) {
         ToCruz toTeste = new ToCruz("teste", 30);
         this.missao = Json.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
         missao.setToCruz(toTeste);

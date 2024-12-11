@@ -3,7 +3,7 @@ package Data;
 
 
 
-import Graphs.PropriaAutoria.GraphNetworkEM;
+import Graphs.GraphNetwork;
 import Missao.*;
 
 import java.io.BufferedReader;
@@ -20,17 +20,17 @@ public class TestRelatoriosToJson {
         Sala sala2 = new Sala("estg", false, false);
         Sala sala3 = new Sala("feup", false, false);
         Sala sala4 = new Sala("um", false, false);
-        GraphNetworkEM<Sala> g1 = new GraphNetworkEM<>();
+        GraphNetwork<Sala> g1 = new GraphNetwork<>();
         g1.addVertex(sala1);
         g1.addVertex(sala2);
         g1.addEdge(sala1, sala2, 1);
         Edificio edificio1 = new Edificio(g1);
-        GraphNetworkEM<Sala> g2 = new GraphNetworkEM<>();
+        GraphNetwork<Sala> g2 = new GraphNetwork<>();
         g2.addVertex(sala1);
         g2.addVertex(sala3);
         g2.addEdge(sala1, sala3, 1);
         Edificio edificio2 = new Edificio(g2);
-        GraphNetworkEM<Sala> g3 = new GraphNetworkEM<>();
+        GraphNetwork<Sala> g3 = new GraphNetwork<>();
         g2.addVertex(sala2);
         g2.addVertex(sala4);
         g2.addEdge(sala2, sala4, 1);
@@ -78,6 +78,13 @@ public class TestRelatoriosToJson {
             relatorios.addRelatorio(relatorio2);
             relatorios.addRelatorio(relatorio3);
             relatorios.addRelatorio(relatorio4);
+        } catch (NullPointerException e) {
+            System.err.println(e.getMessage());
+        }
+
+        try {
+            relatorios.removeRelatorios(1);
+
         } catch (NullPointerException e) {
             System.err.println(e.getMessage());
         }
