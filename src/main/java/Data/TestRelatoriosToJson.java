@@ -38,8 +38,8 @@ public class TestRelatoriosToJson {
 
 
         Missao missao1 = new Missao("String cod_missao", 1, edificio1, new Alvo(sala1,"Mini")) ;
-        Missao missao2 = new Missao("String cod_missao", 1, edificio1, new Alvo(sala1,"Sagres"));
-        Missao missao3 = new Missao("String cod_missao", 1, edificio1, new Alvo(sala1,"Leitao assado"));
+        Missao missao2 = new Missao("y cod_missao", 2, edificio1, new Alvo(sala1,"Sagres"));
+        Missao missao3 = new Missao("String p", 3, edificio1, new Alvo(sala1,"Leitao assado"));
         Missao funcionall = Json.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
 
         missao1.setToCruz(new ToCruz("p1", 200));
