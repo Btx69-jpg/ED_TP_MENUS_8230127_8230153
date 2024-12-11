@@ -31,7 +31,7 @@ public class GamesMode implements GameMode {
         Edificio edificio = missao.getEdificio();
         ToCruz toCruz = missao.getToCruz();
         LinearLinkedUnorderedList<Sala> EntradasSaidas = edificio.getEntradas_saidas();
-        GraphNetwork<Sala> mstCaminhos = edificio.getSalas().mstNetwork();
+        GraphNetwork<Sala> salasGrafo = edificio.getSalas();
         Iterator<Sala> CaminhoTemp;
         Sala salaAlvo = edificio.getSalaAlvo();
         Sala salaToCruz = EntradasSaidas.first();
@@ -44,8 +44,8 @@ public class GamesMode implements GameMode {
         System.out.println("SetUp do SpawnPoint");
          if (EntradasSaidas.size() > 1) {
             for (Sala EntExit : EntradasSaidas){
-                 currentWeigthAM =  mstCaminhos.shortestPathWeight(EntExit, salaAlvo);
-                if (mstCaminhos.shortestPathWeight(salaToCruz, edificio.getSalaAlvo()) > currentWeigthAM){
+                 currentWeigthAM =  salasGrafo.shortestPathWeight(EntExit, salaAlvo);
+                if (salasGrafo.shortestPathWeight(salaToCruz, edificio.getSalaAlvo()) > currentWeigthAM){
                     salaToCruz = EntExit;
                 }
             }
@@ -53,8 +53,8 @@ public class GamesMode implements GameMode {
         }
         System.out.println("SpawnPoint: " + salaToCruz.getNome());
 
-        caminho = mstCaminhos.iteratorShortestPath(salaToCruz, salaAlvo);
-         currentWeigthAM = mstCaminhos.shortestPathWeight(salaToCruz, edificio.getSalaAlvo());
+        caminho = salasGrafo.iteratorShortestWeight(salaToCruz, salaAlvo);
+         currentWeigthAM = salasGrafo.shortestPathWeight(salaToCruz, edificio.getSalaAlvo());
         missao.changeSala(salaToCruz, salaToCruz.setHaveToCruz(true));
         //---------------------------------------------------------------------
         //Inicio do jogo
