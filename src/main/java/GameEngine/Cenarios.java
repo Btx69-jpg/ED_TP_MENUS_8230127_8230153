@@ -156,7 +156,6 @@ public abstract class Cenarios implements Cenario {
             //fim do ataque do inimigo -----------------------
 
             //movimentação dos inimigos que não estão em confronto
-            missao.changeEdificio(edificio);
             walkEnimies(missao, autoMode, true);
         }
         System.out.println("Fim do confronto Tó Cruz passou em ED!");
