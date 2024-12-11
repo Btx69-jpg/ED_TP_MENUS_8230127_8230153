@@ -3,6 +3,7 @@ import Graphs.PropriaAutoria.GraphNetworkEM;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
+import Enum.ItemType;
 
 import java.awt.*;
 import java.util.Iterator;
@@ -20,9 +21,9 @@ public class GrafoRenderer extends JPanel {
     private Point[] coordenadas;
     private LinearLinkedUnorderedList<Sala> vertices;
     private LinearLinkedUnorderedList<Point[]> linhasDesenhadas;
-    private Image inimigoIcon;
-    private Image medkitIcon;
-    private Image coleteIcon;
+    private JLabel inimigoIcon;
+    private JLabel medkitIcon;
+    private JLabel coleteIcon;
 
 
     public GrafoRenderer(Missao missao, boolean organizar) {
@@ -30,9 +31,9 @@ public class GrafoRenderer extends JPanel {
         this.random = new Random();
         this.linhasDesenhadas = new LinearLinkedUnorderedList<>();
 
-        inimigoIcon = new ImageIcon(getClass().getResource("/resources/imagens/Inimigo.jpeg")).getImage();
-        medkitIcon = new ImageIcon(getClass().getResource("/resources/imagens/MedKit.jpeg")).getImage();
-        coleteIcon = new ImageIcon(getClass().getResource("/resources/imagens/Colete.jpeg")).getImage();
+        inimigoIcon = new JLabel(new ImageIcon("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Inimigos.jpeg"));
+        medkitIcon = new JLabel(new ImageIcon("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\MedKit.jpeg"));
+        coleteIcon = new JLabel(new ImageIcon("C:\\Users\\pedro\\Documents\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Colete.jpeg"));
 
         grafo = missao.getEdificio().getSalas();
         if(organizar){
@@ -47,6 +48,7 @@ public class GrafoRenderer extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        this.setLayout(null);
 
         Iterator<Sala> itVertices = vertices.iterator();
         // Desenhar Arestas
@@ -104,44 +106,44 @@ public class GrafoRenderer extends JPanel {
                 }else {
                     g2d.drawString(sala.getNome() , textX, textY);
                 }
+
                 int iconSize = 20; // Tamanho de cada ícone
                 int iconPadding = 5; // Espaçamento entre ícones
                 int startX = p.x - (squareSize / 2) + iconPadding; // Início da linha
                 int startY = p.y - (squareSize / 2) + iconPadding; // Início do topo
 
-                // Desenhar inimigos
-                for (int i = 0; i < sala.getInimigos().size(); i++) {
-                    g2d.drawImage(inimigoIcon, startX, startY, iconSize, iconSize, this);
-                    startX += iconSize + iconPadding;
 
-                    // Ir para a próxima linha se exceder o quadrado
-                    if (startX > p.x + (squareSize / 2) - iconSize) {
-                        startX = p.x - (squareSize / 2) + iconPadding;
-                        startY += iconSize + iconPadding;
+                // Desenhar inimigos
+                if (sala.getInimigos() != null) {
+                    for (int i = 0; i < sala.getInimigos().size(); i++) {
+                        inimigoIcon.setBounds(startX, startY, iconSize, iconSize); // Tamanho 20x20
+                        this.add(inimigoIcon);
+
+                        startX += 25; // Incrementar para próxima posição
+                        if (startX > p.x + (squareSize / 2) - 20) {
+                            startX = p.x - (squareSize / 2) + 5;
+                            startY += 25;
+                        }
                     }
                 }
 
-                // Desenhar medkits
-                Iterator<Item> itemIterator = sala.getItens().iterator();
-                for (Item item : itemIterator) {
-                    if (item.getTipo().equals("MEDKIT")){
-                        g2d.drawImage(medkitIcon, startX, startY, iconSize, iconSize, this);
-                        startX += iconSize + iconPadding;
-
-                        if (startX > p.x + (squareSize / 2) - iconSize) {
-                            startX = p.x - (squareSize / 2) + iconPadding;
-                            startY += iconSize + iconPadding;
+                // Desenhar itens
+                if (sala.getItens() != null) {
+                    for (Item item : sala.getItens()) {
+                        if (item.getTipo().equals(ItemType.MEDKIT)) {
+                            medkitIcon.setBounds(startX, startY, iconSize, iconSize); // Tamanho 20x20
+                            this.add(medkitIcon);
+                        } else if (item.getTipo().equals(ItemType.COLETE)) {
+                            coleteIcon.setBounds(startX, startY, iconSize, iconSize); // Tamanho 20x20
+                            this.add(coleteIcon);
+                        } else {
+                            System.err.println("Tipo de item desconhecido: " + item.getTipo());
                         }
-                    }else if (item.getTipo().equals("COLETE")){
-                        g2d.drawImage(coleteIcon, startX, startY, iconSize, iconSize, this);
-                        startX += iconSize + iconPadding;
-
-                        if (startX > p.x + (squareSize / 2) - iconSize) {
-                            startX = p.x - (squareSize / 2) + iconPadding;
-                            startY += iconSize + iconPadding;
+                        startX += 25; // Incrementar para próxima posição
+                        if (startX > p.x + (squareSize / 2) - 20) {
+                            startX = p.x - (squareSize / 2) + 5;
+                            startY += 25;
                         }
-                    }else{
-                        //throw new
                     }
                 }
             }

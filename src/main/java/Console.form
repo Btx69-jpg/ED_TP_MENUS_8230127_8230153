@@ -559,7 +559,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="Modo Manual"/>
+              <text value="    Modo Manual  "/>
             </properties>
           </component>
           <component id="63fc1" class="javax.swing.JButton" binding="ModoAutomatico">

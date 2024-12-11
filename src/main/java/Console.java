@@ -173,6 +173,7 @@ public class Console {
                 frame.setContentPane(JogoMapaFacil);
                 Grafo.setLayout(new BorderLayout());
                 Grafo.add(grafoRenderer, BorderLayout.CENTER);
+                grafoRenderer.revalidate();
                 grafoRenderer.repaint();
                 atualizarRound();
                 frame.revalidate();
