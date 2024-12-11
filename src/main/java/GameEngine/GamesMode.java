@@ -41,6 +41,7 @@ public class GamesMode implements GameMode {
         double tempWeight2;
 
         //SetUp Do spawnPoint
+        System.out.println("SetUp do SpawnPoint");
          if (EntradasSaidas.size() > 1) {
             for (Sala EntExit : EntradasSaidas){
                  currentWeigthAM =  mstCaminhos.shortestPathWeight(EntExit, salaAlvo);
@@ -50,14 +51,16 @@ public class GamesMode implements GameMode {
             }
 
         }
+        System.out.println("SpawnPoint: " + salaToCruz.getNome());
 
-        caminho = mstCaminhos.iteratorShortestPath(salaToCruz, edificio.getSalaAlvo());
+        caminho = mstCaminhos.iteratorShortestPath(salaToCruz, salaAlvo);
          currentWeigthAM = mstCaminhos.shortestPathWeight(salaToCruz, edificio.getSalaAlvo());
         missao.changeSala(salaToCruz, salaToCruz.setHaveToCruz(true));
         //---------------------------------------------------------------------
         //Inicio do jogo
+        System.out.println("Comecou!");
         while ( !end) {
-            while ( toCruz.getVida() > 0 && caminho.hasNext()) {
+            while ( toCruz.getVida() > 0 && !caminho.hasNext()) {
                 toCruz = missao.getToCruz();
                 Sala proximaSala;
                 Sala salaMedKit = edificio.getMedKitProx(true);
@@ -88,6 +91,7 @@ public class GamesMode implements GameMode {
                     //---------------------------------
                     caminho.next();
                     proximaSala = caminho.next();
+                    System.out.println("To andou para: " + proximaSala.getNome());
                     Rounds.moveToCruz(missao, proximaSala, true);
                     mstCaminhos = edificio.getSalas().mstNetwork();
                 }
@@ -108,6 +112,7 @@ public class GamesMode implements GameMode {
                             if (CaminhoTemp != null){
                                 caminho = CaminhoTemp;
                             }
+                            System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, proximaSala, true);
                             mstCaminhos = edificio.getSalas().mstNetwork();
                         }
@@ -118,6 +123,7 @@ public class GamesMode implements GameMode {
                                 caminho = CaminhoTemp;
                             }
                             caminho.next();
+                            System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, caminho.next(), true);
                             mstCaminhos = edificio.getSalas().mstNetwork();
                         }
@@ -133,6 +139,7 @@ public class GamesMode implements GameMode {
                             if (CaminhoTemp != null){
                                 caminho = CaminhoTemp;
                             }
+                            System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, proximaSala, true);
                             mstCaminhos = edificio.getSalas().mstNetwork();
                         }
@@ -142,6 +149,7 @@ public class GamesMode implements GameMode {
                             if (CaminhoTemp != null){
                                 caminho = CaminhoTemp;
                             }
+                            System.out.println("To andou para: " + proximaSala.getNome());
                             Rounds.moveToCruz(missao, edificio.getClosestExitAM(), true);
                             mstCaminhos = edificio.getSalas().mstNetwork();
                         }
@@ -159,7 +167,6 @@ public class GamesMode implements GameMode {
                 //---------------------------------------------
                 //caso tenha 40% ou menos da vida maxima, não tenha o alvo e tenha um medkit, vai usar
                  if ((toCruz.getVida() <= toCruz.getMaxLife() * 0.40 && !toCruz.getMochila().isEmpty())){
-
                     Rounds.useMedkit(missao, true, false);
                 }
                 if (missao.getToCruz().getVida() <= 0){
@@ -349,11 +356,14 @@ public class GamesMode implements GameMode {
         return caminhoStr.toString();
     }
     @Override
-    public void run(Boolean autoMode) {
+    public void run(boolean autoMode) {
         ToCruz toTeste = new ToCruz("teste", 30);
         this.missao = Json.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
         missao.setToCruz(toTeste);
-        manual();
+        if (!autoMode) {
+            manual();
+        }
+        automatic();
     }
 
     public int printOptions(Sala salaToCruz){
