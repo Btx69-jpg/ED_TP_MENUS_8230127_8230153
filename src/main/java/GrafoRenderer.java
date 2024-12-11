@@ -1,4 +1,5 @@
 import Edificio.Sala;
+import Graphs.GraphNetwork;
 import Graphs.PropriaAutoria.GraphNetworkEM;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
@@ -16,7 +17,7 @@ public class GrafoRenderer extends JPanel {
     private static int ALTURA = 500;
 
     private Missao missao;
-    private GraphNetworkEM<Sala> grafo; // Sua classe de grafo
+    private GraphNetwork<Sala> grafo; // Sua classe de grafo
     private Random random;
     private Point[] coordenadas;
     private LinearLinkedUnorderedList<Sala> vertices;
