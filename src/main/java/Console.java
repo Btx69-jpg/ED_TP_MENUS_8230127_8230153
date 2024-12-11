@@ -62,6 +62,7 @@ public class Console {
     private JPanel Grafo;
     private JPanel Graph;
     private JTextArea legenda;
+    private JTextArea Legenda;
 
 
     private Missao missao;
@@ -213,6 +214,14 @@ public class Console {
         });
 
         legenda.setText("ToCruz: Azul \n" +
+                "Inimigo: Vermelho \n" +
+                "Itens: Verde \n" +
+                "ToCruz e Inimigos: Rosa \n" +
+                "Tocruz e Itens: Cinzento \n" +
+                "Inimigo e Itens: Amarelo\n" +
+                "ToCruz e Inimigos e Itens: Orange");
+
+        Legenda.setText("ToCruz: Azul \n" +
                 "Inimigo: Vermelho \n" +
                 "Itens: Verde \n" +
                 "ToCruz e Inimigos: Rosa \n" +
