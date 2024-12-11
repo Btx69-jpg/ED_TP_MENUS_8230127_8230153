@@ -7,9 +7,7 @@ import Graphs.GraphNetwork;
 import Graphs.PropriaAutoria.GraphNetworkEM;
 import Interfaces.OrderedListADT;
 import Item.Item;
-import Missao.Alvo;
-import Missao.Missao;
-import Missao.Relatorio;
+import Missao.*;
 import Pessoa.Inimigo;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -25,8 +23,9 @@ import java.util.Iterator;
 public class Json {
 
     private static OrderedListADT<Missao> missoes;
+    private static Relatorios relatorios;
 
-    public static Missao ReadJson(String filePath) {
+    public static Missao ReadMissao(String filePath) {
         JSONParser jsonParser = new JSONParser();
 
         try (FileReader reader = new FileReader(filePath)) {
@@ -149,9 +148,9 @@ public class Json {
     }
 
     public static void WriteJson() {
-        Relatorio relatorio = new Relatorio();
+
         try (FileWriter arquivoJson = new FileWriter("mapa.json")) {
-            arquivoJson.write(relatorio.toJsonString());
+            arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }

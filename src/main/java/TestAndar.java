@@ -7,7 +7,7 @@ public class TestAndar {
     public static void main(String[] args) {
         Missao missao;
 
-        missao = Json.ReadJson("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        missao = Json.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
 
         System.out.println("Antes de se moverem: " + missao.getEdificio().getSalaComInimigos());
 

@@ -6,6 +6,7 @@ import Exceptions.EmptyCollectionException;
 import Pessoa.*;
 import Missao.Missao;
 import Item.Item;
+import Missao.Alvo;
 
 import java.util.Iterator;
 
@@ -28,7 +29,15 @@ public class Rounds implements Round {
         } else {
             Cenarios.walkEnimies(missao, autoMode,false );
         }
+        if (to.haveAlvo() && autoMode){
+            ToCruz toCruz = missao.getToCruz();
+            toCruz.setGotAlvo(true);
+            to.setAlvo(false);
+            missao.changeToCruz(toCruz);
+            missao.changeSala(to, to.setAlvo(false));
+            missao.changeAlvo(new Alvo(new Sala("ToCruz", true, false), missao.getAlvo().getTipo()));
 
+        }
 
     }
 
@@ -46,10 +55,12 @@ public class Rounds implements Round {
         atacado.setVida(atacado.getVida() - atacante.getPoder());
     }
 
-    public static void useMedkit(ToCruz toCruz, Missao missao, boolean autoMode, boolean wasInConfronto) {
+    public static void useMedkit(Missao missao, boolean autoMode, boolean wasInConfronto) {
         try {
+            ToCruz toCruz = missao.getToCruz();
             Item kit = toCruz.usarMedKit();
             System.out.println("ToCruz usou um medkit, Curou: " + kit.getQuantidade());
+            missao.changeToCruz(toCruz);
             Cenarios.walkEnimies(missao, autoMode, wasInConfronto);
         }catch (EmptyCollectionException | NullPointerException  | IllegalArgumentException e) {
             System.out.println(e.getMessage());
