@@ -1,0 +1,8 @@
+{
+  "2": [
+{"cod_missao":"y cod_missao","vidaFinal":100,"sucesso":false,"caminho":Sala{nome='um', inimigos=, itens=, alvo=false} Sala{nome='estg', inimigos=, itens=, alvo=false} Sala{nome='porcas', inimigos=, itens=, alvo=false} }
+  ],
+  "3": [
+{"cod_missao":"String p","vidaFinal":100,"sucesso":false,"caminho":Sala{nome='um', inimigos=, itens=, alvo=false} Sala{nome='estg', inimigos=, itens=, alvo=false} Sala{nome='feup', inimigos=, itens=, alvo=false} }
+  ]
+}
