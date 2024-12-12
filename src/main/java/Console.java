@@ -1,10 +1,14 @@
 import Data.DataTreating;
+import Edificio.Edificio;
 import Edificio.Sala;
 import GameEngine.Rounds;
+import Graphs.GraphNetwork;
+import LinkedList.LinearLinkedOrderedList;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
 import Pessoa.ToCruz;
 import Missao.Alvo;
+import Missao.Relatorio;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,10 +60,8 @@ public class Console {
     private JTextArea legenda;
     private JButton inserirMissaoButton;
     private JButton relatoriosButton;
-    private JPanel InserirMissao;
     private JPanel VerRelatorios;
     private JButton voltarButton;
-    private JButton VoltarButton;
     private JList relatorios;
 
 
@@ -68,16 +70,6 @@ public class Console {
     private GrafoRenderer grafoRenderer;
 
     public Console() {
-
-        VoltarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(InserirMissao);
-                frame.setContentPane(EcraInicial);
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
 
         voltarButton.addActionListener(new ActionListener() {
             @Override
@@ -94,6 +86,8 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
                 frame.setContentPane(VerRelatorios);
+                teste();
+                getRelatorios();
                 frame.revalidate();
                 frame.repaint();
             }
@@ -102,10 +96,7 @@ public class Console {
         inserirMissaoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
-                frame.setContentPane(InserirMissao);
-                frame.revalidate();
-                frame.repaint();
+                lerJson();
             }
         });
 
@@ -275,7 +266,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(ModoDeJogo);
                 frame.setContentPane(SpawnSelecter);
-                runGame();
+                escolherMissao();
                 atualizarSpawnList();
                 frame.revalidate();
                 frame.repaint();
@@ -444,13 +435,173 @@ public class Console {
         missao = DataTreating.getMissaoByVersion(2);
     }
 
+    private void runGame(int versao) {
+        missao = DataTreating.getMissaoByVersion(versao);
+    }
+
     private void atualizarRound(){
         RoundCnt.setText("Round:" + roundsCount);
     }
 
     private void getRelatorios(){
         DefaultListModel<String> model = new DefaultListModel<>();
+        Iterator<Relatorio> itRelatorio = DataTreating.getRelatorios().getAllRelatorios().iterator();
+        while (itRelatorio.hasNext()){
+            model.addElement(itRelatorio.next().relatorioMissao());
+        }
+        relatorios.setModel(model);
+    }
 
+    private void escolherMissao(){
+        LinearLinkedOrderedList<Missao> missoes = DataTreating.getMissoes();
+        Object[] versaoMissoes = new Object[missoes.size()];
+        Iterator<Missao> missoesIt = missoes.iterator();
+        int index = 0;
+        while (missoesIt.hasNext()) {
+            versaoMissoes[index++] = missoesIt.next().getVersion();
+        }
+
+        int escolha = JOptionPane.showOptionDialog(
+                null,
+                "Escolha a sala para a qual deseja mover:",
+                "Mover para uma Sala",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                versaoMissoes,
+                versaoMissoes[0] // Padrão selecionado
+        );
+        runGame(escolha);
+    }
+
+    private void lerJson(){
+        boolean sair = false;
+        while (!sair) {
+            Object[] opcoes = {"Selecionar Caminho", "Voltar"};
+            int escolha = JOptionPane.showOptionDialog(
+                    null,
+                    "Escolha uma opção:",
+                    "Carregar Missão",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    opcoes,
+                    opcoes[0]
+            );
+
+            if (escolha == 1) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Voltando ao menu anterior.",
+                        "Ação Cancelada",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                sair = true;
+            } else if (escolha == 0) {
+                String caminhoJson = JOptionPane.showInputDialog(
+                        null,
+                        "Insira o caminho do arquivo JSON:",
+                        "Carregar Missão",
+                        JOptionPane.PLAIN_MESSAGE
+                );
+
+                if (caminhoJson != null && !caminhoJson.isEmpty()) {
+                    try {
+                        DataTreating.ReadMissoes(caminhoJson);
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Missão carregada com sucesso!\n",
+                                "Sucesso",
+                                JOptionPane.INFORMATION_MESSAGE
+                        );
+                        sair = true;
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Erro ao carregar o arquivo JSON: " + e.getMessage(),
+                                "Erro",
+                                JOptionPane.ERROR_MESSAGE
+                        );
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Nenhum caminho foi inserido.",
+                            "Ação Cancelada",
+                            JOptionPane.WARNING_MESSAGE
+                    );
+                }
+            }else {
+                sair = true;
+            }
+        }
+    }
+
+    private void teste(){
+        Sala sala1 = new Sala("porcas", false, false);
+        Sala sala2 = new Sala("estg", false, false);
+        Sala sala3 = new Sala("feup", false, false);
+        Sala sala4 = new Sala("um", false, false);
+        GraphNetwork<Sala> g1 = new GraphNetwork<>();
+        g1.addVertex(sala1);
+        g1.addVertex(sala2);
+        g1.addEdge(sala1, sala2, 1);
+        Edificio edificio1 = new Edificio(g1);
+        GraphNetwork<Sala> g2 = new GraphNetwork<>();
+        g2.addVertex(sala1);
+        g2.addVertex(sala3);
+        g2.addEdge(sala1, sala3, 1);
+        Edificio edificio2 = new Edificio(g2);
+        GraphNetwork<Sala> g3 = new GraphNetwork<>();
+        g2.addVertex(sala2);
+        g2.addVertex(sala4);
+        g2.addEdge(sala2, sala4, 1);
+        Edificio edificio3 = new Edificio(g3);
+
+
+        Missao missao1 = new Missao("String cod_missao", 1, edificio1, new Alvo(sala1,"Mini")) ;
+        Missao missao2 = new Missao("y cod_missao", 2, edificio1, new Alvo(sala1,"Sagres"));
+        Missao missao3 = new Missao("String p", 3, edificio1, new Alvo(sala1,"Leitao assado"));
+        DataTreating.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        Missao funcionall = DataTreating.getMissaoByVersion(2);
+
+        missao1.setToCruz(new ToCruz("p1", 200));
+        missao2.setToCruz(new ToCruz("p2", 10));
+        missao3.setToCruz(new ToCruz("MrPizza", 20));
+        funcionall.setToCruz(new ToCruz("TODelas", 2));
+
+
+        missao1.addSalaCaminhoTo(sala1);
+        missao1.addSalaCaminhoTo(sala2);
+        missao1.addSalaCaminhoTo(sala1);
+
+        missao2.addSalaCaminhoTo(sala4);
+        missao2.addSalaCaminhoTo(sala2);
+        missao2.addSalaCaminhoTo(sala1);
+
+        missao3.addSalaCaminhoTo(sala4);
+        missao3.addSalaCaminhoTo(sala2);
+        missao3.addSalaCaminhoTo(sala3);
+
+        funcionall.addSalaCaminhoTo(sala4);
+        funcionall.addSalaCaminhoTo(sala1);
+        funcionall.addSalaCaminhoTo(sala3);
+        // Create some Relatorio instances
+        Relatorio relatorio1 = new Relatorio(missao1);
+        Relatorio relatorio2 = new Relatorio(missao2);
+        Relatorio relatorio3 = new Relatorio(missao3);
+        Relatorio relatorio4 = new Relatorio(funcionall);
+
+
+        try {
+            DataTreating.addRelatorio(relatorio1);
+            DataTreating.addRelatorio(relatorio2);
+            DataTreating.addRelatorio(relatorio3);
+            DataTreating.addRelatorio(relatorio4);
+
+        } catch (NullPointerException e) {
+            System.err.println(e.getMessage());
+        }
     }
 
     public static void main(String[] args) {

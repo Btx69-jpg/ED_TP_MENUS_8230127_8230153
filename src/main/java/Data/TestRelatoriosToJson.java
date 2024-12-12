@@ -40,7 +40,7 @@ public class TestRelatoriosToJson {
         Missao missao1 = new Missao("String cod_missao", 1, edificio1, new Alvo(sala1,"Mini")) ;
         Missao missao2 = new Missao("y cod_missao", 2, edificio1, new Alvo(sala1,"Sagres"));
         Missao missao3 = new Missao("String p", 3, edificio1, new Alvo(sala1,"Leitao assado"));
-         DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
         Missao funcionall = DataTreating.getMissaoByVersion(1);
 
         missao1.setToCruz(new ToCruz("p1", 200));
