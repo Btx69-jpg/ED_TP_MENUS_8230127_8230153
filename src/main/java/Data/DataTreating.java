@@ -16,15 +16,21 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
 
 
-public class Json {
+public class DataTreating {
 
     private static OrderedListADT<Missao> missoes;
     private static Relatorios relatorios;
 
-    public static Missao ReadMissao(String filePath) {
+    public static Missao getMissaoByVersion(int Version) {
+        for (Missao missao : missoes) {
+            if (missao.getVersion() == Version) {
+                return missao;
+            }
+        }
+    }
+    public static void ReadMissao(String filePath) {
         JSONParser jsonParser = new JSONParser();
         int bothFind = 0;
 
@@ -134,7 +140,7 @@ public class Json {
 
             // Adiciona o alvo
             Sala salaAlvo = findSala(salasArray, alvoDivisao);
-            return new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo));
+            missoes .add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
 
 
         } catch (IOException e) {
