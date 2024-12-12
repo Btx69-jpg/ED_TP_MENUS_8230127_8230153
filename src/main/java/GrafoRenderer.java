@@ -21,19 +21,11 @@ public class GrafoRenderer extends JPanel {
     private Point[] coordenadas;
     private LinearLinkedUnorderedList<Sala> vertices;
     private LinearLinkedUnorderedList<Point[]> linhasDesenhadas;
-    private JLabel inimigoIcon;
-    private JLabel medkitIcon;
-    private JLabel coleteIcon;
-
 
     public GrafoRenderer(Missao missao, boolean organizar) {
         this.missao = missao;
         this.random = new Random();
         this.linhasDesenhadas = new LinearLinkedUnorderedList<>();
-
-        inimigoIcon = new JLabel(new ImageIcon("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Inimigos.jpeg"));
-        medkitIcon = new JLabel(new ImageIcon("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\MedKit.jpeg"));
-        coleteIcon = new JLabel(new ImageIcon("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\imagens\\Colete.jpeg"));
 
         grafo = missao.getEdificio().getSalas();
         if (organizar) {
@@ -83,7 +75,7 @@ public class GrafoRenderer extends JPanel {
 
                 g2d.drawLine(origemBorda.x, origemBorda.y, pontoIntermediario.x, pontoIntermediario.y);
                 g2d.drawLine(pontoIntermediario.x, pontoIntermediario.y, destinoBorda.x, destinoBorda.y);
-
+                g2d.setColor(Color.BLACK);
                 linhasDesenhadas.addToRear(new Point[]{origemBorda, destinoBorda});
             }
 
@@ -114,9 +106,8 @@ public class GrafoRenderer extends JPanel {
                     g2d.setColor(Color.BLACK);
                 }
 
-
                 g2d.drawRect(p.x - squareSize / 2, p.y - squareSize / 2, squareSize, squareSize);
-
+                g2d.setColor(Color.BLACK);
                 FontMetrics metrics = g2d.getFontMetrics();
                 int textX = p.x - metrics.stringWidth(sala.getNome()) / 2;
                 int textY = p.y + metrics.getHeight() / 4;
@@ -125,46 +116,6 @@ public class GrafoRenderer extends JPanel {
                 } else {
                     g2d.drawString(sala.getNome(), textX, textY);
                 }
-
-                /*int iconSize = 20; // Tamanho de cada ícone
-                int iconPadding = 5; // Espaçamento entre ícones
-                int startX = p.x - (squareSize / 2) + iconPadding; // Início da linha
-                int startY = p.y - (squareSize / 2) + iconPadding; // Início do topo
-
-
-                // Desenhar inimigos
-                if (sala.getInimigos() != null) {
-                    for (int i = 0; i < sala.getInimigos().size(); i++) {
-                        inimigoIcon.setBounds(startX, startY, iconSize, iconSize); // Tamanho 20x20
-                        this.add(inimigoIcon);
-
-                        startX += 25; // Incrementar para próxima posição
-                        if (startX > p.x + (squareSize / 2) - 20) {
-                            startX = p.x - (squareSize / 2) + 5;
-                            startY += 25;
-                        }
-                    }
-                }
-
-                // Desenhar itens
-                if (sala.getItens() != null) {
-                    for (Item item : sala.getItens()) {
-                        if (item.getTipo().equals(ItemType.MEDKIT)) {
-                            medkitIcon.setBounds(startX, startY, iconSize, iconSize); // Tamanho 20x20
-                            this.add(medkitIcon);
-                        } else if (item.getTipo().equals(ItemType.COLETE)) {
-                            coleteIcon.setBounds(startX, startY, iconSize, iconSize); // Tamanho 20x20
-                            this.add(coleteIcon);
-                        } else {
-                            System.err.println("Tipo de item desconhecido: " + item.getTipo());
-                        }
-                        startX += 25; // Incrementar para próxima posição
-                        if (startX > p.x + (squareSize / 2) - 20) {
-                            startX = p.x - (squareSize / 2) + 5;
-                            startY += 25;
-                        }
-                    }
-                }*/
             }
         }
     }

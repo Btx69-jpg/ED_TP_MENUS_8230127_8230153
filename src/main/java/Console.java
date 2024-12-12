@@ -444,7 +444,7 @@ public class Console {
 
     private void runGame() {
         DataTreating.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
-        missao = DataTreating.getMissaoByVersion(1);
+        missao = DataTreating.getMissaoByVersion(2);
         gamesMode = new GamesMode();
     }
 
