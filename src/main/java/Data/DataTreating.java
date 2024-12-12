@@ -3,6 +3,7 @@ package Data;
 import Edificio.Edificio;
 import Edificio.Sala;
 import Enum.ItemType;
+import Exceptions.EmptyCollectionException;
 import Graphs.GraphNetwork;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
@@ -324,6 +325,47 @@ public class DataTreating {
 
     }
 
+    public static void exportRelatoriosToJson() {
+        JSONObject jsonObject = new JSONObject();
+        Iterator<LinearLinkedOrderedList<Relatorio>> iterator = null;
+        try {
+            iterator = relatorios.IteratorListasRelatorios();
+        } catch (EmptyCollectionException e) {
+            System.out.println("Não há relatorios a importar");
+        }
+
+
+        while (iterator.hasNext()) {
+            LinearLinkedOrderedList<Relatorio> relatorioList = iterator.next();
+            JSONArray jsonArray = new JSONArray();
+
+            for (Relatorio relatorio : relatorioList) {
+                JSONObject reportJson = new JSONObject();
+                reportJson.put("cod_missao", relatorio.getMissao().getCod_missao());
+                reportJson.put("vidaFinal", relatorio.getVidaTo());
+                reportJson.put("sucesso", relatorio.getMissao().isSucess());
+                LinearLinkedUnorderedList<Sala> salas = relatorio.getCaminhoTo();
+                JSONArray salasArray = new JSONArray();
+
+                for (Sala sala : salas) {
+                    salasArray.add(sala.getNome());
+                }
+                reportJson.put("caminho", salasArray);
+
+                jsonArray.add(reportJson);
+            }
+
+            jsonObject.put(String.valueOf(relatorioList.first().getMissionVersion()), jsonArray);
+        }
+
+        try (FileWriter file = new FileWriter(".\\GameData\\RelatoriosNovos")) {
+            file.write(jsonObject.toJSONString());
+            file.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void SaveMissoes() {
         JSONArray missoesArray = new JSONArray();
 
@@ -406,7 +448,7 @@ public class DataTreating {
     public static void SaveRelatorios() {
 
         try (FileWriter arquivoJson = new FileWriter(".\\GameData\\Relatorios\\relatorios.json")) {
-            arquivoJson.write(relatorios.toJsonString());
+       //     arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }
@@ -429,21 +471,14 @@ public class DataTreating {
                     int vidaFinal = ((Long) reportJson.get("vidaFinal")).intValue();
                     boolean sucesso = (Boolean) reportJson.get("sucesso");
 
-
-
-
-                    // Assuming you have a way to create a Missao object with the given data
-                    Missao missao = new Missao(cod_missao, 1, null, null); // You need to set the correct version and other fields
-                    missao.setToCruz(new ToCruz("ToCruz", vidaFinal)); // Assuming ToCruz has a constructor that takes vidaFinal
-                    String caminhoStr = (String) reportJson.get("caminho");
-                    String[] salas = caminhoStr.split(" ");
-                    for (String salaStr : salas) {
-
-                        missao.addSalaCaminhoTo(new Sala(salaStr, false, false));
+                    Missao missao = new Missao(cod_missao, 1, null, null);
+                    missao.setToCruz(new ToCruz("ToCruz", vidaFinal));
+                    JSONArray salasCaminhoAr = (JSONArray) jsonObject.get("caminho");
+                    for (Object salasNome : salasCaminhoAr){
+                        missao.addSalaCaminhoTo(new Sala((String) salasNome, false, false));
                     }
 
                     missao.setSucess(sucesso);
-
 
                     relatorios.addRelatorio(new Relatorio(missao));
                 }
@@ -453,6 +488,11 @@ public class DataTreating {
         }
 
 
+    }
+
+    public static void loadGameData() {
+        importReportsFromJson();
+        ReadMissoes(".\\GameData\\Missoes\\missoes.json");
     }
 
     /**
