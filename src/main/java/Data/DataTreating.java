@@ -23,7 +23,6 @@ public class DataTreating {
     private static LinearLinkedOrderedList<Missao> missoes = new LinearLinkedOrderedList<>();
     private static Relatorios relatorios = new Relatorios();
 
-
     public static Missao getMissaoByVersion(int Version) {
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
