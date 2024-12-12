@@ -1,6 +1,5 @@
 import Data.DataTreating;
 import Edificio.Sala;
-import GameEngine.GamesMode;
 import GameEngine.Rounds;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
@@ -55,16 +54,59 @@ public class Console {
     private JPanel ModoDeJogo;
     private JPanel Grafo;
     private JTextArea legenda;
-    private JButton iniciarMissaoButton;
+    private JButton inserirMissaoButton;
     private JButton relatoriosButton;
+    private JPanel InserirMissao;
+    private JPanel VerRelatorios;
+    private JButton voltarButton;
+    private JButton VoltarButton;
 
 
     private Missao missao;
     private int roundsCount = 1;
     private GrafoRenderer grafoRenderer;
-    private GamesMode gamesMode;
 
     public Console() {
+
+        VoltarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(InserirMissao);
+                frame.setContentPane(EcraInicial);
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        voltarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(VerRelatorios);
+                frame.setContentPane(EcraInicial);
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        relatoriosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
+                frame.setContentPane(VerRelatorios);
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
+
+        inserirMissaoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
+                frame.setContentPane(InserirMissao);
+                frame.revalidate();
+                frame.repaint();
+            }
+        });
 
         Grafo.addMouseListener(new MouseAdapter() {
             @Override
@@ -78,7 +120,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 roundsCount = 1;
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
-                frame.setContentPane(NivelDificuldadePanel);
+                frame.setContentPane(EcraInicial);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -97,7 +139,6 @@ public class Console {
                     while (itSala.hasNext()){
                         Sala sala = itSala.next();
                         if (sala.getNome().equals(selectedSpawnPoint)){
-                            //missao.getEdificio().getSalaToCruz() = sala;
                             missao.changeSala(sala, sala.setHaveToCruz(true));
                             break;
                         }
@@ -122,6 +163,7 @@ public class Console {
                 escolhaTurnoUtilizador();
                 roundsCount++;
                 atualizarRound();
+                opcoesTurnoUtilizador(missao.getEdificio().getSalaToCruz());
 
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
@@ -242,10 +284,14 @@ public class Console {
         IniciarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
-                frame.setContentPane(ModoDeJogo);
-                frame.revalidate();
-                frame.repaint();
+                if (DataTreating.getMissoes().size() == 0){
+                    JOptionPane.showMessageDialog(EcraInicial, "Por favor insire uma missão antes de começar");
+                }else {
+                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
+                    frame.setContentPane(ModoDeJogo);
+                    frame.revalidate();
+                    frame.repaint();
+                }
             }
         });
 
@@ -271,7 +317,7 @@ public class Console {
         Iterator<Sala> entradasSaidasIterator = missao.getEdificio().getEntradas_saidas().iterator();
 
         for (int i = 0; i < entradasSaidas; i++) {
-            model.addElement(i + " - " + entradasSaidasIterator.next().getNome());
+            model.addElement(entradasSaidasIterator.next().getNome());
         }
         SpawnList.setModel(model);
         SpawnList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -395,7 +441,6 @@ public class Console {
     private void runGame() {
         DataTreating.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
         missao = DataTreating.getMissaoByVersion(2);
-        gamesMode = new GamesMode();
     }
 
     private void atualizarRound(){
