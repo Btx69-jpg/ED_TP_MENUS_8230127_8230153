@@ -13,15 +13,13 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 public class GamesMode implements GameMode {
-    private Missao missao;
+    private  Missao missao;
     private Iterator<Sala> caminhoMedKit;
     private Iterator<Sala> caminhoAlvo;
     private Iterator<Sala> caminhoSaida;
     //---------------------------------
 
-    private double currentWeigthAM;
     private ToCruz toCruz;
-    private Sala proximaSala;
     private Sala salaMedKitAM;
     private Edificio edificioAM;
     private GraphNetwork<Sala> salasGrafoAM;
@@ -33,7 +31,6 @@ public class GamesMode implements GameMode {
     public  GamesMode() {
         this.missao = null;
         this.end = false;
-        currentWeigthAM = 0;
     }
 
     @Override
@@ -44,31 +41,33 @@ public class GamesMode implements GameMode {
         Iterator<Sala> CaminhoTemp;
         Sala salaAlvo = edificioAM.getSalaAlvo();
         salaToCruzAM = EntradasSaidas.first();
-        Iterator<Sala> caminho ;
+        Iterator<Sala> caminho;
         double tempWeight1;
         double tempWeight2;
 
-        //SetUp Do spawnPoint
-        System.out.println("SetUp do SpawnPoint");
-         if (EntradasSaidas.size() > 1) {
-            for (Sala EntExit : EntradasSaidas){
-                 currentWeigthAM =  salasGrafoAM.shortestWeightWeight(EntExit, salaAlvo);
-                if (salasGrafoAM.shortestWeightWeight(salaToCruzAM, edificioAM.getSalaAlvo()) > currentWeigthAM){
+        // Setup do SpawnPoint
+        System.out.println("Setup do SpawnPoint");
+        if (EntradasSaidas.size() > 1) {
+            for (Sala EntExit : EntradasSaidas) {
+                tempWeight1 = salasGrafoAM.shortestWeightWeight(EntExit, salaAlvo);
+                if (salasGrafoAM.shortestWeightWeight(salaToCruzAM, edificioAM.getSalaAlvo()) > tempWeight1) {
                     salaToCruzAM = EntExit;
                 }
             }
-
         }
+
         System.out.println("SpawnPoint: " + salaToCruzAM.getNome());
 
-         currentWeigthAM = salasGrafoAM.shortestWeightWeight(salaToCruzAM, edificioAM.getSalaAlvo());
+
         missao.changeSala(salaToCruzAM, salaToCruzAM.setHaveToCruz(true));
         AtualizeAM();
         caminho = salasGrafoAM.iteratorShortestWeight(salaToCruzAM, salaAlvo);
 
-        //---------------------------------------------------------------------
-        //Inicio do jogo
-        System.out.println("Comecou!");
+        // Início do jogo
+        System.out.println("Começou!");
+        if (missao.getEdificio().getSalaToCruz().hasInimigos()){
+            Cenarios.Confronto(missao, true, true);
+        }
         while ( !end) {
             while ( toCruz.getVida() > 0 && caminho.hasNext()) {
                 try {
@@ -159,12 +158,6 @@ public class GamesMode implements GameMode {
                         }
                         //----------------------------------------
 
-//                        double newWeight = salasGrafoAM.shortestWeightWeight(edificioAM.getSalaToCruz(), edificioAM.getSalaAlvo());
-//
-//                        if (currentWeigthAM > newWeight) {
-//                            caminho = salasGrafoAM.iteratorShortestWeight(edificioAM.getSalaToCruz(), edificioAM.getSalaAlvo());
-//                            currentWeigthAM = newWeight;
-//                        }
                     }
                     //---------------------------------------------
                     //caso tenha 40% ou menos da vida maxima, não tenha o alvo e tenha um medkit, vai usar
@@ -179,14 +172,14 @@ public class GamesMode implements GameMode {
                 } catch (IllegalArgumentException e){
                     System.out.println(e.getMessage());
                 }
+                AtualizeAM();
 
-                if (salaToCruzAM.equals(edificioAM.getSalaAlvo())){
-                    CaminhoTemp = getCaminhoAM(salaToCruzAM, saida, salasGrafoAM);
-                    if (CaminhoTemp != null) {
-                        caminho = CaminhoTemp;
-                    }
+                 if (toCruz.getGotAlvo() && salaToCruzAM.isEntradaSaida()){
+                    missao.setSucess(true);
+                    end = true;
+                    break;
                 }
-               else  if (salaToCruzAM.equals(salaMedKitAM) && !toCruz.getGotAlvo()) {
+                else  if (salaToCruzAM.equals(salaMedKitAM) && !toCruz.getGotAlvo()) {
                     CaminhoTemp = getCaminhoAM(salaToCruzAM, salaAlvo, salasGrafoAM);
                     if (CaminhoTemp != null) {
                         caminho = CaminhoTemp;
@@ -196,18 +189,23 @@ public class GamesMode implements GameMode {
                     if (CaminhoTemp != null) {
                         caminho = CaminhoTemp;
                     }
-                } else if (toCruz.getGotAlvo() && salaToCruzAM.isEntradaSaida()){
-                    missao.setSucess(true);
-                    end = true;
-                    break;
+                }
+                if (toCruz.getGotAlvo()){
+                    CaminhoTemp = getCaminhoAM(salaToCruzAM, saida, salasGrafoAM);
+                    if (CaminhoTemp != null) {
+                        caminho = CaminhoTemp;
+                    }
                 }
 
             }
 
         }
-        //todas as decisões são tomadas automaticamente
-        //iterator the shortestpath
+        if (toCruz.getVida() > 0 ){
+            System.out.println("To concluiu a missao com sucesso, restando lhe " + toCruz.getVida() + "  pontos de vida");
+        }
+
     }
+
 
     @Override
     public void manual() {
@@ -493,12 +491,6 @@ public class GamesMode implements GameMode {
     }
 
     private Iterator<Sala> getCaminhoAM(Sala from, Sala to, GraphNetwork<Sala> salasGraph){
-        double newWeight = salasGraph.shortestWeightWeight(from, to);
-
-        if (currentWeigthAM > newWeight){
-            currentWeigthAM = newWeight;
-            return salasGraph.iteratorShortestWeight(from, to);
-        }
-        return null;
+        return salasGraph.iteratorShortestWeight(from, to);
     }
 }
