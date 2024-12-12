@@ -60,6 +60,7 @@ public class Console {
     private JPanel VerRelatorios;
     private JButton voltarButton;
     private JButton VoltarButton;
+    private JList relatorios;
 
 
     private Missao missao;
@@ -445,6 +446,11 @@ public class Console {
 
     private void atualizarRound(){
         RoundCnt.setText("Round:" + roundsCount);
+    }
+
+    private void getRelatorios(){
+        DefaultListModel<String> model = new DefaultListModel<>();
+        
     }
 
     public static void main(String[] args) {
