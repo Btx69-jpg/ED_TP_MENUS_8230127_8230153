@@ -14,5 +14,6 @@ public class TestImport {
 
         missao2 = DataTreating.getMissaoByVersion(2);
         System.out.println(missao2);
+
     }
 }

@@ -36,10 +36,29 @@ public class DataTreating {
     public static LinearLinkedOrderedList<Missao> getMissoes() {
         LinearLinkedOrderedList<Missao> missoesclone = new LinearLinkedOrderedList<>();
         for (Missao missao : missoes) {
-
                 missoesclone.add(missao.clone());
         }
         return missoesclone;
+    }
+
+    public static void addRelatorio(Relatorio relatorio){
+        relatorios.addRelatorio(relatorio);
+    }
+
+    public static void RemoveRelatorio(Relatorio relatorio){
+        relatorios.removeRelatorio(relatorio);
+    }
+
+    public static void RemoveRelatoriosByVersion(int Version){
+        relatorios.removeRelatorios(Version);
+    }
+
+    public static void GetRelatoriosByVersion(int Version) {
+        relatorios.getRelatorios(Version);
+    }
+
+    public static void GetRelatoriosByVersion(int Version) {
+        relatorios.g
     }
 
     public static Relatorios getRelatorios() {
@@ -368,9 +387,9 @@ public class DataTreating {
         }
     }
 
-    public static void WriteJson() {
+    public static void SaveRelatorios() {
 
-        try (FileWriter arquivoJson = new FileWriter("mapa.json")) {
+        try (FileWriter arquivoJson = new FileWriter(".\\resources\\mapa.json")) {
             arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());

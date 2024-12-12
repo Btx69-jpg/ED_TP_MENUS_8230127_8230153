@@ -92,6 +92,7 @@ public class TestRelatoriosToJson {
 
         // Serialize to JSON and write to file
         String jsonString = relatorios.toJsonString();
+        DataTreating.WriteJson();
         writeJsonToFile(jsonString, "relatorios.json");
 
         // Read JSON from file and deserialize
