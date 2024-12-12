@@ -285,7 +285,7 @@ public class Console {
         IniciarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (DataTreating.getMissoes().size() == 0){
+                if (DataTreating.getMissoes().isEmpty()){
                     JOptionPane.showMessageDialog(EcraInicial, "Por favor insire uma missão antes de começar");
                 }else {
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
@@ -450,7 +450,7 @@ public class Console {
 
     private void getRelatorios(){
         DefaultListModel<String> model = new DefaultListModel<>();
-        
+
     }
 
     public static void main(String[] args) {
