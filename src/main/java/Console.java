@@ -1,12 +1,11 @@
 import Data.DataTreating;
 import Edificio.Sala;
-import GameEngine.Cenarios;
 import GameEngine.GamesMode;
 import GameEngine.Rounds;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
-import Pessoa.Inimigo;
 import Pessoa.ToCruz;
+import Missao.Alvo;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,26 +43,20 @@ public class Console {
     private JButton PlayHardModeButton;
     private JList<String> SpawnList;
     private JButton AvancarJogo;
-    private JPanel JogoMapaFacil;
     private JList<String> TurnoUtilizador;
     private JButton TurnoUtillizadorButton;
     private JButton sairJogo;
     private JButton ResetButton;
     private JPanel JogoMapa;
-    private JList TurnoUtilizadorInimigo;
-    private JButton ConfirmarEscolha;
-    private JButton SairJogo;
-    private JButton ReiniciarButton;
-    private JLabel RoundsCount;
     private JLabel RoundCnt;
     private JLabel SelectSpawnPoint;
     private JButton ModoManual;
     private JButton ModoAutomatico;
     private JPanel ModoDeJogo;
     private JPanel Grafo;
-    private JPanel Graph;
     private JTextArea legenda;
-    private JTextArea Legenda;
+    private JButton iniciarMissaoButton;
+    private JButton relatoriosButton;
 
 
     private Missao missao;
@@ -84,47 +77,8 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 roundsCount = 1;
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
-                frame.setContentPane(NivelDificuldadePanel);
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
-
-        ReiniciarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                roundsCount = 1;
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
                 frame.setContentPane(NivelDificuldadePanel);
-                frame.revalidate();
-                frame.repaint();
-            }
-        });
-
-        ConfirmarEscolha.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean jogoEmAndamento = true;
-                if (!jogoEmAndamento) {
-                    JOptionPane.showMessageDialog(JogoMapa, "O jogo já terminou! Reinicie para jogar novamente.");
-                    System.exit(0);
-                }
-
-                escolhaTurnoUtilizador();
-                Cenarios.walkEnimies(missao, false, false );
-                roundsCount++;
-                atualizarRound();
-
-                if (missao.isSucess()) {
-                    JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
-                    jogoEmAndamento = false;
-                } else if (missao.getToCruz().getVida() <= 0) {
-                    JOptionPane.showMessageDialog(JogoMapa, "Game Over! To Cruz foi derrotado.");
-                    jogoEmAndamento = false;
-                }
-
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -148,7 +102,7 @@ public class Console {
                             break;
                         }
                     }
-                    opcoesTurnoUtilizador();
+                    opcoesTurnoUtilizador(missao.getEdificio().getSalaToCruz());
                     frame.revalidate();
                     frame.repaint();
                 }
@@ -160,7 +114,7 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 boolean jogoEmAndamento = true;
                 if (!jogoEmAndamento) {
-                    JOptionPane.showMessageDialog(JogoMapaFacil, "O jogo já terminou! Reinicie para jogar novamente.");
+                    JOptionPane.showMessageDialog(JogoMapa, "O jogo já terminou! Reinicie para jogar novamente.");
                     System.exit(0);
                 }
 
@@ -170,14 +124,14 @@ public class Console {
                 atualizarRound();
 
                 if (missao.isSucess()) {
-                    JOptionPane.showMessageDialog(JogoMapaFacil, "Missão concluída com sucesso!");
+                    JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
                     jogoEmAndamento = false;
                 } else if (missao.getToCruz().getVida() <= 0) {
-                    JOptionPane.showMessageDialog(JogoMapaFacil, "Game Over! To Cruz foi derrotado.");
+                    JOptionPane.showMessageDialog(JogoMapa, "Game Over! To Cruz foi derrotado.");
                     jogoEmAndamento = false;
                 }
 
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapaFacil);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
                 frame.revalidate();
                 frame.repaint();
             }
@@ -187,7 +141,7 @@ public class Console {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
-                frame.setContentPane(JogoMapaFacil);
+                frame.setContentPane(JogoMapa);
                 grafoRenderer = new GrafoRenderer(missao, true);
                 Grafo.setLayout(new BorderLayout());
                 Grafo.add(grafoRenderer, BorderLayout.CENTER);
@@ -205,8 +159,8 @@ public class Console {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeMediaPanel);
                 frame.setContentPane(JogoMapa);
                 grafoRenderer = new GrafoRenderer(missao, true);
-                Graph.setLayout(new BorderLayout());
-                Graph.add(grafoRenderer, BorderLayout.CENTER);
+                Grafo.setLayout(new BorderLayout());
+                Grafo.add(grafoRenderer, BorderLayout.CENTER);
                 grafoRenderer.repaint();
                 atualizarRound();
                 frame.revalidate();
@@ -222,22 +176,14 @@ public class Console {
                 "Inimigo e Itens: Amarelo\n" +
                 "ToCruz e Inimigos e Itens: Orange");
 
-        Legenda.setText("ToCruz: Azul \n" +
-                "Inimigo: Vermelho \n" +
-                "Itens: Verde \n" +
-                "ToCruz e Inimigos: Rosa \n" +
-                "Tocruz e Itens: Cinzento \n" +
-                "Inimigo e Itens: Amarelo\n" +
-                "ToCruz e Inimigos e Itens: Orange");
-
         PlayHardModeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeDificilPanel);
                 frame.setContentPane(JogoMapa);
                 grafoRenderer = new GrafoRenderer(missao, true);
-                Graph.setLayout(new BorderLayout());
-                Graph.add(grafoRenderer, BorderLayout.CENTER);
+                Grafo.setLayout(new BorderLayout());
+                Grafo.add(grafoRenderer, BorderLayout.CENTER);
                 grafoRenderer.repaint();
                 atualizarRound();
                 frame.revalidate();
@@ -317,12 +263,6 @@ public class Console {
             }
         });
 
-        SairJogo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0); // Fecha a aplicação
-            }
-        });
     }
 
     private void atualizarSpawnList() {
@@ -390,46 +330,56 @@ public class Console {
                     JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
                 }
                 break;
-            case "3 - Atacar":
-
-                Sala salaToCruz = missao.getEdificio().getSalaToCruz();
-                Iterator<Inimigo> itInimigos = salaToCruz.getInimigos().iterator();
-                while (itInimigos.hasNext()){
-                    Inimigo inimigo = itInimigos.next();
-                    Rounds.attack(missao.getToCruz(), inimigo);
-                    JOptionPane.showMessageDialog(TurnoUtilizador, "Atacou " + salaToCruz.getInimigos().size() + " inimigos");
-                    break;
-                }
-                JOptionPane.showMessageDialog(TurnoUtilizador, "Sala não inimigos para atacar!");
-                break;
-            case "4 - Verificar Vida":
+            case "3 - Verificar Vida":
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getToCruz().getVida());
                 break;
-            case "5 - Verificar Mochila":
+            case "4 - Verificar Mochila":
                 try{
-                    JOptionPane.showMessageDialog(TurnoUtilizador,  missao.getToCruz().getMochila());
+                    JOptionPane.showMessageDialog(TurnoUtilizador,  missao.getToCruz().getMochila().peek());
                 }catch (NullPointerException | IllegalArgumentException e){
                     JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
                 }
                 break;
-            /*case "6 - Verificar Alvo":
-                JOptionPane.showMessageDialog(TurnoUtilizador, missao.getAlvo());
+            case "5 - Apanhar Item":
+                missao.getToCruz().apanhaItem(missao.getEdificio().getSalaToCruz().getItens());
+                missao.changeToCruz(missao.getToCruz());
+                JOptionPane.showMessageDialog(TurnoUtilizador, missao.getToCruz().getMochila().peek());
                 break;
-            case "7 - Verificar Edificio":
-                JOptionPane.showMessageDialog(TurnoUtilizador, missao.getEdificio());
-                break;*/
+            case "6 - Recuperar o alvo":
+                missao.getToCruz().setGotAlvo(true);
+                missao.getEdificio().getSalaToCruz().setAlvo(false);
+                missao.changeToCruz(missao.getToCruz());
+                missao.changeSala(missao.getEdificio().getSalaToCruz(), missao.getEdificio().getSalaToCruz().setAlvo(false));
+                missao.changeAlvo(new Alvo(new Sala("ToCruz", true, false), missao.getAlvo().getTipo()));
+                JOptionPane.showMessageDialog(TurnoUtilizador, "To Cruz apanhou o alvo: " + missao.getAlvo());
+                break;
+            case "7 - Sair do edificio":
+                if(missao.getToCruz().getGotAlvo()){
+                    JOptionPane.showMessageDialog(TurnoUtilizador, "Missão Concluída");
+                }else {
+                    JOptionPane.showMessageDialog(TurnoUtilizador, "Missão Falhada");
+                }
+
+                break;
         }
     }
 
-    private void opcoesTurnoUtilizador(){
+    private void opcoesTurnoUtilizador(Sala salaToCruz){
         DefaultListModel<String> model = new DefaultListModel<>();
         model.addElement("1 - Mover");
         model.addElement("2 - Usar MedKit");
-        model.addElement("3 - Atacar");
-        model.addElement("4 - Verificar Vida");
-        model.addElement("5 - Verificar Mochila");
-        model.addElement("6 - Verificar Alvo");
-        model.addElement("7 - Verificar Edificio");
+        model.addElement("3 - Verificar Vida");
+        model.addElement("4 - Verificar Mochila");
+
+        if (salaToCruz.hasItens()) {
+            model.addElement("5 - Apanhar Item");
+        }
+        if (salaToCruz.haveAlvo()) {
+            model.addElement("6 - Recuperar o alvo");
+        }
+        if (salaToCruz.isEntradaSaida()) {
+            model.addElement("7 - Sair do edificio");
+        }
         TurnoUtilizador.setModel(model);
         TurnoUtilizador.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
@@ -450,7 +400,6 @@ public class Console {
 
     private void atualizarRound(){
         RoundCnt.setText("Round:" + roundsCount);
-        RoundsCount.setText("Round:" + roundsCount);
     }
 
     public static void main(String[] args) {
