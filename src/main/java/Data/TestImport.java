@@ -1,5 +1,7 @@
 package Data;
 
+import Interfaces.OrderedListADT;
+import LinkedList.LinearLinkedOrderedList;
 import Missao.Missao;
 public class TestImport {
     public static void main(String[] args) {
@@ -9,11 +11,13 @@ public class TestImport {
        // DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
         DataTreating.ReadMissoes("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\Trabalho pratico\\ED_TP_MENUS\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\Teste2missoes.json");
         missao = DataTreating.getMissaoByVersion(1);
-        System.out.println(missao);
-        System.out.println("\n\n\n\n\n\n\n\n");
+        //System.out.println(missao);
+        //System.out.println("\n\n\n\n\n\n\n\n");
 
+        LinearLinkedOrderedList<Missao> missoes = DataTreating.getMissoes();
         missao2 = DataTreating.getMissaoByVersion(2);
-        System.out.println(missao2);
+        //System.out.println(missoes);
+        DataTreating.SaveMissoes();
 
     }
 }

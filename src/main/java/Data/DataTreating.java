@@ -33,6 +33,22 @@ public class DataTreating {
         return null;
     }
 
+    public static void removeMissaoByVersion(int Version) {
+        for (Missao missao : missoes) {
+            if (missao.getVersion() == Version) {
+                missoes.remove(missao);
+            }
+        }
+    }
+
+    public static void removeMissao(Missao missaoremove) {
+        for (Missao missao : missoes) {
+            if (missao.equals(missaoremove)) {
+                missoes.remove(missaoremove);
+            }
+        }
+    }
+
     public static LinearLinkedOrderedList<Missao> getMissoes() {
         LinearLinkedOrderedList<Missao> missoesclone = new LinearLinkedOrderedList<>();
         for (Missao missao : missoes) {
@@ -57,8 +73,8 @@ public class DataTreating {
         relatorios.getRelatorios(Version);
     }
 
-    public static void GetRelatoriosByVersion(int Version) {
-        relatorios.g
+    public static void GetAllRelatorios() {
+        relatorios.getAllRelatorios();
     }
 
     public static Relatorios getRelatorios() {
@@ -308,7 +324,7 @@ public class DataTreating {
 
     }
 
-    public static void WriteMissoesToJson(String filePath) {
+    public static void SaveMissoes() {
         JSONArray missoesArray = new JSONArray();
 
         for (Missao missao : missoes) {
@@ -378,7 +394,7 @@ public class DataTreating {
             missoesArray.add(missaoJson);
         }
 
-        try (FileWriter file = new FileWriter(filePath)) {
+        try (FileWriter file = new FileWriter(".\\missoes.json")) {
             file.write(missoesArray.toJSONString());
             System.out.println("Successfully Copied JSON Object to File...");
             System.out.println("\nJSON Object: " + missoesArray.toJSONString());
@@ -389,7 +405,7 @@ public class DataTreating {
 
     public static void SaveRelatorios() {
 
-        try (FileWriter arquivoJson = new FileWriter(".\\resources\\mapa.json")) {
+        try (FileWriter arquivoJson = new FileWriter(".\\resources\\relatorios.json")) {
             arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
