@@ -134,7 +134,7 @@ public class GamesMode implements GameMode {
                         //------------------------------------
                         //caso não tenha medKit mas tem o alvo e tem a vida a baixo dos40% decide ir para o que esta mais proximo (saida ou medkit)
                         if (toCruz.getGotAlvo()) {
-                            tempWeight2 = salasGrafoAM.shortestWeightWeight(edificioAM.getSalaToCruz(), edificioAM.getClosestExitAM());
+                            tempWeight2 = salasGrafoAM.shortestWeightWeight(edificioAM.getSalaToCruz(), edificioAM.getClosestExit(true));
 
                             if (tempWeight1 < tempWeight2) {
 
@@ -255,9 +255,7 @@ public class GamesMode implements GameMode {
             op = 0;
             System.out.println();
             toCruz = missao.getToCruz();
-            this.caminhoMedKit = missao.getEdificio().getCaminhoMedkit(false);
-            this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
-            this.caminhoSaida = missao.getEdificio().getClosestExitAM(false);
+
             Sala salaToCruz = missao.getEdificio().getSalaToCruz();
 
             int cntOpc = printOptions(salaToCruz);
@@ -274,6 +272,9 @@ public class GamesMode implements GameMode {
                 else {
                     int opcoesValidas = 1;
                     if (op == opcoesValidas++){
+                        this.caminhoMedKit = missao.getEdificio().getCaminhoMedkit(false);
+                        this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
+                        this.caminhoSaida = missao.getEdificio().getCaminhoSaida(false);
                         moverMenu(op,sc);
                     }
                      if (op == opcoesValidas){
@@ -315,7 +316,6 @@ public class GamesMode implements GameMode {
                      if (op == ++opcoesValidas){
                         System.out.println(missao.getAlvo());
                     }
-
                 }
 
             }
@@ -327,56 +327,64 @@ public class GamesMode implements GameMode {
         LinearLinkedUnorderedList<Sala> salas =missao.getEdificio().getSalas().getConnectedVertices(missao.getEdificio().getSalaToCruz());
         Sala caminhoMedkitSala = null;
         Sala caminhoAlvoSala = null;
-        Sala caminhoAlvoAlvo = null;
-        if (caminhoMedKit.hasNext()){
-            caminhoMedkitSala = caminhoMedKit.next();
+        Sala caminhoSaidaSala= null;
+        if (caminhoMedKit!= null && caminhoMedKit.hasNext()){
+            caminhoMedKit.next();
+            if (caminhoMedKit.hasNext()) {
+                caminhoMedkitSala = caminhoMedKit.next();
+            }
         }
-        if (caminhoAlvo.hasNext()) {
-             caminhoAlvoSala = caminhoAlvo.next();
+        if (caminhoAlvo != null && caminhoAlvo.hasNext()) {
+            caminhoAlvo.next();
+            if (caminhoAlvo.hasNext()) {
+                caminhoAlvoSala = caminhoAlvo.next();
+            }
         }
-        if (caminhoSaida.hasNext()) {
-            caminhoAlvoSala = caminhoSaida.next();
+        if (caminhoSaida != null && caminhoSaida.hasNext() && missao.getToCruz().getGotAlvo()) {
+            caminhoSaida.next();
+            if (caminhoSaida.hasNext()) {
+                caminhoSaidaSala = caminhoSaida.next();
+            }
         }
         op = 0;
-        while (op < 1 || op > salas.size()) {
-            int cnt = 3;
-            System.out.println("Escolha uma opção:");
-            if (caminhoMedkitSala != null) {
-                System.out.println(cnt +" - Mover para MedKit mais proximo. ");
-                cnt++;
-            }
-            if (caminhoAlvoSala != null) {
-                System.out.println(cnt + " - Mover para sala mais proxima do alvo ");
-                cnt++;
-            }
-            if ()
-            for (Sala sala : salas){
-                System.out.println(cnt + " - Mover para: " + sala.getNome());
-                cnt++;
-            }
-            System.out.println((cnt) + " - Sair do jogo ");
-            System.out.print("\nEscolha: ");
+        int cnt = printWalkOptions(caminhoMedkitSala, caminhoAlvoSala, caminhoSaidaSala,salas);
+        while (op < 1 || op > cnt) {
+
             op = sc.nextInt();
             if (op < 1 || op > salas.size() + 3){
                 System.out.println("Opção inválida");
-            }else if (op == (salas.size() + 3)) {
-                end = true;
-                break;
+            }else if (op == (cnt + 1)) {
+                return;
             }
             else {
-                if (op == 1){
-                    if (caminhoMedkitSala == null){
-                        System.out.println("Não há mais medKits no edificio! Escolha outra opção ");
+                int opcoesValidas = 1;
+                if (caminhoMedkitSala != null){
+
+                    if ( op == opcoesValidas) {
+                        Rounds.moveToCruz(missao, caminhoMedkitSala,false);
                     }
-                    Rounds.moveToCruz(missao, caminhoMedkitSala,false);
+                    opcoesValidas++;
                 }
-                if (op == 2){
-                    Rounds.moveToCruz(missao, caminhoAlvoSala, false);
+                if (caminhoAlvoSala != null) {
+
+                    if (op == opcoesValidas) {
+                        Rounds.moveToCruz(missao, caminhoAlvoSala,false);
+                        break;
+                    }
+                    opcoesValidas++;
                 }
+                if (caminhoSaidaSala != null) {
+                    if ( op == opcoesValidas) {
+                        Rounds.moveToCruz(missao, caminhoSaidaSala,false);
+                        break;
+                    }
+                    opcoesValidas++;
+                }
+
                 Iterator<Sala> salasIt = salas.iterator();
                 for (int i = 0; i < salas.size() ; i++) {
                     Sala sala = salasIt.next();
-                    if (i + 3 == op) {
+                    if (i + opcoesValidas == op) {
 
                         if (caminhoMedkitSala != sala){
                             caminhoMedKit = missao.getEdificio().getCaminhoMedkit(false);
@@ -384,12 +392,16 @@ public class GamesMode implements GameMode {
                         if (caminhoAlvoSala != sala){
                             caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
                         }
+                        if (caminhoSaidaSala != sala && missao.getToCruz().getGotAlvo()){
+                            caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
+                        }
                         Rounds.moveToCruz(missao, sala, false);
                         System.out.println("To cruz moveu se para: " + sala.getNome());
-                        return;
+                        break;
                     }
 
                 }
+
             }
         }
     }
@@ -413,7 +425,10 @@ public class GamesMode implements GameMode {
         if (!autoMode) {
             manual();
         }
-        automatic();
+        else {
+            automatic();
+        }
+
     }
 
     public int printOptions(Sala salaToCruz){
@@ -441,6 +456,31 @@ public class GamesMode implements GameMode {
         return cnt;
     }
 
+    public int printWalkOptions(Sala caminhoMedkitSala, Sala caminhoAlvoSala, Sala caminhoSaida, LinearLinkedUnorderedList<Sala> salas){
+        int cnt = 1;
+        System.out.println("Escolha uma opção:");
+        if (caminhoMedkitSala != null) {
+            System.out.println(cnt +" - Mover para MedKit mais proximo. ");
+            cnt++;
+        }
+        if (caminhoAlvoSala != null) {
+            System.out.println(cnt + " - Mover para sala mais proxima do alvo ");
+            cnt++;
+        }
+        if (caminhoSaida != null){
+            System.out.println(cnt + " - Mover para saida mais proxima ");
+            cnt++;
+        }
+        for (Sala sala : salas){
+            System.out.println(cnt + " - Mover para: " + sala.getNome());
+            cnt++;
+        }
+        System.out.println((cnt) + " - Voltar ao menu anterior ");
+
+        System.out.print("\nEscolha: ");
+        return cnt;
+    }
+
     private  void AtualizeAM() {
         toCruz = missao.getToCruz();
         edificioAM = missao.getEdificio();
@@ -448,7 +488,7 @@ public class GamesMode implements GameMode {
         salasGrafoAM = edificioAM.getSalas();
         salaToCruzAM = edificioAM.getSalaToCruz();
         if (toCruz.getGotAlvo()) {
-            saida = edificioAM.getClosestExitAM();
+            saida = edificioAM.getClosestExit(true);
         }
     }
 
