@@ -374,7 +374,7 @@ public class DataTreating {
         }
     }
 
-    public static void importRelatoriosFromJson() {
+    public static void loadRelatorios() {
         JSONParser parser = new JSONParser();
         try (FileReader reader = new FileReader(".\\GameData\\Relatorios\\Novos.json")) {
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -494,42 +494,6 @@ public class DataTreating {
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }
-    }
-
-    public static void loadRelatorios() {
-
-        JSONParser parser = new JSONParser();
-
-        try (FileReader reader = new FileReader(".\\GameData\\Relatorios\\Novos.json")) {
-            JSONObject jsonObject = (JSONObject) parser.parse(reader);
-
-            for (Object key : jsonObject.keySet()) {
-                JSONArray jsonArray = (JSONArray) jsonObject.get(key);
-
-                for (Object obj : jsonArray) {
-                    JSONObject reportJson = (JSONObject) obj;
-
-                    String cod_missao = (String) reportJson.get("cod_missao");
-                    int vidaFinal = ((Long) reportJson.get("vidaFinal")).intValue();
-                    boolean sucesso = (Boolean) reportJson.get("sucesso");
-
-                    Missao missao = new Missao(cod_missao, 1, null, null);
-                    missao.setToCruz(new ToCruz("ToCruz", vidaFinal));
-                    JSONArray salasCaminhoAr = (JSONArray) jsonObject.get("caminho");
-                    for (Object salasNome : salasCaminhoAr){
-                        missao.addSalaCaminhoTo(new Sala((String) salasNome, false, false));
-                    }
-
-                    missao.setSucess(sucesso);
-
-                    relatorios.addRelatorio(new Relatorio(missao));
-                }
-            }
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-
-
     }
 
     public static void loadGameData() {
