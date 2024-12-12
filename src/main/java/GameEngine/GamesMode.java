@@ -68,7 +68,7 @@ public class GamesMode implements GameMode {
                 salasGrafo = edificio.getSalas();
                 salaToCruz = edificio.getSalaToCruz();
                 if (toCruz.getGotAlvo()){
-                    saida = edificio.getClosestExitAM();
+                    //saida = edificio.getClosestExitAM();
                 }
 
                 //caso tenha mais que 40% da vida maxima e não tenha o alvo, constinua a andar em direção ao alvo
@@ -131,7 +131,7 @@ public class GamesMode implements GameMode {
                     }
                     //------------------------------------
                     //caso não tenha medKit mas tem o alvo e tem a vida a baixo dos40% decide ir para o que esta mais proximo (saida ou medkit)
-                     if  (toCruz.getGotAlvo()){
+                     /*if  (toCruz.getGotAlvo()){
                         tempWeight2 = salasGrafo.shortestWeightWeight( edificio.getSalaToCruz(), edificio.getClosestExitAM());
 
                         if (tempWeight1 < tempWeight2){
@@ -154,7 +154,7 @@ public class GamesMode implements GameMode {
                             Rounds.moveToCruz(missao, edificio.getClosestExitAM(), true);
                             salasGrafo = edificio.getSalas();
                         }
-                    }
+                    }*/
                     //----------------------------------------
 
                      salasGrafo = edificio.getSalas();

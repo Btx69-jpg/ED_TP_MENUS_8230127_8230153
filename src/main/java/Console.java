@@ -3,6 +3,7 @@ import Edificio.Sala;
 import GameEngine.Cenarios;
 import GameEngine.GamesMode;
 import GameEngine.Rounds;
+import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
 import Pessoa.Inimigo;
 import Pessoa.ToCruz;
@@ -141,9 +142,10 @@ public class Console {
                     Iterator<Sala> itSala = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
                     while (itSala.hasNext()){
                         Sala sala = itSala.next();
-                        if (sala.toString().equals(selectedSpawnPoint)){
+                        if (sala.getNome().equals(selectedSpawnPoint)){
                             Sala oldSala = sala;
                             sala.setHaveToCruz(true);
+                            missao.getEdificio().getSalaToCruz() = sala;
                             missao.changeSala(oldSala, sala);
                         }
                     }
@@ -330,7 +332,7 @@ public class Console {
         Iterator<Sala> entradasSaidasIterator = missao.getEdificio().getEntradas_saidas().iterator();
 
         for (int i = 0; i < entradasSaidas; i++) {
-            model.addElement(i + " - " + entradasSaidasIterator.next().toString());
+            model.addElement(i + " - " + entradasSaidasIterator.next().getNome());
         }
         SpawnList.setModel(model);
         SpawnList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -343,20 +345,40 @@ public class Console {
         }
         switch (selectedAction){
             case "1 - Mover":
-                Sala sala = missao.getEdificio().getSalaToCruz();
+                Sala salaAtual = missao.getEdificio().getSalaToCruz();
+                LinearLinkedUnorderedList<Sala> salasConectadas = new LinearLinkedUnorderedList<>();
+                Iterator<Sala> it = missao.getEdificio().getSalas().getConnectedVertices(salaAtual).iterator();
+                while (it.hasNext()) {
+                    salasConectadas.addToRear(it.next());
+                }
+                String[] nomesSalasConectadas = new String[salasConectadas.size()];
+                Iterator<Sala> salaIt = salasConectadas.iterator();
+                int index = 0;
+                while (salaIt.hasNext()) {
+                    nomesSalasConectadas[index++] = salaIt.next().getNome();
+                }
+
                 String escolha = (String) JOptionPane.showInputDialog(
                         null,
                         "Escolha a sala para a qual deseja mover:",
                         "Mover para uma Sala",
                         JOptionPane.PLAIN_MESSAGE,
                         null,
-                        missao.getEdificio().getSalas().getConnectedVertex(sala),
-                        sala // Padrão selecionado
+                        nomesSalasConectadas,
+                        nomesSalasConectadas[0] // Padrão selecionado
                 );
 
                 if (escolha != null) {
-                    Rounds.moveToCruz(missao, sala, false);
-                    JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + missao.getEdificio().getSalas().getVertex(0).getNome());
+                    salaIt = salasConectadas.iterator();
+                    Sala salaEscolhida = null;
+                    while (salaIt.hasNext()){
+                        salaEscolhida = salaIt.next();
+                        if (salaEscolhida.getNome().equals(escolha)){
+                            break;
+                        }
+                    }
+                    Rounds.moveToCruz(missao, salaEscolhida, false);
+                    JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + salaEscolhida);
                 } else {
                     JOptionPane.showMessageDialog(TurnoUtilizador, "O utilizador cancelou ou não fez uma escolha.");
                 }

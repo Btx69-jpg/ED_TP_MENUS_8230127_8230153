@@ -1,6 +1,5 @@
 import Edificio.Sala;
 import Graphs.GraphNetwork;
-import Graphs.PropriaAutoria.GraphNetworkEM;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
