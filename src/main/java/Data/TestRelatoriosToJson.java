@@ -81,40 +81,10 @@ public class TestRelatoriosToJson {
             System.err.println(e.getMessage());
         }
 
-        // Serialize to JSON and write to file
-        String jsonString = DataTreating.relatorios.toJsonString();
-    //    DataTreating.SaveRelatorios();
-        //writeJsonToFile(jsonString, "relatorios.json");
 
-        // Read JSON from file and deserialize
-        //String readJsonString = readJsonFromFile("relatorios.json");
-        //Relatorios deserializedRelatorios = Relatorios.fromJsonString(readJsonString);
-
-        // Print deserialized Relatorios
-        //System.out.println(deserializedRelatorios.toJsonString());
         DataTreating.SaveRelatorios();
 
     }
 
-    private static void writeJsonToFile(String jsonString, String filePath) {
-        try (FileWriter file = new FileWriter(filePath)) {
-            file.write(jsonString);
-            System.out.println("Successfully wrote JSON to the file.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private static String readJsonFromFile(String filePath) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String currentLine;
-            while ((currentLine = br.readLine()) != null) {
-                contentBuilder.append(currentLine).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contentBuilder.toString();
-    }
 }
