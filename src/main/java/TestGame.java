@@ -1,4 +1,3 @@
-import GameEngine.GameMode;
 import GameEngine.GamesMode;
 
 public class TestGame {

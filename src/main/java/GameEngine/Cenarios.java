@@ -2,13 +2,13 @@ package GameEngine;
 
 import BinaryTree.AVLPriorityTree;
 import Edificio.Edificio;
+import Edificio.Sala;
 import Exceptions.EmptyCollectionException;
-import Heaps.PriorityHeap;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
-import Pessoa.*;
-import Edificio.Sala;
 import Missao.Missao;
+import Pessoa.Inimigo;
+import Pessoa.ToCruz;
 
 import java.util.Iterator;
 import java.util.Random;

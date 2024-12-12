@@ -1,16 +1,12 @@
 package Data;
 
 
-
-
+import Edificio.Edificio;
+import Edificio.Sala;
 import Graphs.GraphNetwork;
-import Missao.*;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import Edificio.*;
+import Missao.Relatorio;
+import Missao.Alvo;
+import Missao.Missao;
 import Pessoa.ToCruz;
 
 public class TestRelatoriosToJson {
@@ -80,10 +76,9 @@ public class TestRelatoriosToJson {
 //        } catch (NullPointerException e) {
 //            System.err.println(e.getMessage());
 //        }
-
-
-        DataTreating.importReportsFromJson();
-        DataTreating.exportRelatoriosToJson();
+//
+//        DataTreating.exportRelatoriosToJson();
+        DataTreating.importRelatoriosFromJson();
         System.out.println(DataTreating.relatorios);
 
     }
