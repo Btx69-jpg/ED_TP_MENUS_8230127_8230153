@@ -6,6 +6,7 @@ import Enum.ItemType;
 import Graphs.GraphNetwork;
 import Interfaces.OrderedListADT;
 import Item.Item;
+import LinkedList.LinearLinkedOrderedList;
 import Missao.*;
 import Pessoa.Inimigo;
 import org.json.simple.JSONArray;
@@ -19,11 +20,20 @@ import java.io.IOException;
 
 
 public class DataTreating {
+    private static LinearLinkedOrderedList<Missao> missoes = new LinearLinkedOrderedList<>();
+    private static Relatorios relatorios = new Relatorios();
 
-    private static OrderedListADT<Missao> missoes;
-    private static Relatorios relatorios;
 
     public static Missao getMissaoByVersion(int Version) {
+        for (Missao missao : missoes) {
+            if (missao.getVersion() == Version) {
+                return missao;
+            }
+        }
+        return null;
+    }
+
+    public static Missao getMissoes(int Version) {
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
                 return missao;
@@ -141,7 +151,7 @@ public class DataTreating {
 
             // Adiciona o alvo
             Sala salaAlvo = findSala(salasArray, alvoDivisao);
-            missoes .add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
+            missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
 
 
         } catch (IOException e) {
