@@ -70,57 +70,21 @@ public class TestRelatoriosToJson {
         Relatorio relatorio3 = new Relatorio(missao3);
         Relatorio relatorio4 = new Relatorio(funcionall);
 
-        // Create a Relatorios instance
-        Relatorios relatorios = new Relatorios();
-
-        // Add Relatorio instances to the Relatorios
-        try {
-            relatorios.addRelatorio(relatorio1);
-            relatorios.addRelatorio(relatorio2);
-            relatorios.addRelatorio(relatorio3);
-            relatorios.addRelatorio(relatorio4);
-        } catch (NullPointerException e) {
-            System.err.println(e.getMessage());
-        }
 
         try {
-            relatorios.removeRelatorios(1);
+        DataTreating.addRelatorio(relatorio1);
+            DataTreating.addRelatorio(relatorio2);
+            DataTreating.addRelatorio(relatorio3);
+            DataTreating.addRelatorio(relatorio4);
 
         } catch (NullPointerException e) {
             System.err.println(e.getMessage());
         }
 
-        // Serialize to JSON and write to file
-        String jsonString = relatorios.toJsonString();
-        writeJsonToFile(jsonString, "relatorios.json");
 
-        // Read JSON from file and deserialize
-        //String readJsonString = readJsonFromFile("relatorios.json");
-        //Relatorios deserializedRelatorios = Relatorios.fromJsonString(readJsonString);
+        DataTreating.SaveRelatorios();
 
-        // Print deserialized Relatorios
-        //System.out.println(deserializedRelatorios.toJsonString());
     }
 
-    private static void writeJsonToFile(String jsonString, String filePath) {
-        try (FileWriter file = new FileWriter(filePath)) {
-            file.write(jsonString);
-            System.out.println("Successfully wrote JSON to the file.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private static String readJsonFromFile(String filePath) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String currentLine;
-            while ((currentLine = br.readLine()) != null) {
-                contentBuilder.append(currentLine).append("\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contentBuilder.toString();
-    }
 }

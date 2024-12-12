@@ -4,7 +4,6 @@ import Edificio.Edificio;
 import Edificio.Sala;
 import Enum.ItemType;
 import Graphs.GraphNetwork;
-import Interfaces.OrderedListADT;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
 import Missao.*;
@@ -17,32 +16,71 @@ import org.json.simple.parser.ParseException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 
 
 public class DataTreating {
     private static LinearLinkedOrderedList<Missao> missoes = new LinearLinkedOrderedList<>();
-    private static Relatorios relatorios = new Relatorios();
+    public static Relatorios relatorios = new Relatorios();
 
     public static Missao getMissaoByVersion(int Version) {
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
-                return missao;
+                return missao.clone();
             }
         }
         return null;
     }
 
-    public static Missao getMissoes(int Version) {
+    public static void removeMissaoByVersion(int Version) {
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
-                return missao;
+                missoes.remove(missao);
             }
         }
-        return null;
+    }
+
+    public static void removeMissao(Missao missaoremove) {
+        for (Missao missao : missoes) {
+            if (missao.equals(missaoremove)) {
+                missoes.remove(missaoremove);
+            }
+        }
+    }
+
+    public static LinearLinkedOrderedList<Missao> getMissoes() {
+        LinearLinkedOrderedList<Missao> missoesclone = new LinearLinkedOrderedList<>();
+        for (Missao missao : missoes) {
+                missoesclone.add(missao.clone());
+        }
+        return missoesclone;
+    }
+
+    public static void addRelatorio(Relatorio relatorio){
+        relatorios.addRelatorio(relatorio);
+    }
+
+    public static void RemoveRelatorio(Relatorio relatorio){
+        relatorios.removeRelatorio(relatorio);
+    }
+
+    public static void RemoveRelatoriosByVersion(int Version){
+        relatorios.removeRelatorios(Version);
+    }
+
+    public static void GetRelatoriosByVersion(int Version) {
+        relatorios.getRelatorios(Version);
+    }
+
+    public static void GetAllRelatorios() {
+        relatorios.getAllRelatorios();
+    }
+
+    public static Relatorios getRelatorios() {
+        return relatorios;
     }
     public static void ReadMissao(String filePath) {
         JSONParser jsonParser = new JSONParser();
-        int bothFind = 0;
 
         try (FileReader reader = new FileReader(filePath)) {
             // Lê o JSON como objeto
@@ -163,7 +201,6 @@ public class DataTreating {
 
     public static void ReadMissoes(String filePath) {
         JSONParser jsonParser = new JSONParser();
-        int bothFind = 0;
 
         try (FileReader reader = new FileReader(filePath)) {
             JSONArray missoesArray = (JSONArray) jsonParser.parse(reader);
@@ -286,9 +323,88 @@ public class DataTreating {
 
     }
 
-    public static void WriteJson() {
+    public static void SaveMissoes() {
+        JSONArray missoesArray = new JSONArray();
 
-        try (FileWriter arquivoJson = new FileWriter("mapa.json")) {
+        for (Missao missao : missoes) {
+            JSONObject missaoJson = new JSONObject();
+            missaoJson.put("cod-missao", missao.getCod_missao());
+            missaoJson.put("versao", missao.getVersion());
+
+            JSONObject alvoJson = new JSONObject();
+            alvoJson.put("divisao", missao.getAlvo().getLocalizacao().getNome());
+            alvoJson.put("tipo", missao.getAlvo().getTipo());
+            missaoJson.put("alvo", alvoJson);
+
+            JSONArray edificioArray = new JSONArray();
+            Iterator<Sala> itSalas = missao.getEdificio().getSalas().getVerticesIterator();
+            while (itSalas.hasNext()){
+                Sala sala = itSalas.next();
+                edificioArray.add(sala.getNome());
+            }
+            missaoJson.put("edificio", edificioArray);
+
+            JSONArray entradasSaidasArray = new JSONArray();
+            for (Sala sala : missao.getEdificio().getEntradas_saidas()) {
+                entradasSaidasArray.add(sala.getNome());
+            }
+            missaoJson.put("entradas-saidas", entradasSaidasArray);
+
+            JSONArray ligacoesArray = new JSONArray();
+            itSalas = missao.getEdificio().getSalas().getVerticesIterator();
+            while (itSalas.hasNext()) {
+                Sala sala = itSalas.next();
+                for (Sala adjacente : missao.getEdificio().getSalas().getConnectedVertices(sala)) {
+                    JSONArray ligacao = new JSONArray();
+                    ligacao.add(sala.getNome());
+                    ligacao.add(adjacente.getNome());
+                    ligacoesArray.add(ligacao);
+                }
+            }
+            missaoJson.put("ligacoes", ligacoesArray);
+
+            JSONArray itensArray = new JSONArray();
+            itSalas = missao.getEdificio().getSalas().getVerticesIterator();
+            while (itSalas.hasNext()) {
+                Sala sala = itSalas.next();
+                for (Item item : sala.getItens()) {
+                    JSONObject itemJson = new JSONObject();
+                    itemJson.put("divisao", sala.getNome());
+                    itemJson.put("pontos", item.getQuantidade());
+                    itemJson.put("tipo", item.getTipo().toString());
+                    itensArray.add(itemJson);
+                }
+            }
+            missaoJson.put("itens", itensArray);
+
+            JSONArray inimigosArray = new JSONArray();
+
+            for (Sala SalaComInimigo : missao.getEdificio().getSalaComInimigos()) {
+                for (Inimigo inimigo : SalaComInimigo.getInimigos()) {
+                    JSONObject inimigoJson = new JSONObject();
+                    inimigoJson.put("nome", inimigo.getNome());
+                    inimigoJson.put("poder", inimigo.getPoder());
+                    inimigoJson.put("divisao", SalaComInimigo.getNome());
+                    inimigosArray.add(inimigoJson);
+                }
+            }
+            missaoJson.put("inimigos", inimigosArray);
+
+            missoesArray.add(missaoJson);
+        }
+
+        try (FileWriter file = new FileWriter(".\\missoes.json")) {
+            file.write(missoesArray.toJSONString());
+            System.out.println("Successfully Copied JSON Object to File...");
+            System.out.println("\nJSON Object: " + missoesArray.toJSONString());
+        } catch (IOException e) {
+            System.err.println("Erro ao escrever o JSON: " + e.getMessage());
+        }
+    }
+
+    public static void SaveRelatorios() {
+
+        try (FileWriter arquivoJson = new FileWriter(".\\relatorios.json")) {
             arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
