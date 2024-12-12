@@ -87,110 +87,113 @@ public class DataTreating {
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
             // Lê o código da missão e a versão
-            String codMissao = (String) jsonObject.get("cod-missao");
             long versao = (long) jsonObject.get("versao");
+            if (getMissaoByVersion((int) versao) == null) {
+                String codMissao = (String) jsonObject.get("cod-missao");
 
-            // Lê o alvo
-            JSONObject alvoJson = (JSONObject) jsonObject.get("alvo");
-            String alvoDivisao = (String) alvoJson.get("divisao");
-            String alvoTipo = (String) alvoJson.get("tipo");
-
-
-            // Lê o edifício e cria os vértices do grafo
-            JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
-            Sala[] salasArray = new Sala[edificioArray.size()];
-            int index = 0;
-            GraphNetwork<Sala> salas = new GraphNetwork<>();
-
-            // Adiciona entradas e saídas
-            JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
+                // Lê o alvo
+                JSONObject alvoJson = (JSONObject) jsonObject.get("alvo");
+                String alvoDivisao = (String) alvoJson.get("divisao");
+                String alvoTipo = (String) alvoJson.get("tipo");
 
 
-            for (Object nomeSalaObj : edificioArray) {
-                String nomeSala = (String) nomeSalaObj;
-                boolean isAlvo = nomeSala.equals(alvoDivisao);
-                boolean isEntradaSaida = false;
+                // Lê o edifício e cria os vértices do grafo
+                JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
+                Sala[] salasArray = new Sala[edificioArray.size()];
+                int index = 0;
+                GraphNetwork<Sala> salas = new GraphNetwork<>();
 
-                for (Object entradaSaidaObj : entradasSaidasArray) {
-                    String nomeEntradaSaid = (String) entradaSaidaObj;
-                    if (nomeSala.equals(nomeEntradaSaid)) {
-                        isEntradaSaida = true;
-                        break;
+                // Adiciona entradas e saídas
+                JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
+
+
+                for (Object nomeSalaObj : edificioArray) {
+                    String nomeSala = (String) nomeSalaObj;
+                    boolean isAlvo = nomeSala.equals(alvoDivisao);
+                    boolean isEntradaSaida = false;
+
+                    for (Object entradaSaidaObj : entradasSaidasArray) {
+                        String nomeEntradaSaid = (String) entradaSaidaObj;
+                        if (nomeSala.equals(nomeEntradaSaid)) {
+                            isEntradaSaida = true;
+                            break;
+                        }
+                    }
+                    Sala sala = new Sala(nomeSala, isAlvo, isEntradaSaida);
+                    salasArray[index] = sala;
+                    index++;
+
+                    salas.addVertex(sala);
+                }
+
+                // Adiciona as ligações (arestas) entre as salas
+                JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
+                for (Object ligacaoObj : ligacoesArray) {
+                    JSONArray ligacao = (JSONArray) ligacaoObj;
+                    String sala1 = (String) ligacao.get(0);
+                    String sala2 = (String) ligacao.get(1);
+
+                    int pos1 = -1;
+                    int pos2 = -1;
+
+                    for (int i = 0; i < salasArray.length; i++) {
+                        if (salasArray[i].getNome().trim().equalsIgnoreCase(sala1.trim())) {
+                            pos1 = i;
+                        }
+                        if (salasArray[i].getNome().trim().equalsIgnoreCase(sala2.trim())) {
+                            pos2 = i;
+                        }
+                    }
+
+                    if (pos1 == -1 || pos2 == -1) {
+                        System.err.println("Erro ao criar ligação entre: " + sala1 + " e " + sala2);
+                        continue;
+                    }
+
+                    salas.addEdge(salasArray[pos1], salasArray[pos2]);
+                }
+
+
+                // Adiciona os itens às salas
+                JSONArray itensArray = (JSONArray) jsonObject.get("itens");
+                for (Object itemObj : itensArray) {
+                    JSONObject itemJson = (JSONObject) itemObj;
+                    String divisaoItem = (String) itemJson.get("divisao");
+                    long pontosItem = (long) itemJson.get("pontos");
+                    String tipoItem = (String) itemJson.get("tipo");
+
+                    Sala sala = findSala(salasArray, divisaoItem);
+                    if (sala != null) {
+                        ItemType itemType = ItemType.fromString(tipoItem);
+                        Item item = new Item(itemType, (int) pontosItem);
+                        sala.addItem(item);
                     }
                 }
-                Sala sala = new Sala(nomeSala, isAlvo, isEntradaSaida);
-                salasArray [index] = sala;
-                index++;
 
-                salas.addVertex(sala);
-            }
+                Edificio edificio = new Edificio(salas);
 
-            // Adiciona as ligações (arestas) entre as salas
-            JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
-            for (Object ligacaoObj : ligacoesArray) {
-                JSONArray ligacao = (JSONArray) ligacaoObj;
-                String sala1 = (String) ligacao.get(0);
-                String sala2 = (String) ligacao.get(1);
+                // Adiciona os inimigos às salas
+                JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
+                for (Object inimigoObj : inimigosArray) {
+                    JSONObject inimigoJson = (JSONObject) inimigoObj;
+                    String nomeInimigo = (String) inimigoJson.get("nome");
+                    long poderInimigo = (long) inimigoJson.get("poder");
+                    String divisaoInimigo = (String) inimigoJson.get("divisao");
 
-                int pos1 = -1;
-                int pos2 = -1;
-
-                for (int i = 0; i < salasArray.length; i++) {
-                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala1.trim())) {
-                        pos1 = i;
-                    }
-                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala2.trim())) {
-                        pos2 = i;
+                    Sala sala = findSala(salasArray, divisaoInimigo);
+                    if (sala != null) {
+                        Inimigo inimigo = new Inimigo(nomeInimigo, (int) poderInimigo);
+                        edificio.addInimigo(inimigo, sala);
                     }
                 }
 
-                if (pos1 == -1 || pos2 == -1) {
-                    System.err.println("Erro ao criar ligação entre: " + sala1 + " e " + sala2);
-                    continue;
-                }
+                // Adiciona o alvo
+                Sala salaAlvo = findSala(salasArray, alvoDivisao);
+                missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
 
-                salas.addEdge(salasArray[pos1], salasArray[pos2]);
+            }else {
+                System.out.println("Missão com esta versão já existe");
             }
-
-
-            // Adiciona os itens às salas
-            JSONArray itensArray = (JSONArray) jsonObject.get("itens");
-            for (Object itemObj : itensArray) {
-                JSONObject itemJson = (JSONObject) itemObj;
-                String divisaoItem = (String) itemJson.get("divisao");
-                long pontosItem = (long) itemJson.get("pontos");
-                String tipoItem = (String) itemJson.get("tipo");
-
-                Sala sala = findSala(salasArray, divisaoItem);
-                if (sala != null) {
-                    ItemType itemType = ItemType.fromString(tipoItem);
-                    Item item = new Item(itemType, (int) pontosItem);
-                    sala.addItem(item);
-                }
-            }
-
-            Edificio edificio = new Edificio(salas);
-
-            // Adiciona os inimigos às salas
-            JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
-            for (Object inimigoObj : inimigosArray) {
-                JSONObject inimigoJson = (JSONObject) inimigoObj;
-                String nomeInimigo = (String) inimigoJson.get("nome");
-                long poderInimigo = (long) inimigoJson.get("poder");
-                String divisaoInimigo = (String) inimigoJson.get("divisao");
-
-                Sala sala = findSala(salasArray, divisaoInimigo);
-                if (sala != null) {
-                    Inimigo inimigo = new Inimigo(nomeInimigo, (int) poderInimigo);
-                    edificio.addInimigo(inimigo,sala);
-                }
-            }
-
-            // Adiciona o alvo
-            Sala salaAlvo = findSala(salasArray, alvoDivisao);
-            missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
-
-
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo JSON: " + e.getMessage());
         } catch (ParseException e) {

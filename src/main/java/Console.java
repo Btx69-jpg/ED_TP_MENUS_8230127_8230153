@@ -455,10 +455,12 @@ public class Console {
     private void escolherMissao(){
         LinearLinkedOrderedList<Missao> missoes = DataTreating.getMissoes();
         Object[] nomeMissoes = new Object[missoes.size()];
+        int[] versoesMissoes = new int[missoes.size()];
         Iterator<Missao> missoesIt = missoes.iterator();
         int index = 0;
         while (missoesIt.hasNext()) {
-            nomeMissoes[index++] = missoesIt.next().getCod_missao();
+            nomeMissoes[index] = missao.getCod_missao() + " (Versão: " + missao.getVersion() + ")";
+            versoesMissoes[index++] = missao.getVersion();
         }
 
         int escolha = JOptionPane.showOptionDialog(
@@ -470,8 +472,11 @@ public class Console {
                 null,
                 nomeMissoes,
                 nomeMissoes[0] // Padrão selecionado
-        ); ver aqui para por a dar a versao
-        runGame(escolha);
+        );
+        if (escolha >= 0) {
+            int versaoEscolhida = versoesMissoes[escolha];
+            runGame(versaoEscolhida);
+        }
     }
 
     private void lerJson(){
