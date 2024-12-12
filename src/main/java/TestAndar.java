@@ -1,4 +1,4 @@
-import Data.Json;
+import Data.DataTreating;
 import GameEngine.Cenarios;
 import Missao.Missao;
 import Pessoa.ToCruz;
@@ -7,9 +7,9 @@ public class TestAndar {
     public static void main(String[] args) {
         Missao missao;
 
-        missao = Json.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
-
-        System.out.println("Antes de se moverem: " + missao.getEdificio().getSalaComInimigos());
+        DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        missao = DataTreating.getMissaoByVersion(1);
+                System.out.println("Antes de se moverem: " + missao.getEdificio().getSalaComInimigos());
 
         missao.setToCruz(new ToCruz("to", 45));
 
