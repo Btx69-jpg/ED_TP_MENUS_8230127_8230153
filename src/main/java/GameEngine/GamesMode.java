@@ -1,6 +1,6 @@
 package GameEngine;
 
-import Data.Json;
+import Data.DataTreating;
 import Edificio.Edificio;
 import Graphs.GraphNetwork;
 import LinkedList.LinearLinkedUnorderedList;
@@ -418,7 +418,7 @@ public class GamesMode implements GameMode {
     @Override
     public void run(boolean autoMode) {
         ToCruz toTeste = new ToCruz("teste", 1000);
-        this.missao = Json.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        this.missao = DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
         missao.setToCruz(toTeste);
         if (!autoMode) {
             manual();

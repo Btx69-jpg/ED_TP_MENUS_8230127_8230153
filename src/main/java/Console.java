@@ -1,18 +1,3 @@
-import Data.Json;
-import Edificio.Sala;
-import GameEngine.Cenarios;
-import GameEngine.Rounds;
-import Missao.Missao;
-import Pessoa.Inimigo;
-import Pessoa.ToCruz;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-
-import java.util.Iterator;
 /*
 public class Console {
 
