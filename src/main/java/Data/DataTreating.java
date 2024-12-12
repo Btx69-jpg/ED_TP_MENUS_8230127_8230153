@@ -21,7 +21,7 @@ import java.util.Iterator;
 
 public class DataTreating {
     private static LinearLinkedOrderedList<Missao> missoes = new LinearLinkedOrderedList<>();
-    private static Relatorios relatorios = new Relatorios();
+    public static Relatorios relatorios = new Relatorios();
 
 
     public static Missao getMissaoByVersion(int Version) {
@@ -405,7 +405,7 @@ public class DataTreating {
 
     public static void SaveRelatorios() {
 
-        try (FileWriter arquivoJson = new FileWriter(".\\resources\\relatorios.json")) {
+        try (FileWriter arquivoJson = new FileWriter(".\\relatorios.json")) {
             arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());

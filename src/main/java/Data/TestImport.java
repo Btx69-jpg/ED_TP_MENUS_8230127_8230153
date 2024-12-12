@@ -17,7 +17,7 @@ public class TestImport {
         LinearLinkedOrderedList<Missao> missoes = DataTreating.getMissoes();
         missao2 = DataTreating.getMissaoByVersion(2);
         //System.out.println(missoes);
-        DataTreating.SaveMissoes();
+
 
     }
 }
