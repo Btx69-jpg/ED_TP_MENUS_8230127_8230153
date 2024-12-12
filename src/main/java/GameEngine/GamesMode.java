@@ -419,7 +419,7 @@ public class GamesMode implements GameMode {
     public void run(boolean autoMode) {
         ToCruz toTeste = new ToCruz("teste", 1000);
         DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
-        this.missao = DataTreating.getMissaoByVersion(1);
+        missao = DataTreating.getMissaoByVersion(1);
         missao.setToCruz(toTeste);
         if (!autoMode) {
             manual();
