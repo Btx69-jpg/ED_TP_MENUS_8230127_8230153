@@ -21,13 +21,14 @@ public abstract class Cenarios implements Cenario {
      */
     //LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO ou adicionar verificaçõoes para ver se o inimigo é valido antes de iniciar o confronto(se tem vida)
     //falta adicionar o metodo para todos os outros andarem caso estes não morram
-    public static void Confronto(Missao missao, boolean TocruzStart, boolean autoMode) {
+    public static void Confronto(Missao missao, boolean TocruzStart, boolean autoMode) throws IllegalArgumentException{
 //      PRINT DOS ENVOLVIDOS NO CONFRONTO
         ToCruz toCruz = missao.getToCruz();
         Edificio edificio = missao.getEdificio();
         toCruz.setInConfronto(true);
         missao.changeToCruz(toCruz);
         LinearLinkedUnorderedList<Inimigo> p2 = edificio.getSalaToCruz().getInimigos();
+        LinearLinkedUnorderedList<Inimigo> temKilledEn = new LinearLinkedUnorderedList<>();
 
         if (p2 == null){
             throw new NullPointerException("Não há inimigos na sala");
@@ -70,7 +71,7 @@ public abstract class Cenarios implements Cenario {
                                 if (inimigo.getVida() <= 0) {
                                     System.out.println(inimigo.getNome() + " foi derrotado");
                                     edificio.removeInimigo(inimigo);
-                                    p2.remove(inimigo);
+                                    temKilledEn.addToRear(inimigo);
                                 }
                                 System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
                             }
@@ -116,7 +117,7 @@ public abstract class Cenarios implements Cenario {
                         if (inimigo.getVida() <= 0) {
                             System.out.println(inimigo.getNome() + " foi derrotado");
                             edificio.removeInimigo(inimigo);
-                            p2.remove(inimigo);
+                            temKilledEn.addToRear(inimigo);
                         }
                         System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
                     }
@@ -135,6 +136,12 @@ public abstract class Cenarios implements Cenario {
             }
             //Fim do ataque do TO no modo automatico---------------------------------------------------------------------------------
 
+            if (!temKilledEn.isEmpty()){
+                for (Inimigo desdEnimy : temKilledEn){
+                    p2.remove(desdEnimy);
+                }
+                temKilledEn = new LinearLinkedUnorderedList<>();
+            }
 
             //ataque do(s) inimigo(s)    -----------------------------------
             if (!p2.isEmpty()) {
@@ -158,15 +165,22 @@ public abstract class Cenarios implements Cenario {
             //movimentação dos inimigos que não estão em confronto
             walkEnimies(missao, autoMode, true);
         }
-        System.out.println("Fim do confronto Tó Cruz passou em ED!");
+        System.out.println("Fim do confronto!");
         toCruz.setInConfronto(false);
         missao.changeToCruz(toCruz);
         missao.changeEdificio(edificio);
+        if (toCruz.getVida() <= 0){
+            throw new IllegalArgumentException("\nTó Cruz foi derrotado!");
+        }
+        if (toCruz.getVida() >= 0){
+            System.out.println("\nTó Cruz venceu o confronto!");
+        }
+
         //return true;
     }
 
 //penso estar pronto e correto
-    public static void walkEnimies(Missao missao, boolean autoMode, boolean wasInConfronto) throws EmptyCollectionException {
+    public static void walkEnimies(Missao missao, boolean autoMode, boolean wasInConfronto) {
         Edificio edificio = missao.getEdificio();
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
         LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
@@ -176,7 +190,7 @@ public abstract class Cenarios implements Cenario {
         Random random = new Random();
         int cnt = 1;
         if (inimigos.isEmpty()){
-            throw new EmptyCollectionException("Não há inimigos no edifício");
+            return;
         }
         for( Sala sala : salasComInimigos){
             //impedir de movimentar os inimigos que estão em confronto

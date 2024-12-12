@@ -16,7 +16,17 @@ public class GamesMode implements GameMode {
     private Missao missao;
     private Iterator<Sala> caminhoMedKit;
     private Iterator<Sala> caminhoAlvo;
+    private Iterator<Sala> caminhoSaida;
+    //---------------------------------
+
     private double currentWeigthAM;
+    private ToCruz toCruz;
+    private Sala proximaSala;
+    private Sala salaMedKitAM;
+    private Edificio edificioAM;
+    private GraphNetwork<Sala> salasGrafoAM;
+    private Sala salaToCruzAM;
+    private Sala saida;
 
     private boolean end;
 
@@ -28,14 +38,12 @@ public class GamesMode implements GameMode {
 
     @Override
     public void automatic() {
-        Edificio edificio = missao.getEdificio();
-        ToCruz toCruz = missao.getToCruz();
-        LinearLinkedUnorderedList<Sala> EntradasSaidas = edificio.getEntradas_saidas();
-        GraphNetwork<Sala> salasGrafo = edificio.getSalas();
+        edificioAM = missao.getEdificio();
+        salasGrafoAM = edificioAM.getSalas();
+        LinearLinkedUnorderedList<Sala> EntradasSaidas = edificioAM.getEntradas_saidas();
         Iterator<Sala> CaminhoTemp;
-        Sala salaAlvo = edificio.getSalaAlvo();
-        Sala salaToCruz = EntradasSaidas.first();
-        Sala saida = null;
+        Sala salaAlvo = edificioAM.getSalaAlvo();
+        salaToCruzAM = EntradasSaidas.first();
         Iterator<Sala> caminho ;
         double tempWeight1;
         double tempWeight2;
@@ -44,136 +52,156 @@ public class GamesMode implements GameMode {
         System.out.println("SetUp do SpawnPoint");
          if (EntradasSaidas.size() > 1) {
             for (Sala EntExit : EntradasSaidas){
-                 currentWeigthAM =  salasGrafo.shortestWeightWeight(EntExit, salaAlvo);
-                if (salasGrafo.shortestWeightWeight(salaToCruz, edificio.getSalaAlvo()) > currentWeigthAM){
-                    salaToCruz = EntExit;
+                 currentWeigthAM =  salasGrafoAM.shortestWeightWeight(EntExit, salaAlvo);
+                if (salasGrafoAM.shortestWeightWeight(salaToCruzAM, edificioAM.getSalaAlvo()) > currentWeigthAM){
+                    salaToCruzAM = EntExit;
                 }
             }
 
         }
-        System.out.println("SpawnPoint: " + salaToCruz.getNome());
+        System.out.println("SpawnPoint: " + salaToCruzAM.getNome());
 
-        caminho = salasGrafo.iteratorShortestWeight(salaToCruz, salaAlvo);
-         currentWeigthAM = salasGrafo.shortestWeightWeight(salaToCruz, edificio.getSalaAlvo());
-        missao.changeSala(salaToCruz, salaToCruz.setHaveToCruz(true));
+         currentWeigthAM = salasGrafoAM.shortestWeightWeight(salaToCruzAM, edificioAM.getSalaAlvo());
+        missao.changeSala(salaToCruzAM, salaToCruzAM.setHaveToCruz(true));
+        AtualizeAM();
+        caminho = salasGrafoAM.iteratorShortestWeight(salaToCruzAM, salaAlvo);
+
         //---------------------------------------------------------------------
         //Inicio do jogo
         System.out.println("Comecou!");
         while ( !end) {
             while ( toCruz.getVida() > 0 && caminho.hasNext()) {
-                toCruz = missao.getToCruz();
-                Sala proximaSala;
-                Sala salaMedKit = edificio.getMedKitProx(true);
-                edificio = missao.getEdificio();
-                salasGrafo = edificio.getSalas();
-                salaToCruz = edificio.getSalaToCruz();
-                if (toCruz.getGotAlvo()){
-                    saida = edificio.getClosestExitAM();
-                }
+                try {
+                    Sala proximaSala;
 
-                //caso tenha mais que 40% da vida maxima e não tenha o alvo, constinua a andar em direção ao alvo
-                if (toCruz.getVida() > toCruz.getMaxLife() * 0.40 ){
-
-                    //continuação do caminho caso ele não tenha o alvo
-                    if (!toCruz.getGotAlvo()){
-                        CaminhoTemp = getCaminhoAM(salaToCruz, salaAlvo, salasGrafo);
-                        if (CaminhoTemp != null){
-                            caminho = CaminhoTemp;
-                        }
-                    }
-                    //------------------------------
-                    //continuação do caminho caso ele tenha o alvo
-                    else {
-                        CaminhoTemp = getCaminhoAM(salaAlvo, saida, salasGrafo);
-                        if (CaminhoTemp != null){
-                            caminho = CaminhoTemp;
-                        }
-                    }
-                    //---------------------------------
-                    caminho.next();
-                    proximaSala = caminho.next();
-                    System.out.println("To andou para: " + proximaSala.getNome());
-                    Rounds.moveToCruz(missao, proximaSala, true);
-                    salasGrafo = edificio.getSalas();
-                }
-                //---------------------------------------------
-                //caso tenha 40% ou menos da vida maxima, e tenha a mochila vazia, vai buscar o medkit dependendo se tem o alvo ou não, caso tenha, anda na direção do que estiver mais proximo(saida ou medKit)
-                 if ((toCruz.getVida() <= toCruz.getMaxLife() * 0.40 && toCruz.getMochila().isEmpty())){
-                    caminhoMedKit = edificio.getCaminhoMedkit(true);
-                    caminhoMedKit.next();
-                    proximaSala = caminhoMedKit.next();
-                    tempWeight1 = salasGrafo.shortestWeightWeight( edificio.getSalaToCruz(), salaMedKit);
-                    //caso não tenha o alvo nem medKit e tenha a vida a baixo dos40% decide ir para o que esta mais proximo
-                    if ( !toCruz.getGotAlvo()){
-                        tempWeight2 = salasGrafo.shortestWeightWeight( edificio.getSalaToCruz(), salaAlvo);
-
-                        if (tempWeight1 < tempWeight2){
-
-                            CaminhoTemp = getCaminhoAM(salaToCruz, salaMedKit, salasGrafo);
-                            if (CaminhoTemp != null){
+                    //caso tenha mais que 40% da vida maxima
+                    if (toCruz.getVida() > toCruz.getMaxLife() * 0.40) {
+                        //continuação do caminho caso ele não tenha o alvo
+                        if (!toCruz.getGotAlvo()) {
+                            CaminhoTemp = getCaminhoAM(salaToCruzAM, salaAlvo, salasGrafoAM);
+                            if (CaminhoTemp != null) {
                                 caminho = CaminhoTemp;
                             }
-                            System.out.println("To andou para: " + proximaSala.getNome());
-                            Rounds.moveToCruz(missao, proximaSala, true);
-                            salasGrafo = edificio.getSalas();
                         }
+                        //------------------------------
+                        //continuação do caminho caso ele tenha o alvo
                         else {
-
-                            CaminhoTemp = getCaminhoAM(proximaSala, salaAlvo, salasGrafo);
-                            if (CaminhoTemp != null){
+                            CaminhoTemp = getCaminhoAM(salaToCruzAM, saida, salasGrafoAM);
+                            if (CaminhoTemp != null) {
                                 caminho = CaminhoTemp;
                             }
-                            caminho.next();
-                            System.out.println("To andou para: " + proximaSala.getNome());
-                            Rounds.moveToCruz(missao, caminho.next(), true);
-                            salasGrafo = edificio.getSalas();
                         }
+                        //---------------------------------
+                        caminho.next();
+                        proximaSala = caminho.next();
+                        System.out.println("To andou para: " + proximaSala.getNome());
+                        Rounds.moveToCruz(missao, proximaSala, true);
+                        AtualizeAM();
                     }
-                    //------------------------------------
-                    //caso não tenha medKit mas tem o alvo e tem a vida a baixo dos40% decide ir para o que esta mais proximo (saida ou medkit)
-                     if  (toCruz.getGotAlvo()){
-                        tempWeight2 = salasGrafo.shortestWeightWeight( edificio.getSalaToCruz(), edificio.getClosestExitAM());
+                    //---------------------------------------------
+                    //caso tenha 40% ou menos da vida maxima, e tenha a mochila vazia, vai buscar o medkit dependendo se tem o alvo ou não, caso tenha, anda na direção do que estiver mais proximo(saida ou medKit)
+                    else if ((toCruz.getVida() <= toCruz.getMaxLife() * 0.40 && toCruz.getMochila().isEmpty())) {
+                        caminhoMedKit = edificioAM.getCaminhoMedkit(true);
+                        caminhoMedKit.next();
+                        proximaSala = caminhoMedKit.next();
+                        tempWeight1 = salasGrafoAM.shortestWeightWeight(edificioAM.getSalaToCruz(), salaMedKitAM);
+                        //caso não tenha o alvo nem medKit e tenha a vida a baixo dos40% decide ir para o que esta mais proximo
+                        if (!toCruz.getGotAlvo()) {
+                            tempWeight2 = salasGrafoAM.shortestWeightWeight(edificioAM.getSalaToCruz(), salaAlvo);
 
-                        if (tempWeight1 < tempWeight2){
+                            if (tempWeight1 < tempWeight2) {
 
-                            CaminhoTemp = getCaminhoAM(salaToCruz, salaMedKit, salasGrafo);
-                            if (CaminhoTemp != null){
-                                caminho = CaminhoTemp;
+                                CaminhoTemp = getCaminhoAM(edificioAM.getSalaToCruz(), salaMedKitAM, salasGrafoAM);
+                                if (CaminhoTemp != null) {
+                                    caminho = CaminhoTemp;
+                                }
+                                System.out.println("To andou para: " + proximaSala.getNome());
+                                Rounds.moveToCruz(missao, proximaSala, true);
+                                AtualizeAM();
+                            } else {
+
+                                CaminhoTemp = getCaminhoAM(edificioAM.getSalaToCruz(), salaAlvo, salasGrafoAM);
+                                if (CaminhoTemp != null) {
+                                    caminho = CaminhoTemp;
+                                }
+                                caminho.next();
+                                Sala tempSala =  caminho.next();
+                                System.out.println("To andou para: " + tempSala.getNome());
+                                Rounds.moveToCruz(missao, tempSala, true);
+                                AtualizeAM();
                             }
-                            System.out.println("To andou para: " + proximaSala.getNome());
-                            Rounds.moveToCruz(missao, proximaSala, true);
-                            salasGrafo = edificio.getSalas();
                         }
+                        //------------------------------------
+                        //caso não tenha medKit mas tem o alvo e tem a vida a baixo dos40% decide ir para o que esta mais proximo (saida ou medkit)
+                        if (toCruz.getGotAlvo()) {
+                            tempWeight2 = salasGrafoAM.shortestWeightWeight(edificioAM.getSalaToCruz(), edificioAM.getClosestExitAM());
 
-                        else {
-                            CaminhoTemp = getCaminhoAM(salaToCruz, saida, salasGrafo);
-                            if (CaminhoTemp != null){
-                                caminho = CaminhoTemp;
+                            if (tempWeight1 < tempWeight2) {
+
+                                CaminhoTemp = getCaminhoAM(edificioAM.getSalaToCruz(), salaMedKitAM, salasGrafoAM);
+                                if (CaminhoTemp != null) {
+                                    caminho = CaminhoTemp;
+                                }
+                                System.out.println("To andou para: " + proximaSala.getNome());
+                                Rounds.moveToCruz(missao, proximaSala, true);
+                                AtualizeAM();
+                            } else {
+                                CaminhoTemp = getCaminhoAM(edificioAM.getSalaToCruz(), saida, salasGrafoAM);
+                                if (CaminhoTemp != null) {
+                                    caminho = CaminhoTemp;
+                                }
+                                caminho.next();
+                                proximaSala = caminho.next();
+                                System.out.println("To andou para: " + proximaSala.getNome());
+                                Rounds.moveToCruz(missao, proximaSala, true);
+                                AtualizeAM();
                             }
-                            System.out.println("To andou para: " + proximaSala.getNome());
-                            Rounds.moveToCruz(missao, edificio.getClosestExitAM(), true);
-                            salasGrafo = edificio.getSalas();
                         }
+                        //----------------------------------------
+
+//                        double newWeight = salasGrafoAM.shortestWeightWeight(edificioAM.getSalaToCruz(), edificioAM.getSalaAlvo());
+//
+//                        if (currentWeigthAM > newWeight) {
+//                            caminho = salasGrafoAM.iteratorShortestWeight(edificioAM.getSalaToCruz(), edificioAM.getSalaAlvo());
+//                            currentWeigthAM = newWeight;
+//                        }
                     }
-                    //----------------------------------------
+                    //---------------------------------------------
+                    //caso tenha 40% ou menos da vida maxima, não tenha o alvo e tenha um medkit, vai usar
+                    else if ((toCruz.getVida() <= toCruz.getMaxLife() * 0.40 && !toCruz.getMochila().isEmpty())) {
+                        Rounds.useMedkit(missao, true, false);
+                        AtualizeAM();
+                    }
+                    if (missao.getToCruz().getVida() <= 0) {
+                        end = true;
+                        break;
+                    }
+                } catch (IllegalArgumentException e){
+                    System.out.println(e.getMessage());
+                }
 
-                     salasGrafo = edificio.getSalas();
-                    double newWeight = salasGrafo.shortestWeightWeight(edificio.getSalaToCruz(), edificio.getSalaAlvo());
-
-                    if (currentWeigthAM > newWeight){
-                        caminho = salasGrafo.iteratorShortestWeight(edificio.getSalaToCruz(), edificio.getSalaAlvo());
-                        currentWeigthAM = newWeight;
+                if (salaToCruzAM.equals(edificioAM.getSalaAlvo())){
+                    CaminhoTemp = getCaminhoAM(salaToCruzAM, saida, salasGrafoAM);
+                    if (CaminhoTemp != null) {
+                        caminho = CaminhoTemp;
                     }
                 }
-                //---------------------------------------------
-                //caso tenha 40% ou menos da vida maxima, não tenha o alvo e tenha um medkit, vai usar
-                 if ((toCruz.getVida() <= toCruz.getMaxLife() * 0.40 && !toCruz.getMochila().isEmpty())){
-                    Rounds.useMedkit(missao, true, false);
-                }
-                if (missao.getToCruz().getVida() <= 0){
+               else  if (salaToCruzAM.equals(salaMedKitAM) && !toCruz.getGotAlvo()) {
+                    CaminhoTemp = getCaminhoAM(salaToCruzAM, salaAlvo, salasGrafoAM);
+                    if (CaminhoTemp != null) {
+                        caminho = CaminhoTemp;
+                    }
+                } else if (salaToCruzAM.equals(salaMedKitAM) && toCruz.getGotAlvo()){
+                    CaminhoTemp = getCaminhoAM(salaToCruzAM, saida, salasGrafoAM);
+                    if (CaminhoTemp != null) {
+                        caminho = CaminhoTemp;
+                    }
+                } else if (toCruz.getGotAlvo() && salaToCruzAM.isEntradaSaida()){
+                    missao.setSucess(true);
                     end = true;
                     break;
                 }
+
             }
 
         }
@@ -208,25 +236,28 @@ public class GamesMode implements GameMode {
             else {
                 entradasSaidasIterator = missao.getEdificio().getEntradas_saidas().iterator();
                 for (int i = 1; i < entradasSaidas + 1; i++) {
+                    Sala sala = entradasSaidasIterator.next();
                     if (i == op) {
-                        Sala sala = entradasSaidasIterator.next();
 
                         missao.changeSala(sala, sala.setHaveToCruz(true));
                         break;
                     }
-                    entradasSaidasIterator.next();
+
                 }
             }
 
         }
         //-------------------------------------- fim do setup do spawn point-------------------------------------------
-
+        if (missao.getEdificio().getSalaToCruz().hasInimigos()){
+            Cenarios.Confronto(missao, true, false);
+        }
         while (toCruz.getVida() > 0 && !end) {
             op = 0;
             System.out.println();
             toCruz = missao.getToCruz();
             this.caminhoMedKit = missao.getEdificio().getCaminhoMedkit(false);
             this.caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
+            this.caminhoSaida = missao.getEdificio().getClosestExitAM(false);
             Sala salaToCruz = missao.getEdificio().getSalaToCruz();
 
             int cntOpc = printOptions(salaToCruz);
@@ -294,19 +325,36 @@ public class GamesMode implements GameMode {
 
     private void moverMenu(int op, Scanner sc){
         LinearLinkedUnorderedList<Sala> salas =missao.getEdificio().getSalas().getConnectedVertices(missao.getEdificio().getSalaToCruz());
-        Sala caminhoMedkitSala = caminhoMedKit.next();
-        Sala caminhoAlvoSala = caminhoAlvo.next();
+        Sala caminhoMedkitSala = null;
+        Sala caminhoAlvoSala = null;
+        Sala caminhoAlvoAlvo = null;
+        if (caminhoMedKit.hasNext()){
+            caminhoMedkitSala = caminhoMedKit.next();
+        }
+        if (caminhoAlvo.hasNext()) {
+             caminhoAlvoSala = caminhoAlvo.next();
+        }
+        if (caminhoSaida.hasNext()) {
+            caminhoAlvoSala = caminhoSaida.next();
+        }
         op = 0;
         while (op < 1 || op > salas.size()) {
             int cnt = 3;
             System.out.println("Escolha uma opção:");
-            System.out.println( "1 - Mover para MedKit mais proximo. ");
-            System.out.println("2 - Mover para sala mais proxima do alvo ");
+            if (caminhoMedkitSala != null) {
+                System.out.println(cnt +" - Mover para MedKit mais proximo. ");
+                cnt++;
+            }
+            if (caminhoAlvoSala != null) {
+                System.out.println(cnt + " - Mover para sala mais proxima do alvo ");
+                cnt++;
+            }
+            if ()
             for (Sala sala : salas){
                 System.out.println(cnt + " - Mover para: " + sala.getNome());
                 cnt++;
             }
-            System.out.println((cnt + 1) + " - Sair do jogo ");
+            System.out.println((cnt) + " - Sair do jogo ");
             System.out.print("\nEscolha: ");
             op = sc.nextInt();
             if (op < 1 || op > salas.size() + 3){
@@ -317,6 +365,9 @@ public class GamesMode implements GameMode {
             }
             else {
                 if (op == 1){
+                    if (caminhoMedkitSala == null){
+                        System.out.println("Não há mais medKits no edificio! Escolha outra opção ");
+                    }
                     Rounds.moveToCruz(missao, caminhoMedkitSala,false);
                 }
                 if (op == 2){
@@ -324,19 +375,20 @@ public class GamesMode implements GameMode {
                 }
                 Iterator<Sala> salasIt = salas.iterator();
                 for (int i = 0; i < salas.size() ; i++) {
-
+                    Sala sala = salasIt.next();
                     if (i + 3 == op) {
-                        Sala sala = salasIt.next();
+
                         if (caminhoMedkitSala != sala){
-                            caminhoMedKit = missao.getEdificio().getCaminhoMedkit(true);
+                            caminhoMedKit = missao.getEdificio().getCaminhoMedkit(false);
                         }
                         if (caminhoAlvoSala != sala){
                             caminhoAlvo = missao.getEdificio().getCaminhoAlvo(false);
                         }
                         Rounds.moveToCruz(missao, sala, false);
-                        break;
+                        System.out.println("To cruz moveu se para: " + sala.getNome());
+                        return;
                     }
-                    salasIt.next();
+
                 }
             }
         }
@@ -355,7 +407,7 @@ public class GamesMode implements GameMode {
     }
     @Override
     public void run(boolean autoMode) {
-        ToCruz toTeste = new ToCruz("teste", 30);
+        ToCruz toTeste = new ToCruz("teste", 1000);
         this.missao = Json.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
         missao.setToCruz(toTeste);
         if (!autoMode) {
@@ -387,6 +439,17 @@ public class GamesMode implements GameMode {
         System.out.print("\nEscolha: ");
 
         return cnt;
+    }
+
+    private  void AtualizeAM() {
+        toCruz = missao.getToCruz();
+        edificioAM = missao.getEdificio();
+        salaMedKitAM = edificioAM.getMedKitProx(true);
+        salasGrafoAM = edificioAM.getSalas();
+        salaToCruzAM = edificioAM.getSalaToCruz();
+        if (toCruz.getGotAlvo()) {
+            saida = edificioAM.getClosestExitAM();
+        }
     }
 
     private Iterator<Sala> getCaminhoAM(Sala from, Sala to, GraphNetwork<Sala> salasGraph){
