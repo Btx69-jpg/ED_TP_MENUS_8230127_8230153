@@ -139,14 +139,13 @@ public class Console {
                 }else {
                     JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(SpawnSelecter);
                     frame.setContentPane(NivelDificuldadePanel);
-                    Iterator<Sala> itSala = missao.getEdificio().getSalas().iteratorBFS(missao.getEdificio().getSalas().getVertex(0));
+                    Iterator<Sala> itSala = missao.getEdificio().getEntradas_saidas().iterator();
                     while (itSala.hasNext()){
                         Sala sala = itSala.next();
                         if (sala.getNome().equals(selectedSpawnPoint)){
-                            Sala oldSala = sala;
-                            sala.setHaveToCruz(true);
                             //missao.getEdificio().getSalaToCruz() = sala;
-                            missao.changeSala(oldSala, sala);
+                            missao.changeSala(sala, sala.setHaveToCruz(true));
+                            break;
                         }
                     }
                     opcoesTurnoUtilizador();
