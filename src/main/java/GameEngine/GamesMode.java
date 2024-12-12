@@ -418,7 +418,8 @@ public class GamesMode implements GameMode {
     @Override
     public void run(boolean autoMode) {
         ToCruz toTeste = new ToCruz("teste", 1000);
-        this.missao = DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
+        this.missao = DataTreating.getMissaoByVersion(1);
         missao.setToCruz(toTeste);
         if (!autoMode) {
             manual();

@@ -1,4 +1,4 @@
-import Data.Json;
+import Data.DataTreating;
 import Edificio.Sala;
 import GameEngine.Cenarios;
 import GameEngine.GamesMode;
@@ -145,7 +145,7 @@ public class Console {
                         if (sala.getNome().equals(selectedSpawnPoint)){
                             Sala oldSala = sala;
                             sala.setHaveToCruz(true);
-                            missao.getEdificio().getSalaToCruz() = sala;
+                            //missao.getEdificio().getSalaToCruz() = sala;
                             missao.changeSala(oldSala, sala);
                         }
                     }
@@ -444,7 +444,8 @@ public class Console {
     }
 
     private void runGame() {
-        missao = Json.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        DataTreating.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
+        missao = DataTreating.getMissaoByVersion(1);
         gamesMode = new GamesMode();
     }
 

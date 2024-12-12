@@ -29,6 +29,7 @@ public class DataTreating {
                 return missao;
             }
         }
+        return null;
     }
     public static void ReadMissao(String filePath) {
         JSONParser jsonParser = new JSONParser();
@@ -140,7 +141,7 @@ public class DataTreating {
 
             // Adiciona o alvo
             Sala salaAlvo = findSala(salasArray, alvoDivisao);
-            missoes .add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
+            missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
 
 
         } catch (IOException e) {
@@ -148,7 +149,7 @@ public class DataTreating {
         } catch (ParseException e) {
             System.err.println("Erro ao parsear o JSON: " + e.getMessage());
         }
-        return null;
+
     }
 
     public static void WriteJson() {
