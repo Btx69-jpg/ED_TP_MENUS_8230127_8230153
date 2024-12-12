@@ -6,8 +6,10 @@ import Enum.ItemType;
 import Graphs.GraphNetwork;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
+import LinkedList.LinearLinkedUnorderedList;
 import Missao.*;
 import Pessoa.Inimigo;
+import Pessoa.ToCruz;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,7 +33,6 @@ public class DataTreating {
         }
         return null;
     }
-
     public static void removeMissaoByVersion(int Version) {
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
@@ -393,7 +394,7 @@ public class DataTreating {
             missoesArray.add(missaoJson);
         }
 
-        try (FileWriter file = new FileWriter(".\\missoes.json")) {
+        try (FileWriter file = new FileWriter(".\\GameData\\Missoes\\missoes.json")) {
             file.write(missoesArray.toJSONString());
             System.out.println("Successfully Copied JSON Object to File...");
             System.out.println("\nJSON Object: " + missoesArray.toJSONString());
@@ -404,11 +405,54 @@ public class DataTreating {
 
     public static void SaveRelatorios() {
 
-        try (FileWriter arquivoJson = new FileWriter(".\\relatorios.json")) {
+        try (FileWriter arquivoJson = new FileWriter(".\\GameData\\Relatorios\\relatorios.json")) {
             arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }
+    }
+
+    public static void importReportsFromJson() {
+
+        JSONParser parser = new JSONParser();
+
+        try (FileReader reader = new FileReader(".\\GameData\\Relatorios\\relatorios.json")) {
+            JSONObject jsonObject = (JSONObject) parser.parse(reader);
+
+            for (Object key : jsonObject.keySet()) {
+                JSONArray jsonArray = (JSONArray) jsonObject.get(key);
+
+                for (Object obj : jsonArray) {
+                    JSONObject reportJson = (JSONObject) obj;
+
+                    String cod_missao = (String) reportJson.get("cod_missao");
+                    int vidaFinal = ((Long) reportJson.get("vidaFinal")).intValue();
+                    boolean sucesso = (Boolean) reportJson.get("sucesso");
+
+
+
+
+                    // Assuming you have a way to create a Missao object with the given data
+                    Missao missao = new Missao(cod_missao, 1, null, null); // You need to set the correct version and other fields
+                    missao.setToCruz(new ToCruz("ToCruz", vidaFinal)); // Assuming ToCruz has a constructor that takes vidaFinal
+                    String caminhoStr = (String) reportJson.get("caminho");
+                    String[] salas = caminhoStr.split(" ");
+                    for (String salaStr : salas) {
+
+                        missao.addSalaCaminhoTo(new Sala(salaStr, false, false));
+                    }
+
+                    missao.setSucess(sucesso);
+
+
+                    relatorios.addRelatorio(new Relatorio(missao));
+                }
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     /**
