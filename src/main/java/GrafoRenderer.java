@@ -1,5 +1,5 @@
 import Edificio.Sala;
-import Graphs.PropriaAutoria.GraphNetworkEM;
+import Graphs.GraphNetwork;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
 
@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 public class GrafoRenderer extends JPanel {
 
     private Missao missao;
-    private GraphNetworkEM<Sala> grafo; // Sua classe de grafo
+    private GraphNetwork<Sala> grafo; // Sua classe de grafo
     private Random random;
 
     public GrafoRenderer(Missao missao) {
