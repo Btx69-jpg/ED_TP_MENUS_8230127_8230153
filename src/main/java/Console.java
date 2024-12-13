@@ -157,9 +157,17 @@ public class Console {
 
                 if (missao.isSucess()) {
                     JOptionPane.showMessageDialog(JogoMapa, "Missão concluída com sucesso!");
+                    missao.setSucess(true);
+                    DataTreating.addRelatorio(new Relatorio(missao));
+                    DataTreating.saveGameData();
+                    System.exit(0);
                     jogoEmAndamento = false;
                 } else if (missao.getToCruz().getVida() <= 0) {
                     JOptionPane.showMessageDialog(JogoMapa, "Game Over! To Cruz foi derrotado.");
+                    missao.setSucess(false);
+                    DataTreating.addRelatorio(new Relatorio(missao));
+                    DataTreating.saveGameData();
+                    System.exit(0);
                     jogoEmAndamento = false;
                 }
 
@@ -360,7 +368,6 @@ public class Console {
                         }
                     }
                     moveToCruz(missao, salaEscolhida, false);
-                    confronto(missao, false, false);
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + salaEscolhida);
                 } else {
                     JOptionPane.showMessageDialog(TurnoUtilizador, "O utilizador cancelou ou não fez uma escolha.");
@@ -609,6 +616,14 @@ public class Console {
                             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Ataque", JOptionPane.ERROR_MESSAGE);
                         }
                     }
+                    if (!inimigos.isEmpty()) {
+                        for (Inimigo inimigo : inimigos) {
+                            attack(inimigo, toCruz);
+                        }
+                        missao.changeToCruz(toCruz);
+                        JOptionPane.showMessageDialog(null, "Vida do To Cruz: " + toCruz.getVida(), "Confronto", JOptionPane.INFORMATION_MESSAGE);
+                        TocruzStart = true;
+                    }
                 } else if (escolha == 1) {
                     useMedkit(missao,false,true);
                 } else {
@@ -631,6 +646,7 @@ public class Console {
                     for (Inimigo inimigo : inimigos) {
                         attack(inimigo, toCruz);
                     }
+                    missao.changeToCruz(toCruz);
                     JOptionPane.showMessageDialog(null, "Vida do To Cruz: " + toCruz.getVida(), "Confronto", JOptionPane.INFORMATION_MESSAGE);
                     TocruzStart = true;
                 }
@@ -652,10 +668,12 @@ public class Console {
         } else {
             JOptionPane.showMessageDialog(null, "Tó Cruz foi derrotado!", "Game Over", JOptionPane.ERROR_MESSAGE);
             missao.setSucess(false);
+            DataTreating.addRelatorio(new Relatorio(missao));
+            DataTreating.saveGameData();
+            System.exit(0);
         }
 
         toCruz.setInConfronto(false);
-        missao.changeToCruz(toCruz);
         missao.changeEdificio(edificio);
     }
 
