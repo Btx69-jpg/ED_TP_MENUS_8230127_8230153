@@ -57,15 +57,11 @@ public class Rounds implements Round {
     }
 
     public static void useMedkit(Missao missao, boolean autoMode, boolean wasInConfronto) {
-        try {
             ToCruz toCruz = missao.getToCruz();
             Item kit = toCruz.usarMedKit();
             System.out.println("ToCruz usou um medkit, Curou: " + kit.getQuantidade());
             missao.changeToCruz(toCruz);
             Cenarios.walkEnimies(missao, autoMode, wasInConfronto);
-        }catch (EmptyCollectionException | NullPointerException  | IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
     }
 
 }

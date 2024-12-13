@@ -1,12 +1,17 @@
+import BinaryTree.AVLPriorityTree;
 import Data.DataTreating;
 import Edificio.Edificio;
 import Edificio.Sala;
-import GameEngine.Rounds;
-import Graphs.GraphNetwork;
+import Exceptions.ElementNotFoundException;
+import Exceptions.EmptyCollectionException;
+import GameEngine.Cenarios;
+import Enum.ItemType;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
+import Pessoa.Inimigo;
+import Pessoa.Pessoa;
 import Pessoa.ToCruz;
 import Missao.Alvo;
 import Missao.Relatorio;
@@ -15,6 +20,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Iterator;
+import java.util.Random;
 
 public class Console {
 
@@ -53,7 +59,6 @@ public class Console {
     private JList<String> TurnoUtilizador;
     private JButton TurnoUtillizadorButton;
     private JButton sairJogo;
-    private JButton ResetButton;
     private JPanel JogoMapa;
     private JLabel RoundCnt;
     private JLabel SelectSpawnPoint;
@@ -90,7 +95,6 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
                 frame.setContentPane(VerRelatorios);
-                DataTreating.GetAllRelatorios();
                 getRelatorios();
                 frame.revalidate();
                 frame.repaint();
@@ -108,17 +112,6 @@ public class Console {
             @Override
             public void mouseClicked(MouseEvent e) {
                 carregarSalas(e);
-            }
-        });
-
-        ResetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                roundsCount = 1;
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(JogoMapa);
-                frame.setContentPane(EcraInicial);
-                frame.revalidate();
-                frame.repaint();
             }
         });
 
@@ -180,10 +173,8 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeFacilPanel);
                 frame.setContentPane(JogoMapa);
-                grafoRenderer = new GrafoRenderer(missao, true);
                 Grafo.setLayout(new BorderLayout());
                 Grafo.add(grafoRenderer, BorderLayout.CENTER);
-                grafoRenderer.revalidate();
                 grafoRenderer.repaint();
                 atualizarRound();
                 frame.revalidate();
@@ -196,7 +187,6 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeMediaPanel);
                 frame.setContentPane(JogoMapa);
-                grafoRenderer = new GrafoRenderer(missao, true);
                 Grafo.setLayout(new BorderLayout());
                 Grafo.add(grafoRenderer, BorderLayout.CENTER);
                 grafoRenderer.repaint();
@@ -219,7 +209,6 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(DificuldadeDificilPanel);
                 frame.setContentPane(JogoMapa);
-                grafoRenderer = new GrafoRenderer(missao, true);
                 Grafo.setLayout(new BorderLayout());
                 Grafo.add(grafoRenderer, BorderLayout.CENTER);
                 grafoRenderer.repaint();
@@ -358,7 +347,8 @@ public class Console {
                             break;
                         }
                     }
-                    Rounds.moveToCruz(missao, salaEscolhida, false);
+                    moveToCruz(missao, salaEscolhida, false);
+                    confronto(missao, false, false);
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Moveu se para a sala" + salaEscolhida);
                 } else {
                     JOptionPane.showMessageDialog(TurnoUtilizador, "O utilizador cancelou ou não fez uma escolha.");
@@ -366,8 +356,7 @@ public class Console {
                 break;
             case "2 - Usar MedKit":
                 try{
-                    Rounds.useMedkit(missao, false, false);
-                    JOptionPane.showMessageDialog(TurnoUtilizador, "Usou MedKit");
+                    useMedkit(missao, false, false);
                 }catch (NullPointerException | IllegalArgumentException e){
                     JOptionPane.showMessageDialog(TurnoUtilizador, e.getMessage());
                 }
@@ -388,10 +377,13 @@ public class Console {
                 Sala oldSala = missao.getEdificio().getSalaToCruz();
                 Iterator<Item> itItem = missao.getEdificio().getSalaToCruz().getItens().iterator();
                 while (itItem.hasNext()){
-                    missao.getEdificio().getSalaToCruz().removeItem(itItem.next());
+                    Item item = itItem.next();
+                    if (item.getTipo().equals(ItemType.MEDKIT)) {
+                        JOptionPane.showMessageDialog(TurnoUtilizador, missao.getToCruz().getMochila().peek());
+                    }
+                    missao.getEdificio().getSalaToCruz().removeItem(item);
                 }
                 missao.changeSala(oldSala, missao.getEdificio().getSalaToCruz());
-                JOptionPane.showMessageDialog(TurnoUtilizador, missao.getToCruz().getMochila().peek());
                 break;
             case "6 - Recuperar o alvo":
                 missao.getToCruz().setGotAlvo(true);
@@ -407,7 +399,7 @@ public class Console {
                 }else {
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Missão Falhada");
                 }
-
+                DataTreating.addRelatorio(new Relatorio(missao));
                 System.exit(0);
                 break;
         }
@@ -441,13 +433,10 @@ public class Console {
         }
     }
 
-    /*private void runGame() {
-        DataTreating.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
-        missao = DataTreating.getMissaoByVersion(2);
-    }*/
-
     private void runGame(int versao) {
         missao = DataTreating.getMissaoByVersion(versao);
+        grafoRenderer = new GrafoRenderer(missao, true);
+        grafoRenderer.repaint();
     }
 
     private void atualizarRound(){
@@ -464,30 +453,34 @@ public class Console {
     }
 
     private void escolherMissao(){
-        LinearLinkedOrderedList<Missao> missoes = DataTreating.getMissoes();
-        Object[] nomeMissoes = new Object[missoes.size()];
-        int[] versoesMissoes = new int[missoes.size()];
-        Iterator<Missao> missoesIt = missoes.iterator();
-        int index = 0;
-        while (missoesIt.hasNext()) {
-            Missao missao1 = missoesIt.next();
-            nomeMissoes[index] = missao1.getCod_missao() + " (Versão: " + missao1.getVersion() + ")";
-            versoesMissoes[index++] = missao1.getVersion();
-        }
+        boolean sair = false;
+        while (!sair) {
+            LinearLinkedOrderedList<Missao> missoes = DataTreating.getMissoes();
+            Object[] nomeMissoes = new Object[missoes.size()];
+            int[] versoesMissoes = new int[missoes.size()];
+            Iterator<Missao> missoesIt = missoes.iterator();
+            int index = 0;
+            while (missoesIt.hasNext()) {
+                Missao missao1 = missoesIt.next();
+                nomeMissoes[index] = missao1.getCod_missao() + " (Versão: " + missao1.getVersion() + ")";
+                versoesMissoes[index++] = missao1.getVersion();
+            }
 
-        int escolha = JOptionPane.showOptionDialog(
-                null,
-                "Escolha a sala para a qual deseja mover:",
-                "Mover para uma Sala",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                nomeMissoes,
-                nomeMissoes[0] // Padrão selecionado
-        );
-        if (escolha >= 0) {
-            int versaoEscolhida = versoesMissoes[escolha];
-            runGame(versaoEscolhida);
+            int escolha = JOptionPane.showOptionDialog(
+                    null,
+                    "Escolha a sala para a qual deseja mover:",
+                    "Mover para uma Sala",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    nomeMissoes,
+                    nomeMissoes[0] // Padrão selecionado
+            );
+            if (escolha >= 0) {
+                int versaoEscolhida = versoesMissoes[escolha];
+                runGame(versaoEscolhida);
+                sair = true;
+            }
         }
     }
 
@@ -553,6 +546,200 @@ public class Console {
                 sair = true;
             }
         }
+    }
+
+    private void confronto(Missao missao, boolean autoMode, boolean TocruzStart) {
+        Edificio edificio = missao.getEdificio();
+        Sala salaAtual = edificio.getSalaToCruz();
+        ToCruz toCruz = missao.getToCruz();
+        toCruz.setInConfronto(true);
+        missao.changeToCruz(toCruz);
+        LinearLinkedUnorderedList<Inimigo> inimigos = salaAtual.getInimigos();
+        LinearLinkedUnorderedList<Inimigo> temKilledEn = new LinearLinkedUnorderedList<>();
+
+        boolean confrontoAtivo = true;
+
+        while (confrontoAtivo && toCruz.getVida() > 0 && !inimigos.isEmpty()) {
+            if (!autoMode) {
+                String[] opcoes = {"Atacar", "Usar MedKit"};
+                int escolha = JOptionPane.showOptionDialog(
+                        null,
+                        "Escolha uma ação:",
+                        "Confronto",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        opcoes,
+                        opcoes[0]
+                );
+
+                if (escolha == 0) {
+                    Iterator<Inimigo> inimigosIterator = inimigos.iterator();
+                    while (inimigosIterator.hasNext()) {
+                        Inimigo inimigo = inimigosIterator.next();
+                        try {
+                            attack(toCruz, inimigo);
+                            JOptionPane.showMessageDialog(null,
+                                    "Você atacou o inimigo " + inimigo.getNome() + "!\nVida restante do inimigo: " + inimigo.getVida(),
+                                    "Confronto",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            if (inimigo.getVida() <= 0) {
+                                JOptionPane.showMessageDialog(null,
+                                        inimigo.getNome() + " foi derrotado!",
+                                        "Confronto",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                edificio.removeInimigo(inimigo);
+                                temKilledEn.addToRear(inimigo);
+                            }
+                        } catch (IllegalArgumentException e) {
+                            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Ataque", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } else if (escolha == 1) {
+                    useMedkit(missao,false,true);
+                } else {
+                    confrontoAtivo = false;
+                    JOptionPane.showMessageDialog(null, "Confronto encerrado.", "Confronto", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                if (TocruzStart) {
+                    for (Inimigo inimigo : inimigos) {
+                        attack(toCruz, inimigo);
+                        if (inimigo.getVida() <= 0) {
+                            edificio.removeInimigo(inimigo);
+                            temKilledEn.addToRear(inimigo);
+                        }
+                    }
+                    TocruzStart = false;
+                }
+
+                if (!inimigos.isEmpty()) {
+                    for (Inimigo inimigo : inimigos) {
+                        attack(inimigo, toCruz);
+                    }
+                    JOptionPane.showMessageDialog(null, "Vida do To Cruz: " + toCruz.getVida(), "Confronto", JOptionPane.INFORMATION_MESSAGE);
+                    TocruzStart = true;
+                }
+            }
+
+            if (!temKilledEn.isEmpty()) {
+                for (Inimigo inimigo : temKilledEn) {
+                    inimigos.remove(inimigo);
+                }
+                temKilledEn = new LinearLinkedUnorderedList<>();
+            }
+
+            // verifica se o confronto continua
+            confrontoAtivo = !inimigos.isEmpty() && toCruz.getVida() > 0;
+        }
+
+        if (toCruz.getVida() > 0) {
+            JOptionPane.showMessageDialog(null, "Tó Cruz venceu o confronto!", "Confronto", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Tó Cruz foi derrotado!", "Game Over", JOptionPane.ERROR_MESSAGE);
+            missao.setSucess(false);
+        }
+
+        toCruz.setInConfronto(false);
+        missao.changeToCruz(toCruz);
+        missao.changeEdificio(edificio);
+    }
+
+
+    private void walkEnimies(Missao missao, boolean autoMode, boolean wasInConfronto) {
+        Edificio edificio = missao.getEdificio();
+        LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
+        LinearLinkedUnorderedList<Sala> salasComInimigos = edificio.getSalaComInimigos();
+        LinearLinkedUnorderedList<Sala> salasConnectadas;
+        AVLPriorityTree<Sala> PossiveisSalas = new AVLPriorityTree<>();
+
+        Random random = new Random();
+
+        if (inimigos.isEmpty()){
+            return;
+        }
+        for( Sala sala : salasComInimigos){
+            int cnt = 1;
+            //impedir de movimentar os inimigos que estão em confronto
+            if (sala.hasInimigos() && sala.haveToCruz()){
+                continue;
+            }
+            inimigos = sala.getInimigos();
+            salasConnectadas= edificio.getSalas().getConnectedVertices(sala);
+
+            PossiveisSalas.addElement(sala, cnt);
+            for (Sala salaConnectada : salasConnectadas){
+                //para impedir inimigos de entrarem na sala em que esta a haver um confronto
+                if (salaConnectada.hasInimigos() && salaConnectada.haveToCruz()){
+                    continue;
+                }
+                cnt++;
+                PossiveisSalas.addElement(salaConnectada, cnt);
+            }
+
+            for (Inimigo inimigo : inimigos) {
+                try {
+                    sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
+                    edificio.addInimigo(inimigo, sala);
+                }catch (ElementNotFoundException | EmptyCollectionException _){
+
+                }
+            }
+        }
+        missao.changeEdificio(edificio);
+        Sala checkConfronto = edificio.getSalaToCruz();
+        if (checkConfronto.haveToCruz() && checkConfronto.hasInimigos() && !wasInConfronto){
+            confronto(missao, autoMode,false);
+        }
+    }
+    private void moveToCruz(Missao missao, Sala to, boolean autoMode) {
+        Edificio edificio = missao.getEdificio();
+        Iterator<Sala> iterator = edificio.getSalas().iteratorBFS(to);
+        Sala sala = edificio.getSalaToCruz();
+
+        if (sala != null){
+            missao.changeSala(sala, sala.setHaveToCruz(false));
+        }
+
+        missao.changeSala(to, to.setHaveToCruz(true));
+        missao.addSalaCaminhoTo(to);
+
+        if (to.hasInimigos()){
+            confronto(missao, true, autoMode);
+        } else {
+            walkEnimies(missao, autoMode,false );
+        }
+        if (to.haveAlvo() && autoMode){
+            ToCruz toCruz = missao.getToCruz();
+            toCruz.setGotAlvo(true);
+            to.setAlvo(false);
+            missao.changeToCruz(toCruz);
+            missao.changeSala(to, to.setAlvo(false));
+            missao.changeAlvo(new Alvo(new Sala("ToCruz", true, false), missao.getAlvo().getTipo()));
+
+        }
+    }
+
+    private void useMedkit(Missao missao, boolean autoMode, boolean wasInConfronto) {
+        ToCruz toCruz = missao.getToCruz();
+        Item kit = toCruz.usarMedKit();
+        JOptionPane.showMessageDialog(TurnoUtilizador, "ToCruz usou um medkit, Curou: " + kit.getQuantidade());
+        missao.changeToCruz(toCruz);
+        Cenarios.walkEnimies(missao, autoMode, wasInConfronto);
+    }
+
+    private void attack(Pessoa atacante, Pessoa atacado) throws IllegalArgumentException{
+        if(atacante.getVida() <= 0 && atacado.getVida() <= 0){
+            throw new IllegalArgumentException("Ambos estão mortos, não podem atacar");
+        }
+        if (atacante.getVida() <= 0){
+            throw new IllegalArgumentException("O atacante não pode atacar, pois está morto");
+        }
+        if (atacado.getVida() <= 0){
+            throw new IllegalArgumentException("O alvo não pode ser atacado, pois está morto");
+        }
+
+        atacado.setVida(atacado.getVida() - atacante.getPoder());
     }
 
     public static void main(String[] args) {
