@@ -8,6 +8,7 @@ import Exceptions.EmptyCollectionException;
 import Graphs.GraphNetwork;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
+import LinkedList.LinearLinkedUnorderedList;
 import Missao.*;
 import Pessoa.Inimigo;
 import Pessoa.ToCruz;
@@ -61,7 +62,6 @@ public class DataTreating {
             throw new IllegalArgumentException("A missão não pode ser nula");
         }
 
-    public static void removeMissao(Missao missaoremove) {
         for (Missao missao : missoes) {
             if (missao.equals(missaoremove)) {
                 try {
@@ -81,7 +81,6 @@ public class DataTreating {
             throw new NullPointerException("O jogo ainda não possui missões");
         }
 
-    public static LinearLinkedOrderedList<Missao> getMissoes() {
         LinearLinkedOrderedList<Missao> missoesclone = new LinearLinkedOrderedList<>();
         for (Missao missao : missoes) {
             missoesclone.add(missao.clone());
