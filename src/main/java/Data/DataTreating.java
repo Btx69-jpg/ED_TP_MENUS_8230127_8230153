@@ -88,28 +88,22 @@ public class DataTreating {
         JSONParser jsonParser = new JSONParser();
 
         try (FileReader reader = new FileReader(filePath)) {
-            // Lê o JSON como objeto
+
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
-            // Lê o código da missão e a versão
             String codMissao = (String) jsonObject.get("cod-missao");
             long versao = (long) jsonObject.get("versao");
 
-            // Lê o alvo
             JSONObject alvoJson = (JSONObject) jsonObject.get("alvo");
             String alvoDivisao = (String) alvoJson.get("divisao");
             String alvoTipo = (String) alvoJson.get("tipo");
 
-
-            // Lê o edifício e cria os vértices do grafo
             JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
             Sala[] salasArray = new Sala[edificioArray.size()];
             int index = 0;
             GraphNetwork<Sala> salas = new GraphNetwork<>();
 
-            // Adiciona entradas e saídas
             JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
-
 
             for (Object nomeSalaObj : edificioArray) {
                 String nomeSala = (String) nomeSalaObj;
@@ -130,7 +124,6 @@ public class DataTreating {
                 salas.addVertex(sala);
             }
 
-            // Adiciona as ligações (arestas) entre as salas
             JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
             for (Object ligacaoObj : ligacoesArray) {
                 JSONArray ligacao = (JSONArray) ligacaoObj;
@@ -157,8 +150,6 @@ public class DataTreating {
                 salas.addEdge(salasArray[pos1], salasArray[pos2]);
             }
 
-
-            // Adiciona os itens às salas
             JSONArray itensArray = (JSONArray) jsonObject.get("itens");
             for (Object itemObj : itensArray) {
                 JSONObject itemJson = (JSONObject) itemObj;
@@ -176,7 +167,6 @@ public class DataTreating {
 
             Edificio edificio = new Edificio(salas);
 
-            // Adiciona os inimigos às salas
             JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
             for (Object inimigoObj : inimigosArray) {
                 JSONObject inimigoJson = (JSONObject) inimigoObj;
@@ -191,7 +181,6 @@ public class DataTreating {
                 }
             }
 
-            // Adiciona o alvo
             Sala salaAlvo = findSala(salasArray, alvoDivisao);
             missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
 
@@ -212,26 +201,21 @@ public class DataTreating {
 
             for (Object missaoObj : missoesArray) {
 
-                // Lê o JSON como objeto
                 JSONObject jsonObject = (JSONObject) missaoObj;
 
-                // Lê o código da missão e a versão
                 String codMissao = (String) jsonObject.get("cod-missao");
                 long versao = (long) jsonObject.get("versao");
 
-                // Lê o alvo
                 JSONObject alvoJson = (JSONObject) jsonObject.get("alvo");
                 String alvoDivisao = (String) alvoJson.get("divisao");
                 String alvoTipo = (String) alvoJson.get("tipo");
 
 
-                // Lê o edifício e cria os vértices do grafo
                 JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
                 Sala[] salasArray = new Sala[edificioArray.size()];
                 int index = 0;
                 GraphNetwork<Sala> salas = new GraphNetwork<>();
 
-                // Adiciona entradas e saídas
                 JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
 
 
@@ -254,7 +238,6 @@ public class DataTreating {
                     salas.addVertex(sala);
                 }
 
-                // Adiciona as ligações (arestas) entre as salas
                 JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
                 for (Object ligacaoObj : ligacoesArray) {
                     JSONArray ligacao = (JSONArray) ligacaoObj;
@@ -328,7 +311,7 @@ public class DataTreating {
 
     }
 
-    public static void exportRelatoriosToJson() {
+    public static void SaveRelatorios() {
         JSONObject jsonObject = new JSONObject();
         Iterator<LinearLinkedOrderedList<Relatorio>> iterator = null;
         try {
@@ -487,15 +470,6 @@ public class DataTreating {
         }
     }
 
-    public static void SaveRelatorios() {
-
-        try (FileWriter arquivoJson = new FileWriter(".\\GameData\\Relatorios\\relatorios.json")) {
-       //     arquivoJson.write(relatorios.toJsonString());
-        } catch (IOException e) {
-            System.err.println("Erro ao escrever o JSON: " + e.getMessage());
-        }
-    }
-
     public static void loadGameData() {
         loadRelatorios();
         ReadMissoes(".\\GameData\\Missoes\\missoes.json");
@@ -503,7 +477,7 @@ public class DataTreating {
 
     public static void saveGameData() {
         SaveRelatorios();
-        ReadMissoes(".\\GameData\\Missoes\\missoes.json");
+        SaveMissoes();
     }
 
     /**
