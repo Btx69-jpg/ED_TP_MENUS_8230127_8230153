@@ -41,8 +41,7 @@ public class GrafoRenderer extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         this.setLayout(null);
-        LinearLinkedUnorderedList<Integer> valoresVistos = new LinearLinkedUnorderedList<>();
-        boolean[][] ligaçõesDesenhadas = new boolean[grafo.size()][grafo.size()];
+
         // Desenhar Arestas
         Iterator<Sala> itArestas = vertices.iterator();
         while (itArestas.hasNext()) {
@@ -55,22 +54,8 @@ public class GrafoRenderer extends JPanel {
             while (itConexoes.hasNext()) {
                 Sala destino = itConexoes.next();
                 int destinoIndex = getVertexIndex(destino);
-
-                if (ligaçõesDesenhadas[origemIndex][destinoIndex]) {
-                    continue;
-                }
-
-                ligaçõesDesenhadas[origemIndex][destinoIndex] = true;
-                ligaçõesDesenhadas[destinoIndex][origemIndex] = true;
-
-                valoresVistos.addToRear(origemIndex);
-                if(valoresVistos.contains(origemIndex)) {
-                    continue;
-                }
-
                 int squareWidth = 70;
                 int squareHeight = 70;
-
 
                 Point origemCenter = coordenadas[origemIndex];
                 Point destinoCenter = coordenadas[destinoIndex];
