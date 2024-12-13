@@ -532,6 +532,7 @@ public class Console {
                     try {
                         caminhoJson = caminhoJson.replaceAll("^\"|\"$", "");
                         DataTreating.ReadMissao(caminhoJson);
+                        DataTreating.SaveMissoes();
                         JOptionPane.showMessageDialog(
                                 null,
                                 "Missão carregada com sucesso!\n",
