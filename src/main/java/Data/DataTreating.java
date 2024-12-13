@@ -17,6 +17,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -494,6 +495,18 @@ public class DataTreating {
     }
 
     public static void loadGameData() {
+        File diretorio = new File("GameData");
+        File diretorio2 = new File("GameData\\Relatorios");
+        File diretorio3 = new File("GameData\\Missoes");
+        if (!diretorio.exists()) {
+            diretorio.mkdir();
+        }
+        if (!diretorio2.exists()) {
+            diretorio2.mkdir();
+        }
+        if (!diretorio3.exists()) {
+            diretorio3.mkdir();
+        }
         loadRelatorios();
         ReadMissoes(".\\GameData\\Missoes\\missoes.json");
     }
