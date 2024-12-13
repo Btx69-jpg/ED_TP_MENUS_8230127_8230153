@@ -401,6 +401,7 @@ public class Console {
                     JOptionPane.showMessageDialog(TurnoUtilizador, "Missão Falhada");
                 }
 
+                System.exit(0);
                 break;
         }
     }
@@ -433,10 +434,10 @@ public class Console {
         }
     }
 
-    private void runGame() {
+    /*private void runGame() {
         DataTreating.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
         missao = DataTreating.getMissaoByVersion(2);
-    }
+    }*/
 
     private void runGame(int versao) {
         missao = DataTreating.getMissaoByVersion(versao);
@@ -462,8 +463,9 @@ public class Console {
         Iterator<Missao> missoesIt = missoes.iterator();
         int index = 0;
         while (missoesIt.hasNext()) {
-            nomeMissoes[index] = missao.getCod_missao() + " (Versão: " + missao.getVersion() + ")";
-            versoesMissoes[index++] = missao.getVersion();
+            Missao missao1 = missoesIt.next();
+            nomeMissoes[index] = missao1.getCod_missao() + " (Versão: " + missao1.getVersion() + ")";
+            versoesMissoes[index++] = missao1.getVersion();
         }
 
         int escolha = JOptionPane.showOptionDialog(
@@ -516,7 +518,7 @@ public class Console {
                 if (caminhoJson != null && !caminhoJson.isEmpty()) {
                     try {
                         caminhoJson = caminhoJson.replaceAll("^\"|\"$", "");
-                        DataTreating.ReadMissoes(caminhoJson);
+                        DataTreating.ReadMissao(caminhoJson);
                         JOptionPane.showMessageDialog(
                                 null,
                                 "Missão carregada com sucesso!\n",
