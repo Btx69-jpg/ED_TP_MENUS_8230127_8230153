@@ -72,7 +72,7 @@ public class GamesMode implements GameMode {
             while ( toCruz.getVida() > 0 && caminho.hasNext()) {
                 try {
                     Sala proximaSala;
-
+                    Thread.sleep(1000);
                     //caso tenha mais que 40% da vida maxima
                     if (toCruz.getVida() > toCruz.getMaxLife() * 0.40) {
                         //continuação do caminho caso ele não tenha o alvo
@@ -171,6 +171,8 @@ public class GamesMode implements GameMode {
                     }
                 } catch (IllegalArgumentException e){
                     System.out.println(e.getMessage());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
                 AtualizeAM();
 
