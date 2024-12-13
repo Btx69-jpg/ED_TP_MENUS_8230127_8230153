@@ -3,7 +3,7 @@ import Data.DataTreating;
 public class TestRelatoriosToJson {
     public static void main(String[] args) {
 //        // Create some Missao instances
-//        Sala sala1 = new Sala("porcas", false, false);
+//        Sala sala1 = new Sala("lala", false, false);
 //        Sala sala2 = new Sala("estg", false, false);
 //        Sala sala3 = new Sala("feup", false, false);
 //        Sala sala4 = new Sala("um", false, false);

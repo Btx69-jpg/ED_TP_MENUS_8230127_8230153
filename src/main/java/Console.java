@@ -16,6 +16,7 @@ import Pessoa.ToCruz;
 import Missao.Alvo;
 import Missao.Relatorio;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -96,7 +97,13 @@ public class Console {
             public void actionPerformed(ActionEvent e) {
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
                 frame.setContentPane(VerRelatorios);
-                getRelatorios();
+                try {
+                    getRelatorios();
+                } catch (NullPointerException | EmptyCollectionException ex) {
+                     frame.setContentPane(EcraInicial);
+                    JOptionPane.showMessageDialog(frame, "Não existem relatórios para mostrar!");
+                }
+
                 frame.revalidate();
                 frame.repaint();
             }
@@ -287,14 +294,18 @@ public class Console {
         IniciarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (DataTreating.getMissoes().isEmpty()){
+
+                try {
+                    DataTreating.getMissoes();
+                } catch (NullPointerException ex){
                     JOptionPane.showMessageDialog(EcraInicial, "Por favor insire uma missão antes de começar");
-                }else {
-                    JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
-                    frame.setContentPane(ModoDeJogo);
-                    frame.revalidate();
-                    frame.repaint();
                 }
+
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(EcraInicial);
+                frame.setContentPane(ModoDeJogo);
+                frame.revalidate();
+                frame.repaint();
+
             }
         });
 
@@ -795,7 +806,7 @@ public class Console {
     }
 
     private void automatic() {
-        ToCruz toCruz = null;
+        ToCruz toCruz = missao.getToCruz();
         Sala salaMedKitAM = null;
         Sala saida = null;
         boolean end = false;
@@ -826,15 +837,13 @@ public class Console {
         if (missao.getEdificio().getSalaToCruz().hasInimigos()){
             confronto(missao, true, true);
         }
+        grafoRenderer.repaint();
         while (!end) {
-            try {
-                Thread.sleep(1500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
 
-            grafoRenderer.repaint();
+
             while ( toCruz.getVida() > 0 && caminho.hasNext()) {
+
+
                 try {
                     Sala proximaSala;
 
@@ -860,11 +869,7 @@ public class Console {
                         proximaSala = caminho.next();
                         moveToCruz(missao, proximaSala, true);
                         AtualizeAM(toCruz, edificioAM,salaMedKitAM, salasGrafoAM, salaToCruzAM, saida);
-                        try {
-                            Thread.sleep(1500);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
+
                     }
                     //---------------------------------------------
                     //caso tenha 40% ou menos da vida maxima, e tenha a mochila vazia, vai buscar o medkit dependendo se tem o alvo ou não, caso tenha, anda na direção do que estiver mais proximo(saida ou medKit)
@@ -885,11 +890,7 @@ public class Console {
                                 }
                                 moveToCruz(missao, proximaSala, true);
                                 AtualizeAM(toCruz, edificioAM,salaMedKitAM, salasGrafoAM, salaToCruzAM, saida);
-                                try {
-                                    Thread.sleep(1500);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
+
                             } else {
 
                                 CaminhoTemp = getCaminhoAM(edificioAM.getSalaToCruz(), salaAlvo, salasGrafoAM);
@@ -900,11 +901,7 @@ public class Console {
                                 Sala tempSala =  caminho.next();
                                 moveToCruz(missao, tempSala, true);
                                 AtualizeAM(toCruz, edificioAM,salaMedKitAM, salasGrafoAM, salaToCruzAM, saida);
-                                try {
-                                    Thread.sleep(1500);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
+
                             }
                         }
                         //------------------------------------
@@ -920,11 +917,6 @@ public class Console {
                                 }
                                 moveToCruz(missao, proximaSala, true);
                                 AtualizeAM(toCruz, edificioAM,salaMedKitAM, salasGrafoAM, salaToCruzAM, saida);
-                                try {
-                                    Thread.sleep(1500);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
                             } else {
                                 CaminhoTemp = getCaminhoAM(edificioAM.getSalaToCruz(), saida, salasGrafoAM);
                                 if (CaminhoTemp != null) {
@@ -934,11 +926,6 @@ public class Console {
                                 proximaSala = caminho.next();
                                 moveToCruz(missao, proximaSala, true);
                                 AtualizeAM(toCruz, edificioAM,salaMedKitAM, salasGrafoAM, salaToCruzAM, saida);
-                                try {
-                                    Thread.sleep(1500);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
                             }
                         }
                         //----------------------------------------
@@ -949,21 +936,21 @@ public class Console {
                     else if ((toCruz.getVida() <= toCruz.getMaxLife() * 0.40 && !toCruz.getMochila().isEmpty())) {
                         useMedkit(missao, true, false);
                         AtualizeAM(toCruz, edificioAM,salaMedKitAM, salasGrafoAM, salaToCruzAM, saida);
-                        try {
-                            Thread.sleep(1500);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
                     }
                     if (missao.getToCruz().getVida() <= 0) {
                         end = true;
                         break;
                     }
+                    try {
+                        Thread.sleep(10000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 } catch (IllegalArgumentException e){
                     System.out.println(e.getMessage());
                 }
                 AtualizeAM(toCruz, edificioAM,salaMedKitAM, salasGrafoAM, salaToCruzAM, saida);
-
+                grafoRenderer.repaint();
                 if (toCruz.getGotAlvo() && salaToCruzAM.isEntradaSaida()){
                     missao.setSucess(true);
                     end = true;
@@ -1095,6 +1082,7 @@ public class Console {
             grafoRenderer.repaint();
             frame.revalidate();
             frame.repaint();
+
             automatic();
             JOptionPane.showMessageDialog(null,
                     "O modo 'Automatic' foi executado com sucesso.",
@@ -1112,10 +1100,17 @@ public class Console {
                     "Modo Automático",
                     JOptionPane.WARNING_MESSAGE);
         }
+
+
     }
 
     public static void main(String[] args) {
-        DataTreating.loadGameData();
+        try{
+            DataTreating.loadGameData();
+        } catch (Exception _) {
+
+        }
+
         JFrame frame = new JFrame("Console");
         frame.setContentPane(new Console().EcraInicial);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

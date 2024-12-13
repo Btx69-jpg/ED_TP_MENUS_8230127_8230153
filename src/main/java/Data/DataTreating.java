@@ -113,8 +113,11 @@ public class DataTreating {
         return relatoriosclone;
     }
 
-    public static LinearLinkedOrderedList<Relatorio> GetAllRelatorios()  {
+    public static LinearLinkedOrderedList<Relatorio> GetAllRelatorios() throws EmptyCollectionException {
         LinearLinkedOrderedList<Relatorio> relatoriosclone = new LinearLinkedOrderedList<>();
+        if (relatorios == null || relatorios.getAllRelatorios().isEmpty()){
+            throw new EmptyCollectionException("O Jogo ainda não possui relatórios");
+        }
         for (Relatorio relatorio : relatorios.getAllRelatorios()) {
             try {
                 relatoriosclone.add((Relatorio)relatorio.clone());
@@ -125,8 +128,13 @@ public class DataTreating {
         return relatoriosclone;
     }
 
-    public static Relatorios getRelatorios() {
-        return relatorios;
+    public static Relatorios getRelatorios() throws NullPointerException {
+
+        if (relatorios == null){
+            throw new NullPointerException("O Jogo ainda não possui relatórios");
+        }
+            return relatorios;
+
     }
     public static void ReadMissao(String filePath) {
         JSONParser jsonParser = new JSONParser();
@@ -389,7 +397,7 @@ public class DataTreating {
             jsonObject.put("Relatorios", jsonArray);
         }
 
-        try (FileWriter file = new FileWriter(".\\GameData\\Relatorios\\Novos.json")) {
+        try (FileWriter file = new FileWriter(".\\GameData\\Relatorios\\relatorios,json")) {
             file.write(jsonObject.toJSONString());
             file.flush();
         } catch (IOException e) {
@@ -399,7 +407,7 @@ public class DataTreating {
 
     public static void loadRelatorios() {
         JSONParser parser = new JSONParser();
-        try (FileReader reader = new FileReader(".\\GameData\\Relatorios\\Novos.json")) {
+        try (FileReader reader = new FileReader(".\\GameData\\Relatorios\\relatorios.json")) {
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
             JSONArray jsonArray = (JSONArray) jsonObject.get("Relatorios");
 

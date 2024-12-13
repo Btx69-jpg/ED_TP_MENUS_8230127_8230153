@@ -7,7 +7,7 @@ Realizado por:
 Willkie Filho - 8230127
 Gonçalo Barbosa - 8230153
 
-Repositorio utilizado para criação da funcionalidade do jogo , tais como:
+Funcionalidades presentes neste repositorio utilizados para criação das funcionalidades do jogo:
 - Menu de opções
 - Modos de jogo
 - Rounds/ações
@@ -20,3 +20,4 @@ Para a realização deste modulo do trabalho utilizamos recurso a:
 - modulo da estrutura de dados
 - modulo de Game
 -  conhecimentos previamente adquiridos na UC de PP
+-  Plugin Swing UI Designer
