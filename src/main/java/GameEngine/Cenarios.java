@@ -3,6 +3,7 @@ package GameEngine;
 import BinaryTree.AVLPriorityTree;
 import Edificio.Edificio;
 import Edificio.Sala;
+import Exceptions.ElementNotFoundException;
 import Exceptions.EmptyCollectionException;
 import Item.Item;
 import LinkedList.LinearLinkedUnorderedList;
@@ -188,11 +189,12 @@ public abstract class Cenarios implements Cenario {
         AVLPriorityTree<Sala> PossiveisSalas = new AVLPriorityTree<>();
 
         Random random = new Random();
-        int cnt = 1;
+
         if (inimigos.isEmpty()){
             return;
         }
         for( Sala sala : salasComInimigos){
+            int cnt = 1;
             //impedir de movimentar os inimigos que estão em confronto
             if (sala.hasInimigos() && sala.haveToCruz()){
                 continue;
@@ -211,8 +213,12 @@ public abstract class Cenarios implements Cenario {
             }
 
             for (Inimigo inimigo : inimigos) {
-                sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
-                edificio.addInimigo(inimigo, sala);
+                try {
+                    sala = PossiveisSalas.FindELPriority(random.nextInt(cnt) + 1);
+                    edificio.addInimigo(inimigo, sala);
+                }catch (ElementNotFoundException | EmptyCollectionException _){
+
+                }
             }
         }
         missao.changeEdificio(edificio);
