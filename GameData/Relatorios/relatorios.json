@@ -1,0 +1,12 @@
+{
+  "1": [
+{"cod_missao":"String cod_missao","vidaFinal":100,"sucesso":false,"caminho": ["porcas", "estg", "porcas"]},
+{"cod_missao":"pata de coelho","vidaFinal":100,"sucesso":false,"caminho": ["um", "porcas", "feup"]}
+  ],
+  "2": [
+{"cod_missao":"y cod_missao","vidaFinal":100,"sucesso":false,"caminho": ["um", "estg", "porcas"]}
+  ],
+  "3": [
+{"cod_missao":"String p","vidaFinal":100,"sucesso":false,"caminho": ["um", "estg", "feup"]}
+  ]
+}

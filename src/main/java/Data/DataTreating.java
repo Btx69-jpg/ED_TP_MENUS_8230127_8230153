@@ -3,11 +3,17 @@ package Data;
 import Edificio.Edificio;
 import Edificio.Sala;
 import Enum.ItemType;
+import Exceptions.EmptyCollectionException;
 import Graphs.GraphNetwork;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
-import Missao.*;
+import LinkedList.LinearLinkedUnorderedList;
+import Missao.Alvo;
+import Missao.Missao;
+import Missao.Relatorio;
+import Missao.Relatorios;
 import Pessoa.Inimigo;
+import Pessoa.ToCruz;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,7 +37,6 @@ public class DataTreating {
         }
         return null;
     }
-
     public static void removeMissaoByVersion(int Version) {
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
@@ -326,6 +331,86 @@ public class DataTreating {
 
     }
 
+    public static void exportRelatoriosToJson() {
+        JSONObject jsonObject = new JSONObject();
+        Iterator<LinearLinkedOrderedList<Relatorio>> iterator = null;
+        try {
+            iterator = relatorios.IteratorListasRelatorios();
+        } catch (EmptyCollectionException e) {
+            System.out.println("Não há relatorios a importar");
+        }
+
+
+        while (iterator.hasNext()) {
+            LinearLinkedOrderedList<Relatorio> relatorioList = iterator.next();
+            JSONArray jsonArray = new JSONArray();
+
+            for (Relatorio relatorio : relatorioList) {
+                JSONObject reportJson = new JSONObject();
+                JSONObject alvoJson = new JSONObject();
+                reportJson.put("versao", relatorio.getMissionVersion());
+                alvoJson.put("localizacao", relatorio.getAlvo().getLocalizacao().getNome());
+                alvoJson.put("tipo", relatorio.getAlvo().getTipo());
+                reportJson.put("cod_missao", relatorio.getMissao().getCod_missao());
+                reportJson.put("vidaFinal", relatorio.getVidaTo());
+                reportJson.put("sucesso", relatorio.getMissao().isSucess());
+                LinearLinkedUnorderedList<Sala> salas = relatorio.getCaminhoTo();
+                JSONArray salasArray = new JSONArray();
+
+                for (Sala sala : salas) {
+                    salasArray.add(sala.getNome());
+                }
+                reportJson.put("caminho", salasArray);
+                reportJson.put("alvo", alvoJson);
+
+                jsonArray.add(reportJson);
+            }
+
+            jsonObject.put("Relatorios", jsonArray);
+        }
+
+        try (FileWriter file = new FileWriter(".\\GameData\\Relatorios\\Novos.json")) {
+            file.write(jsonObject.toJSONString());
+            file.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void loadRelatorios() {
+        JSONParser parser = new JSONParser();
+        try (FileReader reader = new FileReader(".\\GameData\\Relatorios\\Novos.json")) {
+            JSONObject jsonObject = (JSONObject) parser.parse(reader);
+            JSONArray jsonArray = (JSONArray) jsonObject.get("Relatorios");
+
+            for (Object reportObj : jsonArray) {
+                JSONObject reportJson = (JSONObject) reportObj;
+                String codMissao = (String) reportJson.get("cod_missao");
+                int versao = ((Long) reportJson.get("versao")).intValue();
+                int vidaFinal = ((Long) reportJson.get("vidaFinal")).intValue();
+                boolean sucesso = (Boolean) reportJson.get("sucesso");
+                JSONArray salasArray = (JSONArray) reportJson.get("caminho");
+                JSONObject alvo = (JSONObject) reportJson.get("alvo");
+                String tipoAlvo = (String) alvo.get("tipo");
+                String localAlvo = (String) alvo.get("localizacao");
+
+                Missao missao = new Missao(codMissao, versao, null, new Alvo(new Sala(localAlvo, false, false), tipoAlvo));
+
+                for (Object salaObj : salasArray) {
+                    String salaNome = (String) salaObj;
+                    missao.addSalaCaminhoTo(new Sala(salaNome, false, false));
+                }
+
+                missao.setSucess(sucesso);
+                missao.setToCruz(new ToCruz("ToCruz", vidaFinal));
+                Relatorio relatorio = new Relatorio(missao);
+                relatorios.addRelatorio(relatorio);
+            }
+        } catch (IOException | ParseException | NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void SaveMissoes() {
         JSONArray missoesArray = new JSONArray();
 
@@ -396,7 +481,7 @@ public class DataTreating {
             missoesArray.add(missaoJson);
         }
 
-        try (FileWriter file = new FileWriter(".\\missoes.json")) {
+        try (FileWriter file = new FileWriter(".\\GameData\\Missoes\\missoes.json")) {
             file.write(missoesArray.toJSONString());
             System.out.println("Successfully Copied JSON Object to File...");
             System.out.println("\nJSON Object: " + missoesArray.toJSONString());
@@ -407,11 +492,21 @@ public class DataTreating {
 
     public static void SaveRelatorios() {
 
-        try (FileWriter arquivoJson = new FileWriter(".\\relatorios.json")) {
-            arquivoJson.write(relatorios.toJsonString());
+        try (FileWriter arquivoJson = new FileWriter(".\\GameData\\Relatorios\\relatorios.json")) {
+       //     arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }
+    }
+
+    public static void loadGameData() {
+        loadRelatorios();
+        ReadMissoes(".\\GameData\\Missoes\\missoes.json");
+    }
+
+    public static void saveGameData() {
+        SaveRelatorios();
+        ReadMissoes(".\\GameData\\Missoes\\missoes.json");
     }
 
     /**

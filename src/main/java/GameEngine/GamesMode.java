@@ -2,12 +2,12 @@ package GameEngine;
 
 import Data.DataTreating;
 import Edificio.Edificio;
+import Edificio.Sala;
 import Graphs.GraphNetwork;
 import LinkedList.LinearLinkedUnorderedList;
-import Pessoa.ToCruz;
-import Missao.Missao;
-import Edificio.Sala;
 import Missao.Alvo;
+import Missao.Missao;
+import Pessoa.ToCruz;
 
 import java.util.Iterator;
 import java.util.Scanner;

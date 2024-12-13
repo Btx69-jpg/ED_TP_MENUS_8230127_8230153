@@ -1,5 +1,3 @@
-package Testes;
-
 import GameEngine.GamesMode;
 
 public class TestGame {
