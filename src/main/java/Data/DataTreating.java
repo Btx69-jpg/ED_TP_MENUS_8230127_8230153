@@ -405,7 +405,7 @@ public class DataTreating {
                 }
 
                 missao.setSucess(sucesso);
-                missao.setToCruz(new ToCruz("ToCruz", vidaFinal));
+                missao.setToCruz(new ToCruz("ToCruz", vidaFinal, 1));
                 Relatorio relatorio = new Relatorio(missao);
                 relatorios.addRelatorio(relatorio);
             }

@@ -1,8 +1,12 @@
+import Data.DataTreating;
 import GameEngine.GamesMode;
+
 
 public class TestAutoGame {
     public static void main(String[] args) {
         GamesMode gameMode = new GamesMode();
-        gameMode.run(true);
+        DataTreating.loadGameData();
+
+        gameMode.run(DataTreating.getMissaoByVersion(1), 2);
     }
 }
