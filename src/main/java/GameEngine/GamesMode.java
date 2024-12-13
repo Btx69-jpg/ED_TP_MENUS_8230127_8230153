@@ -256,7 +256,6 @@ public class GamesMode implements GameMode {
         return ResultadoDaSimulacao.toString();
     }
 
-
     @Override
     public void manual() {
         int op = 0;
@@ -466,20 +465,24 @@ public class GamesMode implements GameMode {
         return caminhoStr.toString();
     }
     @Override
-    public void run(Missao missao, int mode) {
+    public void run(Missao missao, int mode) throws IllegalArgumentException {
 
         this.missao = missao;
 
+        if (mode < 1 || mode > 2 ){
+            throw new IllegalArgumentException("Modo inválido, o valor deve ser entre 1 e 2");
+        }
         if ( mode== 1) {
             manual();
         }
         else if (mode == 2){
             automatic();
         }
-        else if (mode ==3){
-            automatic();
-        }
+    }
 
+    public String RunAutomaticSimulation(Missao missao) {
+        this.missao = missao;
+        return automaticSimulation();
     }
 
     public int printOptions(Sala salaToCruz){

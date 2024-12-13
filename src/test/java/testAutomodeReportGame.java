@@ -12,6 +12,6 @@ public class testAutomodeReportGame {
         DataTreating.loadGameData();
         Missao missao = DataTreating.getMissaoByVersion(1);
         missao.setToCruz(new ToCruz("ToCruz", 100, 5));
-        System.out.println(gameMode.RunAutomaticSimulation(missao));
+      //  System.out.println(gameMode.RunAutomaticSimulation(missao));
     }
 }

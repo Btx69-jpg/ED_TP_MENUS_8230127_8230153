@@ -99,6 +99,11 @@ public abstract class Cenarios implements Cenario {
             if (TocruzStart) {
 
                 System.out.println("Tocruz ataca. ");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 inimigosIterator = p2.iterator();
                 int totalDmg = 0;
                 while (inimigosIterator.hasNext()) {
@@ -116,8 +121,18 @@ public abstract class Cenarios implements Cenario {
                             System.out.println(inimigo.getNome() + " foi derrotado");
                             edificio.removeInimigo(inimigo);
                             temKilledEn.addToRear(inimigo);
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                         System.out.println("Vida do  atual inimigo " + inimigo.getNome() + ": " + inimigo.getVida());
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
 
                 } else {
@@ -144,6 +159,12 @@ public abstract class Cenarios implements Cenario {
             //ataque do(s) inimigo(s)    -----------------------------------
             if (!p2.isEmpty()) {
                 walkEnimies(missao, autoMode, true);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
                 System.out.println("Inimigos atacam. ");
                 inimigosIterator = p2.iterator();
                 while (inimigosIterator.hasNext()) {
@@ -153,6 +174,11 @@ public abstract class Cenarios implements Cenario {
                         System.out.println("To Cruz foi derrotado foi derrotado");
                         missao.changeToCruz(toCruz);
                         missao.setSucess(false);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
                 }
