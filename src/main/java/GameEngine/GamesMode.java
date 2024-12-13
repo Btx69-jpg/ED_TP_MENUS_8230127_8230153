@@ -72,7 +72,7 @@ public class GamesMode implements GameMode {
             while ( toCruz.getVida() > 0 && caminho.hasNext()) {
                 try {
                     Sala proximaSala;
-                    Thread.sleep(1000);
+
                     //caso tenha mais que 40% da vida maxima
                     if (toCruz.getVida() > toCruz.getMaxLife() * 0.40) {
                         //continuação do caminho caso ele não tenha o alvo
@@ -171,8 +171,6 @@ public class GamesMode implements GameMode {
                     }
                 } catch (IllegalArgumentException e){
                     System.out.println(e.getMessage());
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
                 }
                 AtualizeAM();
 
@@ -467,20 +465,24 @@ public class GamesMode implements GameMode {
         return caminhoStr.toString();
     }
     @Override
-    public void run(Missao missao, int mode) {
+    public void run(Missao missao, int mode) throws IllegalArgumentException {
 
         this.missao = missao;
 
+        if (mode < 1 || mode > 2 ){
+            throw new IllegalArgumentException("Modo inválido, o valor deve ser entre 1 e 2");
+        }
         if ( mode== 1) {
             manual();
         }
         else if (mode == 2){
             automatic();
         }
-        else if (mode ==3){
-            automatic();
-        }
+    }
 
+    public String RunAutomaticSimulation(Missao missao) {
+        this.missao = missao;
+        return automaticSimulation();
     }
 
     public int printOptions(Sala salaToCruz){

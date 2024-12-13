@@ -503,8 +503,6 @@ public class DataTreating {
 
         try (FileWriter file = new FileWriter(".\\GameData\\Missoes\\missoes.json")) {
             file.write(missoesArray.toJSONString());
-            System.out.println("Successfully Copied JSON Object to File...");
-            System.out.println("\nJSON Object: " + missoesArray.toJSONString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }
