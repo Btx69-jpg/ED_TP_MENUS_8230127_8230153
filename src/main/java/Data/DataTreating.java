@@ -3,15 +3,13 @@ package Data;
 import Edificio.Edificio;
 import Edificio.Sala;
 import Enum.ItemType;
+import Exceptions.ElementNotFoundException;
 import Exceptions.EmptyCollectionException;
 import Graphs.GraphNetwork;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
 import LinkedList.LinearLinkedUnorderedList;
-import Missao.Alvo;
-import Missao.Missao;
-import Missao.Relatorio;
-import Missao.Relatorios;
+import Missao.*;
 import Pessoa.Inimigo;
 import Pessoa.ToCruz;
 import org.json.simple.JSONArray;
@@ -29,7 +27,10 @@ public class DataTreating {
     private static LinearLinkedOrderedList<Missao> missoes = new LinearLinkedOrderedList<>();
     public static Relatorios relatorios = new Relatorios();
 
-    public static Missao getMissaoByVersion(int Version) {
+    public static Missao getMissaoByVersion(int Version) throws IllegalArgumentException  {
+        if (Version <= 0){
+            throw new IllegalArgumentException("A versão não pode ser negativa/nula");
+        }
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
                 return missao.clone();
@@ -37,31 +38,57 @@ public class DataTreating {
         }
         return null;
     }
-    public static void removeMissaoByVersion(int Version) {
+
+    public static void removeMissaoByVersion(int Version) throws IllegalArgumentException, EmptyCollectionException, ElementNotFoundException {
+        if (Version <= 0){
+            throw new IllegalArgumentException("A versão não pode ser negativa/nula");
+        }
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
-                missoes.remove(missao);
+                try {
+                    missoes.remove(missao);
+                } catch (EmptyCollectionException e) {
+                    throw new EmptyCollectionException("O Jogo ainda não possui missões");
+                } catch (ElementNotFoundException e) {
+                    throw new ElementNotFoundException("O jogo não possui nenhuma missão com esta Versão");
+                }
+
             }
         }
     }
 
-    public static void removeMissao(Missao missaoremove) {
+    public static void removeMissao(Missao missaoremove) throws IllegalArgumentException, ElementNotFoundException, EmptyCollectionException{
+        if (missaoremove == null){
+            throw new IllegalArgumentException("A missão não pode ser nula");
+        }
+
         for (Missao missao : missoes) {
             if (missao.equals(missaoremove)) {
-                missoes.remove(missaoremove);
+                try {
+                    missoes.remove(missaoremove);
+                } catch (EmptyCollectionException e) {
+                    throw new EmptyCollectionException("O Jogo ainda não possui missões");
+                } catch (ElementNotFoundException e) {
+                    throw new ElementNotFoundException("O jogo não possui esta missão");
+                }
+
             }
         }
     }
 
-    public static LinearLinkedOrderedList<Missao> getMissoes() {
+    public static LinearLinkedOrderedList<Missao> getMissoes() throws NullPointerException {
+        if (missoes == null || missoes.isEmpty()){
+            throw new NullPointerException("O jogo ainda não possui missões");
+        }
+
         LinearLinkedOrderedList<Missao> missoesclone = new LinearLinkedOrderedList<>();
         for (Missao missao : missoes) {
-                missoesclone.add(missao.clone());
+            missoesclone.add(missao.clone());
         }
         return missoesclone;
     }
 
-    public static void addRelatorio(Relatorio relatorio){
+    public static void addRelatorio(Relatorio relatorio) throws NullPointerException{
         relatorios.addRelatorio(relatorio);
     }
 
@@ -88,117 +115,103 @@ public class DataTreating {
         JSONParser jsonParser = new JSONParser();
 
         try (FileReader reader = new FileReader(filePath)) {
-            // Lê o JSON como objeto
+
             JSONObject jsonObject = (JSONObject) jsonParser.parse(reader);
 
-            // Lê o código da missão e a versão
+            String codMissao = (String) jsonObject.get("cod-missao");
             long versao = (long) jsonObject.get("versao");
-            if (getMissaoByVersion((int) versao) == null) {
-                String codMissao = (String) jsonObject.get("cod-missao");
 
-                // Lê o alvo
-                JSONObject alvoJson = (JSONObject) jsonObject.get("alvo");
-                String alvoDivisao = (String) alvoJson.get("divisao");
-                String alvoTipo = (String) alvoJson.get("tipo");
+            JSONObject alvoJson = (JSONObject) jsonObject.get("alvo");
+            String alvoDivisao = (String) alvoJson.get("divisao");
+            String alvoTipo = (String) alvoJson.get("tipo");
 
+            JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
+            Sala[] salasArray = new Sala[edificioArray.size()];
+            int index = 0;
+            GraphNetwork<Sala> salas = new GraphNetwork<>();
 
-                // Lê o edifício e cria os vértices do grafo
-                JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
-                Sala[] salasArray = new Sala[edificioArray.size()];
-                int index = 0;
-                GraphNetwork<Sala> salas = new GraphNetwork<>();
+            JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
 
-                // Adiciona entradas e saídas
-                JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
+            for (Object nomeSalaObj : edificioArray) {
+                String nomeSala = (String) nomeSalaObj;
+                boolean isAlvo = nomeSala.equals(alvoDivisao);
+                boolean isEntradaSaida = false;
 
-
-                for (Object nomeSalaObj : edificioArray) {
-                    String nomeSala = (String) nomeSalaObj;
-                    boolean isAlvo = nomeSala.equals(alvoDivisao);
-                    boolean isEntradaSaida = false;
-
-                    for (Object entradaSaidaObj : entradasSaidasArray) {
-                        String nomeEntradaSaid = (String) entradaSaidaObj;
-                        if (nomeSala.equals(nomeEntradaSaid)) {
-                            isEntradaSaida = true;
-                            break;
-                        }
-                    }
-                    Sala sala = new Sala(nomeSala, isAlvo, isEntradaSaida);
-                    salasArray[index] = sala;
-                    index++;
-
-                    salas.addVertex(sala);
-                }
-
-                // Adiciona as ligações (arestas) entre as salas
-                JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
-                for (Object ligacaoObj : ligacoesArray) {
-                    JSONArray ligacao = (JSONArray) ligacaoObj;
-                    String sala1 = (String) ligacao.get(0);
-                    String sala2 = (String) ligacao.get(1);
-
-                    int pos1 = -1;
-                    int pos2 = -1;
-
-                    for (int i = 0; i < salasArray.length; i++) {
-                        if (salasArray[i].getNome().trim().equalsIgnoreCase(sala1.trim())) {
-                            pos1 = i;
-                        }
-                        if (salasArray[i].getNome().trim().equalsIgnoreCase(sala2.trim())) {
-                            pos2 = i;
-                        }
-                    }
-
-                    if (pos1 == -1 || pos2 == -1) {
-                        System.err.println("Erro ao criar ligação entre: " + sala1 + " e " + sala2);
-                        continue;
-                    }
-
-                    salas.addEdge(salasArray[pos1], salasArray[pos2]);
-                }
-
-
-                // Adiciona os itens às salas
-                JSONArray itensArray = (JSONArray) jsonObject.get("itens");
-                for (Object itemObj : itensArray) {
-                    JSONObject itemJson = (JSONObject) itemObj;
-                    String divisaoItem = (String) itemJson.get("divisao");
-                    long pontosItem = (long) itemJson.get("pontos");
-                    String tipoItem = (String) itemJson.get("tipo");
-
-                    Sala sala = findSala(salasArray, divisaoItem);
-                    if (sala != null) {
-                        ItemType itemType = ItemType.fromString(tipoItem);
-                        Item item = new Item(itemType, (int) pontosItem);
-                        sala.addItem(item);
+                for (Object entradaSaidaObj : entradasSaidasArray) {
+                    String nomeEntradaSaid = (String) entradaSaidaObj;
+                    if (nomeSala.equals(nomeEntradaSaid)) {
+                        isEntradaSaida = true;
+                        break;
                     }
                 }
+                Sala sala = new Sala(nomeSala, isAlvo, isEntradaSaida);
+                salasArray [index] = sala;
+                index++;
 
-                Edificio edificio = new Edificio(salas);
-
-                // Adiciona os inimigos às salas
-                JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
-                for (Object inimigoObj : inimigosArray) {
-                    JSONObject inimigoJson = (JSONObject) inimigoObj;
-                    String nomeInimigo = (String) inimigoJson.get("nome");
-                    long poderInimigo = (long) inimigoJson.get("poder");
-                    String divisaoInimigo = (String) inimigoJson.get("divisao");
-
-                    Sala sala = findSala(salasArray, divisaoInimigo);
-                    if (sala != null) {
-                        Inimigo inimigo = new Inimigo(nomeInimigo, (int) poderInimigo);
-                        edificio.addInimigo(inimigo, sala);
-                    }
-                }
-
-                // Adiciona o alvo
-                Sala salaAlvo = findSala(salasArray, alvoDivisao);
-                missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
-
-            }else {
-                System.out.println("Missão com esta versão já existe");
+                salas.addVertex(sala);
             }
+
+            JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
+            for (Object ligacaoObj : ligacoesArray) {
+                JSONArray ligacao = (JSONArray) ligacaoObj;
+                String sala1 = (String) ligacao.get(0);
+                String sala2 = (String) ligacao.get(1);
+
+                int pos1 = -1;
+                int pos2 = -1;
+
+                for (int i = 0; i < salasArray.length; i++) {
+                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala1.trim())) {
+                        pos1 = i;
+                    }
+                    if (salasArray[i].getNome().trim().equalsIgnoreCase(sala2.trim())) {
+                        pos2 = i;
+                    }
+                }
+
+                if (pos1 == -1 || pos2 == -1) {
+                    System.err.println("Erro ao criar ligação entre: " + sala1 + " e " + sala2);
+                    continue;
+                }
+
+                salas.addEdge(salasArray[pos1], salasArray[pos2]);
+            }
+
+            JSONArray itensArray = (JSONArray) jsonObject.get("itens");
+            for (Object itemObj : itensArray) {
+                JSONObject itemJson = (JSONObject) itemObj;
+                String divisaoItem = (String) itemJson.get("divisao");
+                long pontosItem = (long) itemJson.get("pontos");
+                String tipoItem = (String) itemJson.get("tipo");
+
+                Sala sala = findSala(salasArray, divisaoItem);
+                if (sala != null) {
+                    ItemType itemType = ItemType.fromString(tipoItem);
+                    Item item = new Item(itemType, (int) pontosItem);
+                    sala.addItem(item);
+                }
+            }
+
+            Edificio edificio = new Edificio(salas);
+
+            JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
+            for (Object inimigoObj : inimigosArray) {
+                JSONObject inimigoJson = (JSONObject) inimigoObj;
+                String nomeInimigo = (String) inimigoJson.get("nome");
+                long poderInimigo = (long) inimigoJson.get("poder");
+                String divisaoInimigo = (String) inimigoJson.get("divisao");
+
+                Sala sala = findSala(salasArray, divisaoInimigo);
+                if (sala != null) {
+                    Inimigo inimigo = new Inimigo(nomeInimigo, (int) poderInimigo);
+                    edificio.addInimigo(inimigo,sala);
+                }
+            }
+
+            Sala salaAlvo = findSala(salasArray, alvoDivisao);
+            missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
+
+
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo JSON: " + e.getMessage());
         } catch (ParseException e) {
@@ -215,26 +228,21 @@ public class DataTreating {
 
             for (Object missaoObj : missoesArray) {
 
-                // Lê o JSON como objeto
                 JSONObject jsonObject = (JSONObject) missaoObj;
 
-                // Lê o código da missão e a versão
                 String codMissao = (String) jsonObject.get("cod-missao");
                 long versao = (long) jsonObject.get("versao");
 
-                // Lê o alvo
                 JSONObject alvoJson = (JSONObject) jsonObject.get("alvo");
                 String alvoDivisao = (String) alvoJson.get("divisao");
                 String alvoTipo = (String) alvoJson.get("tipo");
 
 
-                // Lê o edifício e cria os vértices do grafo
                 JSONArray edificioArray = (JSONArray) jsonObject.get("edificio");
                 Sala[] salasArray = new Sala[edificioArray.size()];
                 int index = 0;
                 GraphNetwork<Sala> salas = new GraphNetwork<>();
 
-                // Adiciona entradas e saídas
                 JSONArray entradasSaidasArray = (JSONArray) jsonObject.get("entradas-saidas");
 
 
@@ -257,7 +265,6 @@ public class DataTreating {
                     salas.addVertex(sala);
                 }
 
-                // Adiciona as ligações (arestas) entre as salas
                 JSONArray ligacoesArray = (JSONArray) jsonObject.get("ligacoes");
                 for (Object ligacaoObj : ligacoesArray) {
                     JSONArray ligacao = (JSONArray) ligacaoObj;
@@ -284,8 +291,6 @@ public class DataTreating {
                     salas.addEdge(salasArray[pos1], salasArray[pos2]);
                 }
 
-
-                // Adiciona os itens às salas
                 JSONArray itensArray = (JSONArray) jsonObject.get("itens");
                 for (Object itemObj : itensArray) {
                     JSONObject itemJson = (JSONObject) itemObj;
@@ -303,7 +308,6 @@ public class DataTreating {
 
                 Edificio edificio = new Edificio(salas);
 
-                // Adiciona os inimigos às salas
                 JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
                 for (Object inimigoObj : inimigosArray) {
                     JSONObject inimigoJson = (JSONObject) inimigoObj;
@@ -318,7 +322,6 @@ public class DataTreating {
                     }
                 }
 
-                // Adiciona o alvo
                 Sala salaAlvo = findSala(salasArray, alvoDivisao);
                 missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
 
@@ -331,7 +334,7 @@ public class DataTreating {
 
     }
 
-    public static void exportRelatoriosToJson() {
+    public static void SaveRelatorios() {
         JSONObject jsonObject = new JSONObject();
         Iterator<LinearLinkedOrderedList<Relatorio>> iterator = null;
         try {
@@ -490,15 +493,6 @@ public class DataTreating {
         }
     }
 
-    public static void SaveRelatorios() {
-
-        try (FileWriter arquivoJson = new FileWriter(".\\GameData\\Relatorios\\relatorios.json")) {
-       //     arquivoJson.write(relatorios.toJsonString());
-        } catch (IOException e) {
-            System.err.println("Erro ao escrever o JSON: " + e.getMessage());
-        }
-    }
-
     public static void loadGameData() {
         loadRelatorios();
         ReadMissoes(".\\GameData\\Missoes\\missoes.json");
@@ -506,7 +500,7 @@ public class DataTreating {
 
     public static void saveGameData() {
         SaveRelatorios();
-        ReadMissoes(".\\GameData\\Missoes\\missoes.json");
+        SaveMissoes();
     }
 
     /**
