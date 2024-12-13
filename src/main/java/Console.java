@@ -20,6 +20,9 @@ public class Console {
     private static int PODER_MODE_EASY = 25;
     private static int PODER_MODE_MEDIO = 20;
     private static int PODER_MODE_HARD = 15;
+    private static int SIZE_MOCHILA_FACIL = 15;
+    private static int SIZE_MOCHILA_MEDIO = 10;
+    private static int SIZE_MOCHILA_DIFICIL = 5;
 
     private JTextArea bemVindoAoMissionTextArea;
     private JButton IniciarButton;
@@ -232,7 +235,7 @@ public class Console {
                 frame.setContentPane(DificuldadeFacilPanel);
                 frame.revalidate();
                 labelImagemFacil.setPreferredSize(new Dimension(540, 540));
-                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_EASY));
+                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_EASY, SIZE_MOCHILA_FACIL));
                 frame.repaint();
             }
         });
@@ -244,7 +247,7 @@ public class Console {
                 frame.setContentPane(DificuldadeMediaPanel);
                 frame.revalidate();
                 labelImagemMedio.setPreferredSize(new Dimension(540, 540));
-                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_MEDIO));
+                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_MEDIO, SIZE_MOCHILA_MEDIO));
                 frame.repaint();
             }
         });
@@ -256,7 +259,7 @@ public class Console {
                 frame.setContentPane(DificuldadeDificilPanel);
                 frame.revalidate();
                 labelImagemDificil.setPreferredSize(new Dimension(540, 540));
-                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_HARD));
+                missao.setToCruz(new ToCruz("ToCruz", PODER_MODE_HARD, SIZE_MOCHILA_DIFICIL));
                 frame.repaint();
             }
         });
@@ -512,6 +515,7 @@ public class Console {
 
                 if (caminhoJson != null && !caminhoJson.isEmpty()) {
                     try {
+                        caminhoJson = caminhoJson.replaceAll("^\"|\"$", "");
                         DataTreating.ReadMissoes(caminhoJson);
                         JOptionPane.showMessageDialog(
                                 null,
@@ -570,10 +574,10 @@ public class Console {
         DataTreating.ReadMissao("C:\\Users\\Gonçalo\\Documents\\GitHub\\ED_TP_8230127_8230153\\ED_TP_MENUS_8230127_8230153\\src\\main\\resources\\teste.json");
         Missao funcionall = DataTreating.getMissaoByVersion(2);
 
-        missao1.setToCruz(new ToCruz("p1", 200));
-        missao2.setToCruz(new ToCruz("p2", 10));
-        missao3.setToCruz(new ToCruz("MrPizza", 20));
-        funcionall.setToCruz(new ToCruz("TODelas", 2));
+        missao1.setToCruz(new ToCruz("p1", 200, SIZE_MOCHILA_FACIL));
+        missao2.setToCruz(new ToCruz("p2", 10, SIZE_MOCHILA_FACIL));
+        missao3.setToCruz(new ToCruz("MrPizza", 20, SIZE_MOCHILA_FACIL));
+        funcionall.setToCruz(new ToCruz("TODelas", 2, SIZE_MOCHILA_FACIL));
 
 
         missao1.addSalaCaminhoTo(sala1);
