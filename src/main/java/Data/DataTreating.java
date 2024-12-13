@@ -512,6 +512,18 @@ public class DataTreating {
     }
 
     public static void saveGameData() {
+        File diretorio = new File("GameData");
+        File diretorio2 = new File("GameData\\Relatorios");
+        File diretorio3 = new File("GameData\\Missoes");
+        if (!diretorio.exists()) {
+            diretorio.mkdir();
+        }
+        if (!diretorio2.exists()) {
+            diretorio2.mkdir();
+        }
+        if (!diretorio3.exists()) {
+            diretorio3.mkdir();
+        }
         SaveRelatorios();
         SaveMissoes();
     }
