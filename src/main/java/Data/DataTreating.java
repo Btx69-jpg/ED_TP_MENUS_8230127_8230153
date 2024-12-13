@@ -3,6 +3,8 @@ package Data;
 import Edificio.Edificio;
 import Edificio.Sala;
 import Enum.ItemType;
+import Exceptions.ElementNotFoundException;
+import Exceptions.EmptyCollectionException;
 import Graphs.GraphNetwork;
 import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
@@ -24,7 +26,10 @@ public class DataTreating {
     public static Relatorios relatorios = new Relatorios();
 
 
-    public static Missao getMissaoByVersion(int Version) {
+    public static Missao getMissaoByVersion(int Version) throws IllegalArgumentException  {
+        if (Version <= 0){
+            throw new IllegalArgumentException("A versão não pode ser negativa/nula");
+        }
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
                 return missao.clone();
@@ -33,23 +38,48 @@ public class DataTreating {
         return null;
     }
 
-    public static void removeMissaoByVersion(int Version) {
+    public static void removeMissaoByVersion(int Version) throws IllegalArgumentException, EmptyCollectionException, ElementNotFoundException {
+        if (Version <= 0){
+            throw new IllegalArgumentException("A versão não pode ser negativa/nula");
+        }
         for (Missao missao : missoes) {
             if (missao.getVersion() == Version) {
-                missoes.remove(missao);
+                try {
+                    missoes.remove(missao);
+                } catch (EmptyCollectionException e) {
+                    throw new EmptyCollectionException("O Jogo ainda não possui missões");
+                } catch (ElementNotFoundException e) {
+                    throw new ElementNotFoundException("O jogo não possui nenhuma missão com esta Versão");
+                }
+
             }
         }
     }
 
-    public static void removeMissao(Missao missaoremove) {
+    public static void removeMissao(Missao missaoremove) throws IllegalArgumentException, ElementNotFoundException, EmptyCollectionException{
+        if (missaoremove == null){
+            throw new IllegalArgumentException("A missão não pode ser nula");
+        }
+
         for (Missao missao : missoes) {
             if (missao.equals(missaoremove)) {
-                missoes.remove(missaoremove);
+                try {
+                    missoes.remove(missaoremove);
+                } catch (EmptyCollectionException e) {
+                    throw new EmptyCollectionException("O Jogo ainda não possui missões");
+                } catch (ElementNotFoundException e) {
+                    throw new ElementNotFoundException("O jogo não possui esta missão");
+                }
+
             }
         }
     }
 
-    public static LinearLinkedOrderedList<Missao> getMissoes() {
+    public static LinearLinkedOrderedList<Missao> getMissoes() throws NullPointerException {
+        if (missoes == null || missoes.isEmpty()){
+            throw new NullPointerException("O jogo ainda não possui missões");
+        }
+
         LinearLinkedOrderedList<Missao> missoesclone = new LinearLinkedOrderedList<>();
         for (Missao missao : missoes) {
                 missoesclone.add(missao.clone());
@@ -57,7 +87,7 @@ public class DataTreating {
         return missoesclone;
     }
 
-    public static void addRelatorio(Relatorio relatorio){
+    public static void addRelatorio(Relatorio relatorio) throws NullPointerException{
         relatorios.addRelatorio(relatorio);
     }
 
@@ -398,15 +428,6 @@ public class DataTreating {
             file.write(missoesArray.toJSONString());
             System.out.println("Successfully Copied JSON Object to File...");
             System.out.println("\nJSON Object: " + missoesArray.toJSONString());
-        } catch (IOException e) {
-            System.err.println("Erro ao escrever o JSON: " + e.getMessage());
-        }
-    }
-
-    public static void SaveRelatorios() {
-
-        try (FileWriter arquivoJson = new FileWriter(".\\relatorios.json")) {
-            arquivoJson.write(relatorios.toJsonString());
         } catch (IOException e) {
             System.err.println("Erro ao escrever o JSON: " + e.getMessage());
         }
