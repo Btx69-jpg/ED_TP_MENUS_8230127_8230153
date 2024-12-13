@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 public class DataTreating {
     private static LinearLinkedOrderedList<Missao> missoes = new LinearLinkedOrderedList<>();
-    public static Relatorios relatorios = new Relatorios();
+    private static Relatorios relatorios = new Relatorios();
 
     public static Missao getMissaoByVersion(int Version) throws IllegalArgumentException  {
         if (Version <= 0){

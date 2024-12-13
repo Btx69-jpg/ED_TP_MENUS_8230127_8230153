@@ -79,7 +79,7 @@ public class TestRelatoriosToJson {
 //
 //        DataTreating.exportRelatoriosToJson();
         DataTreating.loadRelatorios();
-        System.out.println(DataTreating.relatorios);
+        System.out.println(DataTreating.getRelatorios());
 
     }
 

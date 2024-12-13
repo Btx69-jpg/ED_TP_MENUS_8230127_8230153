@@ -4,6 +4,9 @@ import Missao.Missao;
 import Pessoa.ToCruz;
 
 public class TestAndar {
+    /**
+     * Main para verificar se os inimigos estão a se movimentar
+     * */
     public static void main(String[] args) {
         Missao missao;
 
