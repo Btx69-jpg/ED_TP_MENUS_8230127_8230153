@@ -470,7 +470,7 @@ public class GamesMode implements GameMode {
 
         this.missao = missao;
 
-        if (mode != 1 || mode != 2 ){
+        if (mode < 1 || mode > 2 ){
             throw new IllegalArgumentException("Modo inválido, o valor deve ser entre 1 e 2");
         }
         if ( mode== 1) {
