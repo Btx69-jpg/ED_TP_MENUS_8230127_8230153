@@ -532,7 +532,7 @@ public class GamesMode implements GameMode {
         return cnt;
     }
 
-    private  void AtualizeAM() {
+    private void AtualizeAM() {
         toCruz = missao.getToCruz();
         edificioAM = missao.getEdificio();
         salaMedKitAM = edificioAM.getMedKitProx(true);
