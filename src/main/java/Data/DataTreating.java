@@ -101,12 +101,28 @@ public class DataTreating {
         relatorios.removeRelatorios(Version);
     }
 
-    public static void GetRelatoriosByVersion(int Version) {
-        relatorios.getRelatorios(Version);
+    public static LinearLinkedOrderedList<Relatorio> GetRelatoriosByVersion(int Version) {
+        LinearLinkedOrderedList<Relatorio> relatoriosclone = new LinearLinkedOrderedList<>();
+        for (Relatorio relatorio : relatorios.getRelatorios(Version)) {
+            try {
+                relatoriosclone.add((Relatorio)relatorio.clone());
+            } catch (CloneNotSupportedException _) {
+
+            }
+        }
+        return relatoriosclone;
     }
 
-    public static void GetAllRelatorios() {
-        relatorios.getAllRelatorios();
+    public static LinearLinkedOrderedList<Relatorio> GetAllRelatorios()  {
+        LinearLinkedOrderedList<Relatorio> relatoriosclone = new LinearLinkedOrderedList<>();
+        for (Relatorio relatorio : relatorios.getAllRelatorios()) {
+            try {
+                relatoriosclone.add((Relatorio)relatorio.clone());
+            } catch (CloneNotSupportedException _) {
+
+            }
+        }
+        return relatoriosclone;
     }
 
     public static Relatorios getRelatorios() {
@@ -463,7 +479,7 @@ public class DataTreating {
                     JSONObject itemJson = new JSONObject();
                     itemJson.put("divisao", sala.getNome());
                     itemJson.put("pontos", item.getQuantidade());
-                    itemJson.put("tipo", item.getTipo().toString());
+                    itemJson.put("tipo", item.getTipo().getTipo());
                     itensArray.add(itemJson);
                 }
             }

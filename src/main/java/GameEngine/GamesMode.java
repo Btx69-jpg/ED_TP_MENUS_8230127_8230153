@@ -256,7 +256,6 @@ public class GamesMode implements GameMode {
         return ResultadoDaSimulacao.toString();
     }
 
-
     @Override
     public void manual() {
         int op = 0;
