@@ -291,8 +291,6 @@ public class DataTreating {
                     salas.addEdge(salasArray[pos1], salasArray[pos2]);
                 }
 
-
-                // Adiciona os itens às salas
                 JSONArray itensArray = (JSONArray) jsonObject.get("itens");
                 for (Object itemObj : itensArray) {
                     JSONObject itemJson = (JSONObject) itemObj;
@@ -310,7 +308,6 @@ public class DataTreating {
 
                 Edificio edificio = new Edificio(salas);
 
-                // Adiciona os inimigos às salas
                 JSONArray inimigosArray = (JSONArray) jsonObject.get("inimigos");
                 for (Object inimigoObj : inimigosArray) {
                     JSONObject inimigoJson = (JSONObject) inimigoObj;
@@ -325,7 +322,6 @@ public class DataTreating {
                     }
                 }
 
-                // Adiciona o alvo
                 Sala salaAlvo = findSala(salasArray, alvoDivisao);
                 missoes.add(new Missao(codMissao, (int) versao, edificio, new Alvo(salaAlvo, alvoTipo)));
 

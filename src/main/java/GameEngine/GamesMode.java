@@ -206,6 +206,56 @@ public class GamesMode implements GameMode {
 
     }
 
+    public String automaticSimulation() {
+        StringBuilder ResultadoDaSimulacao = new StringBuilder();
+
+        edificioAM = missao.getEdificio();
+        salasGrafoAM = edificioAM.getSalas();
+        LinearLinkedUnorderedList<Sala> EntradasSaidas = edificioAM.getEntradas_saidas();
+        Iterator<Sala> CaminhoIda;
+        Iterator<Sala> CaminhoVolta;
+        Sala salaAlvo = edificioAM.getSalaAlvo();
+        salaToCruzAM = EntradasSaidas.first();
+        double tempWeight1;
+        double tempWeight2;
+
+        if (EntradasSaidas.size() > 1) {
+            for (Sala EntExit : EntradasSaidas) {
+                tempWeight1 = salasGrafoAM.shortestWeightWeight(EntExit, salaAlvo);
+                if (salasGrafoAM.shortestWeightWeight(salaToCruzAM, edificioAM.getSalaAlvo()) > tempWeight1) {
+                    salaToCruzAM = EntExit;
+                }
+            }
+        }
+
+        ResultadoDaSimulacao.append("SpawnPoint: ").append(salaToCruzAM.getNome()).append("\n");
+
+        missao.changeSala(salaToCruzAM, salaToCruzAM.setHaveToCruz(true));
+
+        CaminhoIda = salasGrafoAM.iteratorShortestWeight(salaToCruzAM, salaAlvo);
+        tempWeight1 = salasGrafoAM.shortestWeightWeight(salaToCruzAM, salaAlvo);
+        missao.changeSala(salaToCruzAM, salaToCruzAM.setHaveToCruz(false));
+        missao.changeSala(salaAlvo, salaAlvo.setHaveToCruz(true));
+        edificioAM = missao.getEdificio();
+        CaminhoVolta = salasGrafoAM.iteratorShortestWeight(salaAlvo,  edificioAM.getClosestExit(true));
+        tempWeight2 = salasGrafoAM.shortestWeightWeight(salaAlvo,  edificioAM.getClosestExit(true));
+
+        ResultadoDaSimulacao.append("É Possivel concluir a missão com sucesso: ");
+        if (missao.getToCruz().getVida() - tempWeight1 - tempWeight2 > 0){
+            ResultadoDaSimulacao.append("Sim\n");
+        } else {
+            ResultadoDaSimulacao.append("Não\n");
+        }
+
+        ResultadoDaSimulacao.append("Vida Final do To Cruz: ").append(missao.getToCruz().getVida() - tempWeight1 - tempWeight2).append("\n");
+
+        ResultadoDaSimulacao.append("Caminho Ida: ").append(PrintCaminho(CaminhoIda));
+
+        ResultadoDaSimulacao.append("Caminho Volta: ").append(PrintCaminho(CaminhoVolta));
+
+        return ResultadoDaSimulacao.toString();
+    }
+
 
     @Override
     public void manual() {
@@ -409,22 +459,24 @@ public class GamesMode implements GameMode {
         caminhoStr.append("[  ").append(caminho.next().getNome());
         while (caminho.hasNext()) {
             Sala sala = caminho.next();
-            caminhoStr.append(", ").append(sala.getNome());
+            caminhoStr.append(" -> ").append(sala.getNome());
         }
         caminhoStr.append("  ]");
 
         return caminhoStr.toString();
     }
     @Override
-    public void run(boolean autoMode) {
-        ToCruz toTeste = new ToCruz("teste", 1000);
-        DataTreating.ReadMissao("C:\\Faculdade\\2ano\\PrimeiroSemestre\\ED\\dadosJogo.json");
-        missao = DataTreating.getMissaoByVersion(1);
-        missao.setToCruz(toTeste);
-        if (!autoMode) {
+    public void run(Missao missao, int mode) {
+
+        this.missao = missao;
+
+        if ( mode== 1) {
             manual();
         }
-        else {
+        else if (mode == 2){
+            automatic();
+        }
+        else if (mode ==3){
             automatic();
         }
 
