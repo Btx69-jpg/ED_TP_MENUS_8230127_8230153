@@ -1,6 +1,5 @@
 package Data;
 
-import Interfaces.OrderedListADT;
 import LinkedList.LinearLinkedOrderedList;
 import Missao.Missao;
 public class TestImport {

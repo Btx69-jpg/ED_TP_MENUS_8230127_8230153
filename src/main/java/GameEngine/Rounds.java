@@ -3,10 +3,11 @@ package GameEngine;
 import Edificio.Edificio;
 import Edificio.Sala;
 import Exceptions.EmptyCollectionException;
-import Pessoa.*;
-import Missao.Missao;
 import Item.Item;
 import Missao.Alvo;
+import Missao.Missao;
+import Pessoa.Pessoa;
+import Pessoa.ToCruz;
 
 import java.util.Iterator;
 
