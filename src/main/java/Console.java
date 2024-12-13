@@ -3,6 +3,7 @@ import Edificio.Edificio;
 import Edificio.Sala;
 import GameEngine.Rounds;
 import Graphs.GraphNetwork;
+import Item.Item;
 import LinkedList.LinearLinkedOrderedList;
 import LinkedList.LinearLinkedUnorderedList;
 import Missao.Missao;
@@ -384,6 +385,12 @@ public class Console {
             case "5 - Apanhar Item":
                 missao.getToCruz().apanhaItem(missao.getEdificio().getSalaToCruz().getItens());
                 missao.changeToCruz(missao.getToCruz());
+                Sala oldSala = missao.getEdificio().getSalaToCruz();
+                Iterator<Item> itItem = missao.getEdificio().getSalaToCruz().getItens().iterator();
+                while (itItem.hasNext()){
+                    missao.getEdificio().getSalaToCruz().removeItem(itItem.next());
+                }
+                missao.changeSala(oldSala, missao.getEdificio().getSalaToCruz());
                 JOptionPane.showMessageDialog(TurnoUtilizador, missao.getToCruz().getMochila().peek());
                 break;
             case "6 - Recuperar o alvo":
