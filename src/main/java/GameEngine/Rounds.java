@@ -11,7 +11,20 @@ import Pessoa.ToCruz;
 
 import java.util.Iterator;
 
+/**
+ * Classe que gerencia os rounds do jogo.
+ */
 public class Rounds implements Round {
+
+    /**
+     * Move o personagem ToCruz para uma sala específica, caso haja inimigos na sala, inicia se o confronto.
+     * Apos a movimentação do to cruz movem se todos os inimigos.
+     * caso seja o modo automatico e toCruz entre na sala que tem o alvo, To Cruz recolhe o alvo
+     *
+     * @param missao a missão atual
+     * @param to a sala de destino
+     * @param autoMode indica se o modo automático está ativado
+     */
     public static void moveToCruz(Missao missao, Sala to, boolean autoMode) {
 
         Edificio edificio = missao.getEdificio();
@@ -42,6 +55,13 @@ public class Rounds implements Round {
 
     }
 
+    /**
+     * Realiza um ataque entre duas pessoas (To cruz e um inimigo habitualmente).
+     *
+     * @param atacante a pessoa que ataca
+     * @param atacado a pessoa que é atacada
+     * @throws IllegalArgumentException se ambos estiverem mortos ou se algum deles estiver morto
+     */
     public static void attack(Pessoa atacante, Pessoa atacado) throws IllegalArgumentException{
         if(atacante.getVida() <= 0 && atacado.getVida() <= 0){
             throw new IllegalArgumentException("Ambos estão mortos, não podem atacar");
@@ -56,6 +76,13 @@ public class Rounds implements Round {
         atacado.setVida(atacado.getVida() - atacante.getPoder());
     }
 
+    /**
+     * Usa um kit médico para curar o personagem ToCruz e anda todos os inimigos.
+     *
+     * @param missao a missão atual
+     * @param autoMode indica se o modo automático está ativado
+     * @param wasInConfronto indica se estava em confronto
+     */
     public static void useMedkit(Missao missao, boolean autoMode, boolean wasInConfronto) {
         try {
             ToCruz toCruz = missao.getToCruz();
