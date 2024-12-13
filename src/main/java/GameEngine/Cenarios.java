@@ -20,8 +20,6 @@ public abstract class Cenarios implements Cenario {
     /**
      * @return true se o jogador venceu o cenário, false caso contrário
      */
-    //LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO ou adicionar verificaçõoes para ver se o inimigo é valido antes de iniciar o confronto(se tem vida)
-    //falta adicionar o metodo para todos os outros andarem caso estes não morram
     public static void Confronto(Missao missao, boolean TocruzStart, boolean autoMode) throws IllegalArgumentException{
 //      PRINT DOS ENVOLVIDOS NO CONFRONTO
         ToCruz toCruz = missao.getToCruz();
@@ -67,7 +65,6 @@ public abstract class Cenarios implements Cenario {
                                     Rounds.attack(toCruz, inimigo);
                                 } catch (IllegalArgumentException e) {
                                     System.out.println(e.getMessage());
-                                    //return false;
                                 }
                                 if (inimigo.getVida() <= 0) {
                                     System.out.println(inimigo.getNome() + " foi derrotado");
@@ -110,7 +107,7 @@ public abstract class Cenarios implements Cenario {
                 }
 
                 if (toCruz.getMochila().isEmpty() || (toCruz.getVida() > toCruz.getMaxLife() * 0.35 && toCruz.getVida() > totalDmg )) {
-                    //ataca todos os inimigos na sala       LEMBRAR DE REMOVER Os INIMIGOs DO EDIFICIO NO FINAL DO CONFRONTO CASO SEJA BEM SUCEDIDO
+                    //ataca todos os inimigos na sala
                     inimigosIterator = p2.iterator();
                     while (inimigosIterator.hasNext()) {
                         inimigo = inimigosIterator.next();
@@ -146,6 +143,7 @@ public abstract class Cenarios implements Cenario {
 
             //ataque do(s) inimigo(s)    -----------------------------------
             if (!p2.isEmpty()) {
+                walkEnimies(missao, autoMode, true);
                 System.out.println("Inimigos atacam. ");
                 inimigosIterator = p2.iterator();
                 while (inimigosIterator.hasNext()) {
@@ -155,7 +153,6 @@ public abstract class Cenarios implements Cenario {
                         System.out.println("To Cruz foi derrotado foi derrotado");
                         missao.changeToCruz(toCruz);
                         missao.setSucess(false);
-                        //return false;
                     }
                     System.out.println("Vida do  atual To Cruz " + ": " + toCruz.getVida());
                 }
@@ -163,8 +160,6 @@ public abstract class Cenarios implements Cenario {
             }
             //fim do ataque do inimigo -----------------------
 
-            //movimentação dos inimigos que não estão em confronto
-            walkEnimies(missao, autoMode, true);
         }
         System.out.println("Fim do confronto!");
         toCruz.setInConfronto(false);
@@ -177,10 +172,8 @@ public abstract class Cenarios implements Cenario {
             System.out.println("\nTó Cruz venceu o confronto!");
         }
 
-        //return true;
     }
 
-//penso estar pronto e correto
     public static void walkEnimies(Missao missao, boolean autoMode, boolean wasInConfronto) {
         Edificio edificio = missao.getEdificio();
         LinearLinkedUnorderedList<Inimigo> inimigos = edificio.getAllInimigos();
@@ -195,6 +188,7 @@ public abstract class Cenarios implements Cenario {
         }
         for( Sala sala : salasComInimigos){
             int cnt = 1;
+
             //impedir de movimentar os inimigos que estão em confronto
             if (sala.hasInimigos() && sala.haveToCruz()){
                 continue;
