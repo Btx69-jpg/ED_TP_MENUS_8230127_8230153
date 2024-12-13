@@ -1,13 +1,4 @@
-package Data;
-
-
-import Edificio.Edificio;
-import Edificio.Sala;
-import Graphs.GraphNetwork;
-import Missao.Relatorio;
-import Missao.Alvo;
-import Missao.Missao;
-import Pessoa.ToCruz;
+import Data.DataTreating;
 
 public class TestRelatoriosToJson {
     public static void main(String[] args) {
